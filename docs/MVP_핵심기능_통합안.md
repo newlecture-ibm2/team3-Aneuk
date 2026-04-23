@@ -512,7 +512,7 @@ Case: 하우스키핑 직원이 청소 중 전구 고장 발견
 
 | 영역 | 기술 | 선택 이유 |
 |------|------|-----------|
-| **Language** | Java 17 | 강타입, DDD 친화적, 팀 역량 |
+| **Language** | Java 21 | 강타입, DDD 친화적, 팀 역량 |
 | **Framework** | Spring Boot 3.x | 생산성, 생태계 |
 | **Architecture** | Hexagonal (Ports & Adapters) | AI 엔진 교체 용이, 테스트 용이 |
 | **ORM** | Spring Data JPA | 도메인 모델 매핑 |
