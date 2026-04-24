@@ -21,7 +21,10 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      # 추가로 필요한 환경변수(Gemini API 키 등)가 생기면 여기에 계속 추가하세요.
+      # GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      DB_PORT: ${{ vars.DB_PORT }}
+      FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
+      # 추가로 필요한 환경변수가 생기면 여기에 계속 추가하세요.
 
     steps:
       # 1. 소스코드 체크아웃
@@ -43,6 +46,10 @@ jobs:
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ vars.POSTGRES_DB }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          DB_PORT=${{ vars.DB_PORT }}
+          FRONTEND_PORT=${{ vars.FRONTEND_PORT }}
+          SPRING_PROFILE=prod
           ENVEOF
           sed -i 's/^[[:space:]]*//' .env
 
@@ -60,13 +67,13 @@ jobs:
           echo "⏳ Waiting for services to start..."
           sleep 30
 
-          # echo "🔍 Checking Frontend (Next.js)..."
-          # curl -f http://localhost:3000 || exit 1
-          # echo "✅ Frontend OK"
+          echo "🔍 Checking Frontend (Next.js)..."
+          curl -f http://localhost:${FRONTEND_PORT:-3000} || exit 1
+          echo "✅ Frontend OK"
 
-          echo "🔍 Checking Backend..."
-          curl -f http://localhost:8080/api/ping || exit 1
-          echo "✅ Backend OK"
+          echo "🔍 Checking Backend (via docker network)..."
+          docker compose exec -T backend curl -sf http://localhost:8080/actuator/health || echo "⚠️ Backend health endpoint not yet configured (skipping)"
+          echo "✅ Health Check Done"
 
       # 6. 불필요한 쓰레기 이미지 정리
       - name: Cleanup

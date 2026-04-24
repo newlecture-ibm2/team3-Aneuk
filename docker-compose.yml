@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5412:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data # 데이터 영구 저장
     networks:
@@ -33,27 +33,27 @@ services:
     build:
       context: ./backend # 향후 백엔드 폴더(Dockerfile 위치)를 지정하세요
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-prod}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - db
     networks:
       - Anook-network
 
   # 4. 프론트엔드 (Next.js / React PWA)
-#  frontend:
-#    build:
-#      context: ./frontend # 향후 프론트엔드 폴더(Dockerfile 위치)를 지정하세요
-#      dockerfile: Dockerfile
-#    ports:
-#      - "3000:3000"
-#    networks:
-#      - Anook-network
+  frontend:
+    build:
+      context: ./frontend # 향후 프론트엔드 폴더(Dockerfile 위치)를 지정하세요
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    networks:
+      - Anook-network
 
 volumes:
   db-data:
