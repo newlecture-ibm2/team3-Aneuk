@@ -50,8 +50,8 @@ jobs:
       - name: Build and Deploy
         run: |
           cd ~/workspace/team3-Anook
-          docker-compose down
-          docker-compose up -d --build
+          docker compose down
+          docker compose up -d --build
 
       # 5. Health Check (배포 정상 확인)
       - name: Health Check
@@ -80,7 +80,7 @@ jobs:
       #   run: |
       #     echo "❌ Deployment failed! Rolling back..."
       #     cd ~/workspace/team3-Anook
-      #     docker-compose down
+      #     docker compose down
       #     git reset --hard HEAD~1
-      #     docker-compose up -d --build
+      #     docker compose up -d --build
       #     echo "🔄 Rollback completed (reverted to previous commit)"
