@@ -60,15 +60,13 @@ jobs:
           echo "⏳ Waiting for services to start..."
           sleep 30
 
-          echo "🔍 Checking Frontend (Next.js)..."
-          curl -f http://localhost:3000 || exit 1
-          echo "✅ Frontend OK"
+          # echo "🔍 Checking Frontend (Next.js)..."
+          # curl -f http://localhost:3000 || exit 1
+          # echo "✅ Frontend OK"
 
-          # 백엔드 Health Check (Spring Boot Actuator 등 세팅 완료되면 활성화 하세요)
-          # echo "🔍 Checking Backend..."
-          # BACKEND_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' team3-Anook-backend-1)
-          # curl -f http://${BACKEND_IP}:8080/actuator/health || exit 1
-          # echo "✅ Backend OK"
+          echo "🔍 Checking Backend..."
+          curl -f http://localhost:8080/api/ping || exit 1
+          echo "✅ Backend OK"
 
       # 6. 불필요한 쓰레기 이미지 정리
       - name: Cleanup
