@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # 1. Nginx 리버스 프록시 (미니PC 환경에서는 호스트 Nginx 사용하므로 주석 처리. AWS 배포 시 주석 해제)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 방금 생성한 설정 파일 매핑
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   networks:
+  #     - Anook-network
+  # 2. PostgreSQL + pgvector (RAG 용)
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: Anook_user
+      POSTGRES_PASSWORD: Anook_password
+      POSTGRES_DB: Anook_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data # 데이터 영구 저장
+    networks:
+      - Anook-network
+
+  # 3. Spring Boot 백엔드
+  backend:
+    build:
+      context: ./backend # 향후 백엔드 폴더(Dockerfile 위치)를 지정하세요
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/Anook_db
+      - SPRING_DATASOURCE_USERNAME=Anook_user
+      - SPRING_DATASOURCE_PASSWORD=Anook_password
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - db
+    networks:
+      - Anook-network
+
+  # 4. 프론트엔드 (Next.js / React PWA)
+#  frontend:
+#    build:
+#      context: ./frontend # 향후 프론트엔드 폴더(Dockerfile 위치)를 지정하세요
+#      dockerfile: Dockerfile
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - Anook-network
+
+volumes:
+  db-data:
+
+networks:
+  Anook-network:
+    driver: bridge
