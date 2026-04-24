@@ -1,0 +1,27 @@
+{
+  "guest": "투숙객",
+  "staff": "직원",
+  "admin": "관리자",
+  "status": {
+    "pending": "접수됨",
+    "assigned": "배정됨",
+    "inProgress": "처리 중",
+    "completed": "완료",
+    "escalated": "이관됨",
+    "transferred": "전달됨"
+  },
+  "priority": {
+    "low": "낮음",
+    "normal": "보통",
+    "high": "높음",
+    "urgent": "긴급"
+  },
+  "common": {
+    "submit": "제출",
+    "cancel": "취소",
+    "confirm": "확인",
+    "close": "닫기",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다"
+  }
+}

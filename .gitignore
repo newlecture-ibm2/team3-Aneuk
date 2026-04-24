@@ -1,13 +1,14 @@
+# ══════════════════════════════════════
+# Java / Spring Boot
+# ══════════════════════════════════════
+
 # Compiled class files
 *.class
 
 # Log files
 *.log
 
-# Blueprints
-*.pdf
-
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -16,16 +17,51 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
 
-# Build systems
-.gradle
-/build/
+# Gradle
+.gradle/
+**/build/
 !gradle/wrapper/gradle-wrapper.jar
 
+# Backend specific
+backend/.gradle/
+backend/build/
+backend/bin/
+
+# ══════════════════════════════════════
+# Node.js / Next.js (Frontend)
+# ══════════════════════════════════════
+
+node_modules/
+.next/
+out/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# npm
+npm-debug.log*
+
+# ══════════════════════════════════════
+# Python (AI Service)
+# ══════════════════════════════════════
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+.venv/
+venv/
+env/
+
+# ══════════════════════════════════════
 # IDEs
+# ══════════════════════════════════════
+
 .settings/
 .classpath
 .project
@@ -34,21 +70,28 @@ replay_pid*
 *.iml
 *.iws
 .vscode/
+*.swp
+*.swo
+*~
 
-# Operating System Files
+# ══════════════════════════════════════
+# OS Files
+# ══════════════════════════════════════
+
 .DS_Store
 Thumbs.db
 
+# ══════════════════════════════════════
 # Environment & Local Config
+# ══════════════════════════════════════
+
 .env
 .env.local
+.env.*.local
 docker-compose.local.yml
 
-# Backend specific
-backend/.gradle/
-backend/build/
+# ══════════════════════════════════════
+# Misc
+# ══════════════════════════════════════
 
-# Node/Frontend (if added later)
-node_modules/
-.next/
-out/
+*.pdf

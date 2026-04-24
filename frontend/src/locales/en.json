@@ -1,0 +1,27 @@
+{
+  "guest": "Guest",
+  "staff": "Staff",
+  "admin": "Admin",
+  "status": {
+    "pending": "Pending",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "escalated": "Escalated",
+    "transferred": "Transferred"
+  },
+  "priority": {
+    "low": "Low",
+    "normal": "Normal",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  }
+}
