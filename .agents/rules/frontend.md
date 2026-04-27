@@ -31,8 +31,9 @@ trigger: always_on
   - `modal/`: 전역적으로 사용되는 모달 컴포넌트.
   - `icons/`: 프로젝트에서 사용되는 모든 커스텀 SVG 아이콘 컴포넌트 (외부 아이콘 라이브러리 미사용).
 
-- **`src/lib/`**: BFF 호출 및 비즈니스 로직, 유틸리티 함수.
-  - API 함수는 도메인별로 분리하며, 백엔드 API를 직접 찌르지 않고 Next.js BFF 레이어(`src/app/api`)를 호출하도록 작성합니다.
+- **`src/lib/`**: 공통 유틸리티 함수 및 API 에러 처리 헬퍼.
+  - ⚠️ **API 호출 함수를 이곳에 중앙 집중화하지 않습니다.** (fetch wrapper 생성 금지)
+  - 공통 에러 처리 로직(`handleResponse`)만 `src/lib/api.ts`에 위치시킵니다.
 
 - **`src/store/`**: Zustand 기반의 클라이언트 전역 상태 관리.
   - 스토어는 도메인 단위로 분리 (`useAuthStore.ts`, `useUIStore.ts`).
@@ -66,18 +67,39 @@ Tailwind CSS 등의 유틸리티 클래스를 사용하지 않으며, **순수 C
 
 ---
 
-## 5. 📡 BFF (Backend-For-Frontend) & API Rules
+## 5. 📡 BFF & API Calling Rules
 
-클라이언트(브라우저)에서 백엔드 서버로 직접 요청을 보내지 않고, Next.js 서버를 거쳐가는 **BFF(Backend-for-Frontend) 패턴**을 강제합니다.
+클라이언트(브라우저)에서 백엔드 서버로 직접 요청을 보내지 않고, Next.js 서버를 거쳐가는 **BFF(Backend-for-Frontend) 패턴**과 **Co-location 훅 패턴**을 강제합니다.
 
-1. **클라이언트 요청 통제**: 브라우저의 컴포넌트는 `fetch`를 통해 내부 BFF 엔드포인트(`Next.js API Routes` 또는 `Server Actions`)만 호출합니다.
-2. **BFF 레이어의 역할 (`src/app/api` 또는 Server Actions)**:
-   - 클라이언트의 요청을 받아 실제 백엔드 서버(Java/Spring 등)로 프록시(Proxy) 합니다.
-   - 서버 간 통신이므로 CORS 이슈를 방지할 수 있습니다.
-   - 필요한 경우 클라이언트가 소비하기 편한 형태로 API 응답 데이터를 가공(Formatting)하여 전달합니다.
-3. **에러 핸들링**: BFF 레이어에서 백엔드의 에러를 1차적으로 캐치하고, 클라이언트에 정제된 에러 메시지를 반환합니다.
+### 5.1 BFF 통신 구조
+1. **클라이언트 요청 통제**: 모든 클라이언트 `fetch`는 내부 BFF 엔드포인트(`/api/*`)만 호출합니다.
+2. **BFF 레이어 프록시 (`src/app/api/[...path]/route.ts`)**: 
+   - 요청을 받아 백엔드 서버(Spring Boot `:8080`)로 프록시하여 CORS를 방지합니다.
+   - 인증 로직(`app/api/auth/*/route.ts`)은 JWT를 `iron-session` 암호화 쿠키로 구워 브라우저에 노출하지 않습니다.
 
----
+### 5.2 훅 파일 위치 규칙 (Co-location)
+API 호출을 수행하는 커스텀 훅(`use*.ts`)은 전역 `hooks/` 폴더가 아닌, 사용되는 곳과 가장 가까운 곳에 둡니다.
+
+| 사용 범위 | 훅 위치 |
+|---|---|
+| 컴포넌트 1개 전용 | 해당 컴포넌트 바로 옆 (`_components/Section/useSection.ts`) |
+| 같은 라우트 하위 공유 | 공통 부모 폴더 (`events/useEvents.ts`) |
+| 앱 전체 공유 | `app/` 루트 (`app/useWebSocket.ts`) |
+
+- ⚠️ **중복이 생기면 삭제하고 공통 부모 폴더로 올립니다.**
+- ⚠️ **`hooks/` 별도 폴더를 절대 만들지 않습니다.**
+
+### 5.3 Fetch 작성 금지 패턴
+- ❌ **컴포넌트 내 직접 fetch**: 컴포넌트에서 `fetch`를 직접 호출하지 말고, 반드시 `use*.ts` 훅 내부에서 호출합니다.
+- ❌ **공통 fetch wrapper 생성**: `src/lib/`에 `get()`, `post()` 같은 래퍼를 만들지 말고 `handleResponse` (에러 처리기)만 둡니다. fetch 호출 자체는 각 훅에서 직접 수행합니다.
+- ❌ **외부에 타입 정의**: 훅이 사용하는 타입(interface)은 외부가 아닌 훅 파일 안에 정의합니다.
+- ❌ **파일 업로드 Content-Type 명시**: `multipart/form-data` 요청 시 브라우저가 boundary를 자동 설정하므로 헤더를 생략합니다.
+
+### 5.4 API 작성 필수 체크리스트
+- □ 모든 API 호출이 `use*.ts` 훅 안에서 수행되는가?
+- □ 훅 반환값에 `loading`, `error` 상태가 포함되어 있는가?
+- □ 응답 처리에 공통 `handleResponse`를 사용했는가?
+- □ JSON 요청 시 `Content-Type: application/json` 헤더를 명시했는가?
 
 ## 6. 🔐 Auth & Session Rules (with BFF)
 
@@ -110,8 +132,7 @@ Tailwind CSS 등의 유틸리티 클래스를 사용하지 않으며, **순수 C
 ### 즉시 수정 경고 신호
 - ⚠️ page.tsx 생성 시 `_components/` 폴더를 동시에 만들지 않았다면 → 즉시 생성
 - ⚠️ 컴포넌트가 폴더 없이 단독 `.tsx` 파일로 존재한다면 → `ComponentName/ComponentName.tsx + .module.css + index.ts` 구조로 변환
-- ⚠️ 하나의 컴포넌트에 UI 렌더링 + 상태 관리 + API 호출이 혼재한다면 → `use{Feature}.ts` 커스텀 훅으로 로직 분리
-- ⚠️ API 함수가 하나의 파일에 여러 도메인이 혼재한다면 → `lib/api/{domain}API.ts`로 도메인별 분리
+- ⚠️ 컴포넌트 내부에서 `fetch`를 직접 호출한다면 → `use*.ts` 커스텀 훅으로 API 호출 로직 분리 (Co-location)
+- ⚠️ `src/lib/` 폴더나 전역 `hooks/`에 도메인별 API 함수가 모여있다면 → 해당 함수를 실제 사용하는 라우트 근처의 `use*.ts` 훅 안으로 이동
 - ⚠️ BFF `route.ts`가 100줄 이상이라면 → `handlers/` 폴더로 핸들러 분리
 - ⚠️ CSS Module을 다른 컴포넌트와 공유하고 있다면 → 각 컴포넌트 전용 `.module.css` 생성
-
