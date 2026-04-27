@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>화면 설계서 - 게스트 채팅 (챗봇 상태)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Sans KR',sans-serif;background:#fff;color:#222;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{width:1200px;margin:20px auto;border:1.5px solid #333;background:#fff;page-break-after:always}
+
+    /* 메타 헤더 */
+    .meta-header{display:grid;grid-template-columns:1fr 1fr;border-bottom:1.5px solid #333}
+    .meta-left,.meta-right{display:grid;grid-template-columns:auto 1fr auto 1fr}
+    .meta-left{border-right:1.5px solid #333}
+    .meta-label{background:#f5f5f5;font-weight:700;font-size:12px;padding:10px 14px;border-right:1px solid #ccc;display:flex;align-items:center;white-space:nowrap}
+    .meta-value{font-size:12px;padding:10px 14px;display:flex;align-items:center;border-right:1px solid #ccc}
+    .meta-value:last-child{border-right:none}
+    .meta-row2{display:grid;grid-template-columns:auto 1fr;border-bottom:1.5px solid #333}
+
+    /* 메인 */
+    .main-content{display:grid;grid-template-columns:65% 35%;min-height:750px}
+    .screen-area{border-right:1.5px solid #333;padding:20px;position:relative;background:#fafafa}
+    .wire{border:1px solid #ddd;border-radius:8px;background:#f9fafb;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+
+    /* 채팅 헤더 */
+    .chat-hdr{display:flex;align-items:center;gap:12px;padding:18px 22px 10px}
+    .chat-icon{width:40px;height:40px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .chat-hdr h3{font-size:15px;font-weight:700;color:#1a1a2e}
+    .chat-hdr span{font-size:11px;color:#9ca3af}
+
+    /* 메시지 */
+    .msgs{padding:10px 22px;display:flex;flex-direction:column;gap:10px}
+    .m{max-width:78%;padding:12px 16px;font-size:12px;line-height:1.65;border-radius:12px}
+    .m-u{background:#1a1a2e;color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
+    .m-a{background:#fff;color:#374151;align-self:flex-start;border:1px solid #e5e7eb;border-radius:4px 12px 12px 12px}
+
+    /* 상태 레이블 */
+    .state-label{font-size:10px;font-weight:700;color:#fff;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:6px}
+    .sl-idle{background:#3b82f6}
+    .sl-think{background:#f59e0b}
+    .sl-success{background:#10b981}
+    .sl-clarify{background:#8b5cf6}
+    .sl-fail{background:#ef4444}
+    .sl-progress{background:#06b6d4}
+    .sl-welcome{background:#6366f1}
+
+    /* Typing indicator */
+    .typing{display:flex;gap:4px;padding:12px 16px;background:#fff;border:1px solid #e5e7eb;border-radius:4px 12px 12px 12px;align-self:flex-start}
+    .dot{width:6px;height:6px;background:#a1a1aa;border-radius:50%;animation:blink 1.4s infinite both}
+    .dot:nth-child(2){animation-delay:.2s}
+    .dot:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+    /* Quick 버튼 */
+    .qbtns{display:flex;gap:6px;flex-wrap:wrap;align-self:flex-start;margin-top:4px}
+    .qb{padding:7px 14px;border-radius:20px;border:1px solid #e5e7eb;background:#fff;font-size:11px;font-weight:500;cursor:pointer}
+
+    /* Status Card */
+    .scard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;width:280px;align-self:flex-start;margin-top:4px}
+    .scard-title{font-weight:700;font-size:12px;margin-bottom:8px}
+    .sbar-bg{width:100%;height:5px;background:#f4f4f5;border-radius:3px;overflow:hidden;margin-bottom:8px}
+    .sbar-fill{height:100%;background:#1a1a2e;border-radius:3px;transition:width .5s}
+    .sbar-steps{display:flex;justify-content:space-between;font-size:9px;color:#a1a1aa}
+    .sbar-steps .on{color:#1a1a2e;font-weight:700}
+
+    /* Feedback Card */
+    .fcard{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;width:280px;align-self:flex-start;margin-top:4px;text-align:center}
+    .fcard-title{font-size:12px;font-weight:600;margin-bottom:8px;color:#374151}
+    .fcard-stars{font-size:20px;letter-spacing:4px;margin-bottom:6px}
+    .fcard-btn{padding:6px 16px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;font-size:11px;cursor:pointer}
+
+    /* Emergency */
+    .m-em{border-color:#ef4444;background:#fef2f2}
+    .m-em strong{color:#dc2626}
+
+    /* Fallback */
+    .m-fb{border-color:#f59e0b;background:#fffbeb}
+
+    /* 입력 영역 */
+    .inp-area{padding:12px 22px 16px;display:flex;gap:10px;align-items:center;background:#fff;border-top:1px solid #f4f4f5}
+    .inp-field{flex:1;border:1px solid #e5e7eb;border-radius:24px;padding:11px 18px;font-size:12px;color:#9ca3af;background:#f4f4f5}
+    .inp-send{width:38px;height:38px;border-radius:50%;background:#1a1a2e;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .inp-send svg{width:16px;height:16px;fill:#fff}
+
+    /* 구분선 */
+    .divider{border:none;border-top:2px dashed #ddd;margin:14px 22px}
+    .divider-label{text-align:center;font-size:10px;color:#9ca3af;margin:-6px 0 8px;background:#f9fafb;display:inline-block;padding:0 8px;position:relative;left:50%;transform:translateX(-50%)}
+
+    /* 마커 */
+    .marker{position:absolute;width:26px;height:26px;border-radius:50%;background:#FF4D6A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,77,106,.4);z-index:10}
+
+    /* Description */
+    .description-area{display:flex;flex-direction:column}
+    .desc-title{background:#f5f5f5;font-weight:700;font-size:14px;padding:10px 16px;border-bottom:1.5px solid #333;text-align:center;letter-spacing:1px}
+    .summary-section{padding:14px 16px;border-bottom:1px solid #ddd}
+    .summary-section h4{font-size:13px;font-weight:700;margin-bottom:8px;color:#444;font-style:italic}
+    .summary-section ul{list-style:disc;padding-left:18px}
+    .summary-section li{font-size:12px;line-height:1.7;color:#555}
+    .desc-table{width:100%;border-collapse:collapse;flex:1}
+    .desc-table tr{border-bottom:1px solid #ddd}
+    .desc-table tr:last-child{border-bottom:none}
+    .desc-table td{padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7}
+    .desc-table .num{width:36px;text-align:center;font-weight:700;color:#FF4D6A;font-size:13px;vertical-align:middle;border-right:1px solid #eee}
+    .desc-table .desc-text{color:#333}
+    .checkpoint{border-top:1.5px solid #333;padding:12px 16px}
+    .checkpoint h4{font-size:13px;font-weight:700;color:#1a56db;margin-bottom:6px}
+    .checkpoint p{font-size:12px;line-height:1.7;color:#555}
+    @media print{.page{width:100%;margin:0;border:none;page-break-after:always}}
+  </style>
+</head>
+<body>
+
+<!-- ====== PAGE 1: 챗봇 상태 종합 ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">게스트 챗봇 상태 (Bot States)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-G-001</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div>
+      <div class="meta-value">정혁</div>
+      <div class="meta-label">Date</div>
+      <div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">QR 스캔 &gt; 게스트 화면 &gt; 컨시어지 채팅</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire">
+        <!-- 채팅 헤더 -->
+        <div class="chat-hdr" data-marker="1">
+          <div class="chat-icon">💬</div>
+          <div>
+            <h3>컨시어지 서비스</h3>
+            <span>AI 퍼스널 어시스턴트</span>
+          </div>
+        </div>
+
+        <div class="msgs">
+          <!-- ① Welcome (QR 스캔 후 첫 화면) -->
+          <div class="state-label sl-welcome" data-marker="2">① Welcome</div>
+          <div class="m m-a">안녕하세요! 그랜드 호텔 AI 컨시어지입니다 🏨<br>무엇이든 편하게 말씀해주세요.<br><br>💡 예시: "수건 2개 가져다주세요", "조식 몇 시에 열어요?"</div>
+
+          <!-- ② Idle (입력 대기 + Quick 버튼) -->
+          <div class="state-label sl-idle" data-marker="3">② Idle</div>
+          <div class="m m-a">추가로 필요한 서비스가 있으신가요?</div>
+          <div class="qbtns">
+            <button class="qb">🛏️ 수건 요청</button>
+            <button class="qb">🧴 어메니티 추가</button>
+            <button class="qb">🧹 룸 클리닝</button>
+            <button class="qb">🔑 체크아웃 문의</button>
+          </div>
+
+          <!-- ③ Thinking (로딩) -->
+          <div class="state-label sl-think" data-marker="4">③ Thinking</div>
+          <div class="m m-u">수건 2개 가져다주세요.</div>
+          <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+
+          <!-- ④ Success (응답 완료 + 상태 카드) -->
+          <div class="state-label sl-success" data-marker="5">④ Success</div>
+          <div class="m m-a">수건 2개 요청이 접수되었습니다! 하우스키핑 팀이 곧 객실로 가져다 드리겠습니다. 🛎️</div>
+          <div class="scard">
+            <div class="scard-title">🛎️ 요청 처리 현황</div>
+            <div class="sbar-bg"><div class="sbar-fill" style="width:33%"></div></div>
+            <div class="sbar-steps">
+              <span class="on">접수 완료</span>
+              <span>처리 중</span>
+              <span>완료</span>
+            </div>
+          </div>
+
+          <!-- ⑤ Clarification (추가 정보 요청) -->
+          <div class="state-label sl-clarify" data-marker="6">⑤ Clarification</div>
+          <div class="m m-u">수건 좀 가져다주세요.</div>
+          <div class="m m-a">수건을 몇 개 가져다 드릴까요?</div>
+          <div class="qbtns">
+            <button class="qb">1개</button>
+            <button class="qb">2개</button>
+            <button class="qb">3개</button>
+          </div>
+
+          <!-- ⑥ Fallback (실패 / 프론트 전달) -->
+          <div class="state-label sl-fail" data-marker="7">⑥ Fallback</div>
+          <div class="m m-u">방에 있는 그림 작가가 누군가요?</div>
+          <div class="m m-a m-fb">해당 요청은 AI가 처리하기 어려운 내용입니다. <strong>프론트 데스크로 전달</strong>되었습니다. 잠시만 기다려주세요. 📞</div>
+
+          <!-- ⑦ In-progress + Feedback -->
+          <div class="state-label sl-progress" data-marker="8">⑦ Progress + Feedback</div>
+          <div class="scard">
+            <div class="scard-title">🛎️ 요청 처리 현황</div>
+            <div class="sbar-bg"><div class="sbar-fill" style="width:100%"></div></div>
+            <div class="sbar-steps">
+              <span class="on">접수 완료</span>
+              <span class="on">처리 중</span>
+              <span class="on">완료 ✓</span>
+            </div>
+          </div>
+          <div class="fcard">
+            <div class="fcard-title">서비스가 만족스러우셨나요?</div>
+            <div class="fcard-stars">⭐⭐⭐⭐⭐</div>
+            <button class="fcard-btn">피드백 보내기</button>
+          </div>
+        </div>
+
+        <!-- 입력 영역 -->
+        <div class="inp-area">
+          <input class="inp-field" type="text" placeholder="무엇이든 물어보세요..." readonly>
+          <button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <div class="summary-section">
+        <h4>Summary.</h4>
+        <ul>
+          <li>게스트 챗봇의 7가지 상태를 한 화면에 종합 정리</li>
+          <li>AI Studio 시뮬레이터 실제 코드 기준 UI 재현</li>
+          <li>각 상태별 컬러 레이블로 시각 구분</li>
+          <li>GNB 헤더 제외, 챗봇 영역만 표시</li>
+        </ul>
+      </div>
+      <table class="desc-table">
+        <tr>
+          <td class="num">1</td>
+          <td class="desc-text"><strong>채팅 서비스 헤더</strong><br>💬 아이콘 + "컨시어지 서비스" + "AI 퍼스널 어시스턴트"</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="desc-text"><strong>① Welcome (QR 첫 화면)</strong><br>· 인사 문구 + 예시 안내<br>· QR 스캔 직후 자동 표시</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="desc-text"><strong>② Idle (입력 대기)</strong><br>· Quick 버튼: 수건/어메니티/클리닝/체크아웃<br>· Pill 형태, 클릭 시 자동 메시지 전송</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="desc-text"><strong>③ Thinking (처리 중)</strong><br>· 3-dot typing indicator 애니메이션<br>· AI 응답 생성 중 표시</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="desc-text"><strong>④ Success (응답 완료)</strong><br>· 확인 메시지 + 상태 카드(progress bar)<br>· 접수 완료 → 처리 중 → 완료 단계 표시</td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="desc-text"><strong>⑤ Clarification (추가 정보)</strong><br>· AI 되물음 + Quick 버튼(필수)<br>· 예: "몇 개?" → [1개][2개][3개]</td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="desc-text"><strong>⑥ Fallback (실패)</strong><br>· 프론트 데스크 전달 안내<br>· 노란 보더 강조, 📞 아이콘</td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="desc-text"><strong>⑦ Progress + Feedback</strong><br>· 상태 카드: 100% progress, 완료 체크<br>· 피드백 카드: 별점 + 보내기 버튼</td>
+        </tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event Description</div>
+      <table class="desc-table">
+        <tr>
+          <td class="num" style="color:#3730a3;">E1</td>
+          <td class="desc-text"><strong>Quick 버튼 클릭</strong><br>· 버튼 텍스트가 메시지로 자동 전송<br>· API: <code>POST /api/chat/message</code></td>
+        </tr>
+        <tr>
+          <td class="num" style="color:#3730a3;">E2</td>
+          <td class="desc-text"><strong>메시지 전송 → Thinking 전환</strong><br>· 전송 즉시 typing indicator 표시<br>· AI 응답 수신 시 indicator 제거 + 버블 렌더</td>
+        </tr>
+        <tr>
+          <td class="num" style="color:#3730a3;">E3</td>
+          <td class="desc-text"><strong>상태 카드 실시간 업데이트</strong><br>· WebSocket/SSE로 progress 수신<br>· 접수→처리중→완료 단계별 바 갱신</td>
+        </tr>
+        <tr>
+          <td class="num" style="color:#3730a3;">E4</td>
+          <td class="desc-text"><strong>Clarification Quick 버튼 응답</strong><br>· 수량 버튼 클릭 → 확정 메시지 전송<br>· 이후 Success 상태로 전환</td>
+        </tr>
+        <tr>
+          <td class="num" style="color:#3730a3;">E5</td>
+          <td class="desc-text"><strong>Fallback 에스컬레이션</strong><br>· NLU confidence 미달 → 프론트 전달<br>· 2회 연속 시 직원 연결 제안</td>
+        </tr>
+        <tr>
+          <td class="num" style="color:#3730a3;">E6</td>
+          <td class="desc-text"><strong>피드백 제출</strong><br>· 별점 선택 + 보내기 클릭<br>· API: <code>POST /api/chat/feedback</code></td>
+        </tr>
+      </table>
+
+      <div class="checkpoint">
+        <h4>Check Point</h4>
+        <p>
+          · 인증: 객실번호 + 이름 (Guest 세션, JWT 불필요)<br>
+          · 챗봇 상태 순환: Welcome → Idle → Thinking → Success/Clarification/Fallback → Progress → Feedback<br>
+          · Quick 버튼: Idle/Clarification 상태에서 표시<br>
+          · 상태 카드: Success 시 생성, 실시간 업데이트<br>
+          · Fallback: 프론트 데스크로 자동 에스컬레이션<br>
+          · 파이프코드: <code>DOMAIN|SEVERITY|ACTION|ITEM|QTY</code>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 2: ① Welcome + ② Idle ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">챗봇 상태 — ① Welcome / ② Idle</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-G-001-S1</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">State</div>
+    <div class="meta-value">QR 스캔 후 첫 화면 (Welcome) → 입력 대기 (Idle)</div>
+  </div>
+  <div class="main-content">
+    <div class="screen-area">
+      <!-- ① Welcome -->
+      <div class="wire" style="margin-bottom:20px">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="1">
+          <div class="m m-a">안녕하세요! 그랜드 호텔 AI 컨시어지입니다 🏨<br>무엇이든 편하게 말씀해주세요.<br><br>💡 예시:<br>• "수건 2개 가져다주세요"<br>• "조식 몇 시에 열어요?"<br>• "근처 맛집 추천해주세요"</div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+      <!-- ② Idle -->
+      <div class="wire">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="2">
+          <div class="m m-a">추가로 필요한 서비스가 있으신가요?</div>
+          <div class="qbtns"><button class="qb">🛏️ 수건 요청</button><button class="qb">🧴 어메니티</button><button class="qb">🧹 룸 클리닝</button><button class="qb">🔑 체크아웃</button></div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+    </div>
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>① Welcome (QR 첫 화면)</strong><br>· QR 스캔 직후 자동 표시<br>· 인사 문구 + 예시 안내 3건 포함<br>· 투숙객이 어떤 요청을 할 수 있는지 가이드</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>② Idle (입력 대기)</strong><br>· 대화 완료 후 추가 요청 유도<br>· Quick 버튼 4개: 수건/어메니티/클리닝/체크아웃<br>· Pill 형태, 클릭 시 해당 텍스트가 메시지로 자동 전송<br>· Quick 버튼은 Idle 상태에서만 표시</td></tr>
+      </table>
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>Quick 버튼 클릭</strong><br>· 버튼 텍스트 → 메시지 자동 전송<br>· API: <code>POST /api/chat/message</code><br>· 즉시 ③ Thinking 상태로 전환</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>직접 입력 전송</strong><br>· Enter 또는 전송 버튼 클릭<br>· PII 마스킹 선제 적용 후 전송</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 3: ③ Thinking + ④ Success ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">챗봇 상태 — ③ Thinking / ④ Success</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-G-001-S2</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">State</div>
+    <div class="meta-value">처리 중 (Thinking) → 응답 완료 (Success)</div>
+  </div>
+  <div class="main-content">
+    <div class="screen-area">
+      <!-- ③ Thinking -->
+      <div class="wire" style="margin-bottom:20px">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="1">
+          <div class="m m-u">수건 2개 가져다주세요.</div>
+          <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+      <!-- ④ Success -->
+      <div class="wire">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="2">
+          <div class="m m-u">수건 2개 가져다주세요.</div>
+          <div class="m m-a">수건 2개 요청이 접수되었습니다! 하우스키핑 팀이 곧 객실로 가져다 드리겠습니다. 🛎️</div>
+          <div class="scard">
+            <div class="scard-title">🛎️ 요청 처리 현황</div>
+            <div class="sbar-bg"><div class="sbar-fill" style="width:33%"></div></div>
+            <div class="sbar-steps"><span class="on">접수 완료</span><span>처리 중</span><span>완료</span></div>
+          </div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+    </div>
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>③ Thinking (처리 중)</strong><br>· 메시지 전송 즉시 표시<br>· 3-dot typing indicator 애니메이션<br>· AI 응답 생성 중 사용자에게 피드백 제공<br>· 입력 필드 비활성화</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>④ Success (응답 완료)</strong><br>· AI 확인 메시지 + 상태 카드 생성<br>· 상태 카드: 접수완료 → 처리중 → 완료 (3단계)<br>· progress bar로 현재 단계 시각화<br>· 파이프코드: <code>HK|NORM|REQ_ITEM|TOWEL|2</code></td></tr>
+      </table>
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>Thinking → Success 전환</strong><br>· AI 응답 수신 시 indicator 제거<br>· 응답 버블 + 상태 카드 동시 렌더링</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>상태 카드 실시간 업데이트</strong><br>· WebSocket/SSE로 progress 수신<br>· 단계별 바 갱신 + 텍스트 강조 변경</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 4: ⑤ Clarification + ⑥ Fallback ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">챗봇 상태 — ⑤ Clarification / ⑥ Fallback</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-G-001-S3</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">State</div>
+    <div class="meta-value">추가 정보 요청 (Clarification) / 실패·프론트 전달 (Fallback)</div>
+  </div>
+  <div class="main-content">
+    <div class="screen-area">
+      <!-- ⑤ Clarification -->
+      <div class="wire" style="margin-bottom:20px">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="1">
+          <div class="m m-u">수건 좀 가져다주세요.</div>
+          <div class="m m-a">수건을 몇 개 가져다 드릴까요?</div>
+          <div class="qbtns"><button class="qb">1개</button><button class="qb">2개</button><button class="qb">3개</button></div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+      <!-- ⑥ Fallback -->
+      <div class="wire">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="2">
+          <div class="m m-u">방에 있는 그림 작가가 누군가요?</div>
+          <div class="m m-a m-fb">해당 요청은 AI가 처리하기 어려운 내용입니다. <strong>프론트 데스크로 전달</strong>되었습니다. 잠시만 기다려주세요. 📞</div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+    </div>
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>⑤ Clarification (추가 정보 요청)</strong><br>· 수량/세부사항 누락 시 AI가 되물음<br>· Quick 버튼 필수 표시: [1개] [2개] [3개]<br>· 버튼 클릭 → 확정 메시지 전송 → Success 전환</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>⑥ Fallback (실패 / 프론트 전달)</strong><br>· NLU confidence score 미달 시 표시<br>· 노란 보더(#f59e0b) 강조 버블<br>· 프론트 데스크로 자동 에스컬레이션 안내<br>· 2회 연속 Fallback 시 직원 연결 제안</td></tr>
+      </table>
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>Clarification 응답</strong><br>· Quick 버튼 클릭 → 수량 확정 전송<br>· 이후 Thinking → Success 순환</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>Fallback 에스컬레이션</strong><br>· 프론트 데스크 채널에 요청 자동 전달<br>· 직원이 채팅 인계 가능</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 5: ⑦ Progress + Feedback ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">챗봇 상태 — ⑦ Progress + Feedback</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-G-001-S4</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">State</div>
+    <div class="meta-value">처리 진행 상태 (In-progress → 완료) + 피드백</div>
+  </div>
+  <div class="main-content">
+    <div class="screen-area">
+      <!-- Progress: 처리 중 -->
+      <div class="wire" style="margin-bottom:20px">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="1">
+          <div class="m m-a">수건 2개 요청이 접수되었습니다! 🛎️</div>
+          <div class="scard">
+            <div class="scard-title">🛎️ 요청 처리 현황</div>
+            <div class="sbar-bg"><div class="sbar-fill" style="width:66%"></div></div>
+            <div class="sbar-steps"><span class="on">접수 완료</span><span class="on">처리 중</span><span>완료</span></div>
+          </div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+      <!-- 완료 + Feedback -->
+      <div class="wire">
+        <div class="chat-hdr"><div class="chat-icon">💬</div><div><h3>컨시어지 서비스</h3><span>AI 퍼스널 어시스턴트</span></div></div>
+        <div class="msgs" data-marker="2">
+          <div class="m m-a">수건 교체가 완료되었습니다! ✅</div>
+          <div class="scard">
+            <div class="scard-title">🛎️ 요청 처리 현황</div>
+            <div class="sbar-bg"><div class="sbar-fill" style="width:100%"></div></div>
+            <div class="sbar-steps"><span class="on">접수 완료</span><span class="on">처리 중</span><span class="on">완료 ✓</span></div>
+          </div>
+          <div class="fcard">
+            <div class="fcard-title">서비스가 만족스러우셨나요?</div>
+            <div class="fcard-stars">⭐⭐⭐⭐⭐</div>
+            <button class="fcard-btn">피드백 보내기</button>
+          </div>
+        </div>
+        <div class="inp-area"><input class="inp-field" placeholder="무엇이든 물어보세요..." readonly><button class="inp-send"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+    </div>
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>⑦-a Progress (처리 중)</strong><br>· 상태 카드 progress bar 66% (처리 중 단계)<br>· 실시간 WebSocket/SSE로 상태 업데이트 수신<br>· 직원이 배정/이동/완료 시 자동 갱신</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>⑦-b 완료 + Feedback</strong><br>· progress 100%, "완료 ✓" 표시<br>· 완료 메시지 버블 자동 추가<br>· 피드백 카드: ⭐ 별점 + 보내기 버튼<br>· 피드백 미제출 시 24시간 후 자동 소멸</td></tr>
+      </table>
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>상태 카드 실시간 갱신</strong><br>· WebSocket으로 progress 수신<br>· 접수→처리중→완료 단계 전환</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>피드백 제출</strong><br>· 별점 선택 + 보내기 클릭<br>· API: <code>POST /api/chat/feedback</code><br>· 제출 후 "감사합니다" 메시지 표시</td></tr>
+      </table>
+      <div class="checkpoint">
+        <h4>Check Point</h4>
+        <p>· 상태 순환: Welcome→Idle→Thinking→Success/Clarification/Fallback→Progress→Feedback<br>· Quick 버튼: Idle + Clarification에서만 표시<br>· 상태 카드: Success 시 생성, 완료까지 실시간 갱신<br>· Fallback: 프론트 데스크 자동 에스컬레이션<br>· Feedback: 완료 후 자동 노출, 24h TTL</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function positionMarkers(){
+  document.querySelectorAll('.screen-area').forEach(function(sa){
+    var r=sa.getBoundingClientRect();
+    sa.querySelectorAll('.marker').forEach(function(m){m.remove()});
+    sa.querySelectorAll('[data-marker]').forEach(function(t){
+      var n=t.getAttribute('data-marker'),tr=t.getBoundingClientRect(),mk=document.createElement('div');
+      mk.className='marker';mk.textContent=n;
+      var top=tr.top-r.top,left=tr.right-r.left+6;
+      if(left+28>r.width)left=tr.left-r.left-34;
+      if(left<0)left=4;if(top<0)top=4;
+      mk.style.top=top+'px';mk.style.left=left+'px';
+      sa.appendChild(mk);
+    });
+  });
+}
+window.addEventListener('load',positionMarkers);
+window.addEventListener('resize',positionMarkers);
+if(typeof ResizeObserver!=='undefined')document.querySelectorAll('.screen-area').forEach(function(sa){new ResizeObserver(positionMarkers).observe(sa)});
+</script>
+</body>
+</html>
