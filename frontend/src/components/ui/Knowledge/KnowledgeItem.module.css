@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--color-surface);
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.container:last-child {
+  border-bottom: none;
+}
+
+.container:hover {
+  opacity: 0.8;
+}
+
+.title {
+  font: var(--text-h3-bold);
+  color: var(--color-gray-900);
+  margin: 0 0 var(--space-8) 0;
+}
+
+.description {
+  font: var(--text-body-regular);
+  color: var(--color-gray-600);
+  margin: 0 0 var(--space-16) 0;
+  line-height: 1.5;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.clockIcon {
+  color: var(--color-gray-400);
+}
+
+.dateText {
+  font: var(--text-caption-medium);
+  color: var(--color-gray-400);
+}
