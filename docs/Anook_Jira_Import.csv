@@ -1,0 +1,111 @@
+Issue Id,Summary,Issue Type,Parent Id,Priority,Start date,Due date,Labels,Description
+1,설계/기획,Epic,,,,,,ERD 도메인모델 API스펙 화면설계
+2,DB ERD 설계 및 검증,Task,1,Highest,2026-04-27,2026-04-27,설계 Design BE,DB 테이블 및 연관관계 설계
+3,API 명세 정의,Task,1,Highest,2026-04-27,2026-04-27,설계 Design Full,엔드포인트 및 DTO 스펙
+4,요청/메시지/지식 도메인 모델 설계,Task,1,Highest,2026-04-27,2026-04-27,설계 Design BE,Request / Message / Knowledge
+5,직원/투숙객/태스크 도메인 모델 설계,Task,1,Highest,2026-04-28,2026-04-28,설계 Design BE,Staff / Guest / Task
+6,객실/부서/인수인계 도메인 모델 설계,Task,1,High,2026-04-28,2026-04-28,설계 Design BE,Room / Department / Handover
+7,화면 설계 및 UI 레퍼런스 확정,Task,1,Highest,2026-04-28,2026-04-28,설계 Design FE,와이어프레임 및 컴포넌트 도출
+8,인프라 구축,Epic,,,,,,Docker 프로젝트초기화 보안설정 Nginx
+9,도커 컨테이너 환경 구성 (스프링/DB/AI/웹),Task,8,Highest,2026-04-29,2026-04-29,인프라 Infra Full,docker-compose.yml 작성
+10,스프링부트 프로젝트 초기화 (헥사고날 구조),Task,8,Highest,2026-04-29,2026-04-29,인프라 Infra BE,백엔드 구조 세팅
+11,Next.js 프로젝트 초기화 (App Router 구조),Task,8,Highest,2026-04-29,2026-04-29,인프라 Infra FE,프론트엔드 구조 세팅
+12,FastAPI AI 서버 초기화 및 제미나이 연동,Task,8,Highest,2026-04-29,2026-04-29,인프라 Infra AI,파이썬 AI 서버 세팅
+13,DB 테이블 및 벡터 검색 스키마(pgvector) 생성,Task,8,Highest,2026-04-30,2026-04-30,인프라 Infra BE,DDL 스크립트
+14,SecurityConfig 및 JWT 인증 필터 구현,Task,8,Highest,2026-04-30,2026-04-30,인프라 Infra BE,보안 및 토큰 관리
+15,WebSocket 실시간 통신 브로커 설정,Task,8,Highest,2026-04-30,2026-04-30,인프라 Infra BE,STOMP 설정
+16,공통 에러 핸들러 및 마스킹 유틸 구현,Task,8,High,2026-04-30,2026-04-30,인프라 Infra BE,예외 처리 및 PII 마스킹
+17,웹서버 리버스 프록시 설정 (Nginx),Task,8,Highest,2026-04-30,2026-04-30,인프라 Infra Full,HTTPS 및 라우팅 설정
+18,공통 (UI/BFF),Epic,,,,,,공통UI BFF프록시 훅 다국어 디자인토큰
+19,전역 디자인 토큰(CSS 변수) 정의,Task,18,Highest,2026-05-04,2026-05-04,구현 Feature FE,글로벌 스타일링
+20,공통 UI 컴포넌트 개발 (버튼/뱃지/모달),Task,18,Highest,2026-05-04,2026-05-04,구현 Feature FE,재사용 가능한 UI 요소
+21,BFF 프록시 레이어 및 인증 핸들러 구현,Task,18,Highest,2026-05-04,2026-05-04,구현 Feature FE,Next.js API 라우트
+22,공통 API 호출 함수(fetch wrapper) 구현,Task,18,Highest,2026-05-06,2026-05-06,구현 Feature FE,클라이언트 API 유틸
+23,웹소켓 연결/재연결 및 채널 수신 관리 훅 구현,Task,18,Highest,2026-05-06,2026-05-06,구현 Feature FE,실시간 통신 커스텀 훅
+24,오프라인 상태 감지 및 액션 이원화 처리 구현,Task,18,High,2026-05-06,2026-05-06,구현 Feature FE,온라인 전용 액션(태스크 수락 등)은 오프라인 시 차단. 오프라인 가능 액션(메모 등)은 IndexedDB 버퍼링 후 복귀 시 동기화
+25,정적 다국어 리소스(ko/en) 파일 작성,Task,18,High,2026-05-06,2026-05-06,구현 Feature FE,언어팩 지원
+26,인증 (security),Epic,,,,,,Guest QR인증 Staff PIN Admin ID/PW
+27,AU: 투숙객 QR 토큰 검증 및 세션 발급 기능,Task,26,Highest,2026-05-06,2026-05-06,구현 Feature BE,QR 인증 로직
+28,AU: 직원 PIN 검증 및 JWT 발급 기능,Task,26,Highest,2026-05-07,2026-05-07,구현 Feature BE,PIN 로그인 로직
+29,AU: 관리자 ID/PW 검증 및 JWT 발급 기능,Task,26,Highest,2026-05-07,2026-05-07,구현 Feature BE,관리자 로그인 로직
+30,AU: 역할별 인증 API 엔드포인트 구현,Task,26,Highest,2026-05-07,2026-05-07,구현 Feature BE,REST API 컨트롤러
+31,AU: 동일 PIN 다중 기기 동시 접속 제한 기능 구현,Task,26,Highest,2026-05-07,2026-05-07,구현 Feature BE,1코드 1기기 세션 제어
+32,AU: 직원 PIN 및 관리자 ID/PW 로그인 화면 개발,Task,26,Highest,2026-05-07,2026-05-07,구현 Feature FE,인증 페이지 뷰
+33,가상 PMS (admin/guest),Epic,,,,,,MockPMS 체크인/아웃 QR생성 투숙객관리
+34,PM: 투숙객 체크인 시 QR 토큰 자동 생성 기능,Task,33,Highest,2026-05-08,2026-05-08,구현 Feature BE,체크인 처리
+35,PM: 투숙객 체크아웃 시 세션 Hard Delete 기능,Task,33,Highest,2026-05-08,2026-05-08,구현 Feature BE,체크아웃 처리
+36,PM: 투숙객 관리 API 및 DB 어댑터 구현,Task,33,Highest,2026-05-08,2026-05-08,구현 Feature BE,조회 API 및 영속성
+37,PM: Mock PMS 시드 데이터 생성,Task,33,High,2026-05-08,2026-05-08,구현 Feature BE,초기 샘플 데이터
+38,PM: 투숙객 관리 화면 개발 (목록/체크인/QR),Task,33,Highest,2026-05-08,2026-05-08,구현 Feature FE,관리자용 투숙객 뷰
+39,PM: 투숙객 랜딩 화면 개발 (QR 처리 및 언어선택),Task,33,Highest,2026-05-08,2026-05-08,구현 Feature FE,고객 진입점
+40,대화 (message),Epic,,,,,,고객AI대화 메시지송수신
+41,MS: 고객 메시지 전송 기능 구현,Task,40,Highest,2026-05-11,2026-05-11,구현 Feature BE,메시지 발송
+42,MS: 고객 대화 내역 조회 기능 구현,Task,40,Highest,2026-05-11,2026-05-11,구현 Feature BE,이력 조회
+43,MS: 메시지 관리 API 및 DB 어댑터 구현,Task,40,Highest,2026-05-11,2026-05-11,구현 Feature BE,REST API 및 영속성
+44,MS: Python AI 서버 호출용 HTTP 연동 어댑터 구현,Task,40,Highest,2026-05-11,2026-05-11,구현 Feature BE,AI 서비스 통신
+45,MS: AI 응답 비동기 처리 및 디바운스 연타 방지 구현,Task,40,Highest,2026-05-12,2026-05-12,구현 Feature BE,메시지 수신 시 즉시 202 응답 후 AI 분석을 비동기 처리. 결과는 WebSocket Push. 연속 전송 시 디바운스로 중복 호출 방지
+46,MS: 고객 대화 화면 개발 (메시지 목록/입력/말풍선),Task,40,Highest,2026-05-12,2026-05-12,구현 Feature FE,채팅 UI 렌더링 + 발신자별 말풍선
+47,MS: AI 응답 실시간 수신 및 타이핑 스켈레톤 구현,Task,40,Highest,2026-05-12,2026-05-12,구현 Feature FE,WebSocket 수신 + AI 대기 애니메이션 + 메시지 실시간 추가
+48,요청 (request),Epic,,,,,,요청접수 태스크생성 상태조회 실시간알림
+49,RQ: 고객 요청 접수 기능 구현,Task,48,Highest,2026-05-12,2026-05-12,구현 Feature BE,요청 생성 및 저장
+50,RQ: AI 분석 결과 기반 태스크 자동 생성 및 부서 배정 기능,Task,48,Highest,2026-05-12,2026-05-12,구현 Feature BE,AI 파이프코드(예: HK|NORM|REQ_ITEM|TOWEL|2) 파싱 → 부서·긴급도·품목 추출 → Request 테이블에 태스크 자동 생성
+51,RQ: 고객 본인 요청 상태 조회 기능,Task,48,Highest,2026-05-12,2026-05-12,구현 Feature BE,상태 확인
+52,RQ: 요청 관리 API 및 DB 어댑터 구현,Task,48,Highest,2026-05-13,2026-05-13,구현 Feature BE,REST API 및 영속성
+53,RQ: WebSocket 기반 실시간 상태 변경 알림 전송 어댑터,Task,48,Highest,2026-05-13,2026-05-13,구현 Feature BE,이벤트 브로드캐스팅
+54,RQ: 고객용 빠른 요청 패널 화면 개발 (그리드),Task,48,Highest,2026-05-13,2026-05-13,구현 Feature FE,템플릿 요청 UI
+55,RQ: 실시간 요청 진행 상태 표시 카드 개발,Task,48,Highest,2026-05-14,2026-05-14,구현 Feature FE,타임라인 뷰 UI
+56,직원 태스크 (staff/task),Epic,,,,,,태스크수락 완료 전달 응답
+57,TK: 직원 태스크 상태 변경 기능 (수락/완료/전달),Task,56,Highest,2026-05-14,2026-05-14,구현 Feature BE,수락/완료/부서전달 상태 전이 API. 동시 수락 충돌 방지를 위해 낙관적 락(Version) 적용
+58,TK: 직원의 투숙객 메시지 응답 기능 (번역),Task,56,Highest,2026-05-14,2026-05-14,구현 Feature BE,직원이 한국어로 작성한 응답을 투숙객 언어로 자동 번역하여 전달. 원문과 번역문 모두 저장
+59,TK: 직원 태스크 API 및 DB 어댑터 구현,Task,56,Highest,2026-05-15,2026-05-15,구현 Feature BE,REST API 및 영속성
+60,TK: 직원 대시보드 화면 개발 (실시간 목록/필터),Task,56,Highest,2026-05-15,2026-05-15,구현 Feature FE,업무 리스트 뷰
+61,TK: 직원 업무 상세 및 응답 화면 개발,Task,56,Highest,2026-05-15,2026-05-15,구현 Feature FE,업무 상세 뷰
+62,관리자 태스크 (admin/task),Epic,,,,,,모니터링 상세조회 컨펌승인 재배정 수동생성
+63,AD: 관리자 태스크보드 전체 현황 조회 기능,Task,62,Highest,2026-05-18,2026-05-18,구현 Feature Full,목록+필터 API + 대시보드 리스트 뷰
+64,AD: 관리자 요청 상세 조회 기능,Task,62,Highest,2026-05-18,2026-05-18,구현 Feature Full,상세 API + 대화이력/메모 조회 + 상세 화면
+65,AD: 컨펌 대기열 조회 및 에스컬레이션 승인 기능,Task,62,Highest,2026-05-18,2026-05-18,구현 Feature Full,에스컬레이션 목록 + 승인 API + 대기열 UI
+66,AD: 요청 수동 재배정 기능,Task,62,Highest,2026-05-18,2026-05-18,구현 Feature Full,재배정 API + 재배정 모달 UI
+67,AD: 관리자 수동 태스크 생성 기능,Task,62,Highest,2026-05-18,2026-05-18,구현 Feature Full,생성 API + 생성 폼 UI
+68,관리 설정 (admin/settings),Epic,,,,,,직원CRUD 객실CRUD 부서CRUD
+69,ST: 직원 정보 등록 및 관리(CRUD) 기능,Task,68,Highest,2026-05-19,2026-05-19,구현 Feature BE,직원 관리 서비스
+70,ST: 객실 정보 등록 및 관리(CRUD) 기능,Task,68,Highest,2026-05-19,2026-05-19,구현 Feature BE,객실 관리 서비스
+71,ST: 부서 정보 등록 및 관리(CRUD) 기능,Task,68,Highest,2026-05-19,2026-05-19,구현 Feature BE,부서 관리 서비스
+72,ST: 설정 관리 API 및 도메인별 DB 어댑터 구현,Task,68,Highest,2026-05-19,2026-05-19,구현 Feature BE,REST API 및 영속성
+73,ST: 관리자 설정 화면 개발 (데이터 그리드 CRUD),Task,68,Highest,2026-05-19,2026-05-19,구현 Feature FE,설정 뷰
+74,AI - RAG 검색 (Inference),Epic,,,,,,벡터검색 유사도판정 답변생성 Fallback BE어댑터
+75,R1: 임베딩 변환 및 유사도 검색 엔진 개발,Task,74,Highest,2026-05-11,2026-05-11,구현 Feature AI,고객 질문을 임베딩 변환 후 pgvector 코사인 유사도 검색으로 관련 FAQ 후보를 조회하는 검색 엔진
+76,R1: 유사도 0.7 미만 시 Fallback 방어 로직 구현,Task,74,Highest,2026-05-12,2026-05-12,구현 Feature AI,검색 유사도 < 0.7이면 답변 미생성 + '정보 없음' 처리 + 프론트 데스크 연결 안내 (할루시네이션 방지)
+77,R1: 답변 생성 응답 시간(Latency) 최적화 튜닝,Task,74,High,2026-05-13,2026-05-13,구현 Feature AI,Gemini API 호출 → 고객 응답 3초 이내 목표. 프롬프트 길이 최적화 및 스트리밍 응답 검토
+78,R1: 지식 검색 API 및 pgvector DB 어댑터 구현,Task,74,High,2026-05-20,2026-05-20,구현 Feature BE,REST API 및 영속성
+79,R1: 백엔드에서 RAG AI 서버를 호출하는 연동 어댑터 구현,Task,74,High,2026-05-20,2026-05-20,구현 Feature BE,AI HTTP 어댑터
+80,R1: FAQ 초기 지식베이스 시드 임베딩 및 적재,Task,74,High,2026-05-20,2026-05-20,구현 Feature AI,서비스 초기 가동용 호텔 FAQ(조식시간·와이파이·편의시설 등) 사전 임베딩 후 pgvector 적재
+81,AI - RAG 지식적재 (Ingestion),Epic,,,,,,미답변클러스터링 지식승인 임베딩적재
+82,R2: 미답변 질문 배치 클러스터링(Cron) 로직 구현,Task,81,High,2026-05-14,2026-05-14,구현 Feature AI,AI 미답변 질문을 주기적으로 수집하여 유사 질문끼리 클러스터링. 관리자가 군집 단위로 새 FAQ 등록할 수 있도록 후보 생성
+83,R2: 관리자 승인 텍스트 임베딩 후 벡터DB 삽입 로직 구현,Task,81,High,2026-05-15,2026-05-15,구현 Feature AI,관리자 승인된 FAQ 텍스트를 임베딩 변환 후 pgvector에 자동 삽입하여 RAG 지식베이스 확장
+84,R2: 신규 지식 승인 및 DB 등록 관리 기능,Task,81,High,2026-05-20,2026-05-20,구현 Feature BE,지식 승인 서비스
+85,R2: 신규 지식 승인 대기열 관리자 화면 개발,Task,81,High,2026-05-15,2026-05-15,구현 Feature FE,승인 UI 컴포넌트
+86,AI - NLU 분류 (Task 자동분류),Epic,,,,,,One-pass 다국어 파이프코드 Enum검증 할루시네이션방어
+87,N1: 다국어 One-pass 프롬프트 설계 (언어감지+번역+의도파악 통합),Task,86,Highest,2026-05-04,2026-05-06,구현 Feature AI,언어감지+번역+의도파악+Entity추출을 단일 Gemini 호출로 처리. 다국어 입력 → 한국어 기준 파이프코드 출력
+88,N1: 파이프코드 출력 규격 정의 및 포맷 강제 최적화,Task,86,Highest,2026-05-06,2026-05-07,구현 Feature AI,AI 출력을 파이프코드(HK|NORM|REQ_ITEM|TOWEL|2) 형태로 강제하여 토큰 80~90% 절감. 포맷 일탈 시 재요청
+89,N1: Task_Definitions 코드 테이블 설계 및 시드 데이터 생성,Task,86,Highest,2026-05-07,2026-05-07,구현 Feature BE,파이프코드용 부서코드(HK/FC/FB 등)·분류코드·품목코드를 DB 테이블로 정의하고 초기 시드 데이터 삽입
+90,N1: 백엔드 파이프코드 파서 및 Enum 타입 검증 로직 구현,Task,86,Highest,2026-05-08,2026-05-08,구현 Feature BE,파이프코드 문자열을 Java Enum으로 캐스팅. 미정의 코드는 UNDEFINED로 치환하여 타입 안전성 확보
+91,N1: AI 할루시네이션 방어 - 미정의 코드 Fallback 큐 이관 로직,Task,86,Highest,2026-05-08,2026-05-08,구현 Feature BE,UNDEFINED 코드가 포함된 태스크를 관리자 수동처리 대기열(Fallback Queue)로 자동 이관
+92,AI - NLU 예외제어 (Safety/Fallback),Epic,,,,,,PII마스킹 미등록품목 에스컬레이션
+93,N2: PII(개인정보) 정규식 마스킹 선제 방어 로직 구현,Task,92,Highest,2026-05-07,2026-05-08,구현 Feature AI,AI 전달 전 전화번호·이메일·여권번호 등 PII를 정규식 탐지 후 마스킹(예: 010-****-1234). 응답 후 원문 복원
+94,N2: 미등록 품목(ETC) 신뢰도 강등 및 수동 배정 연동 로직,Task,92,Highest,2026-05-08,2026-05-08,구현 Feature AI,미등록 품목(ETC) 감지 시 confidence 강제 하향 → 자동처리 대신 관리자 컨펌 경로로 에스컬레이션
+95,N2: Entity 누락 시 AI 되묻기(Clarification) 로직 구현,Task,92,Highest,2026-05-08,2026-05-08,구현 Feature AI,품목·수량 등 필수 Entity 누락 시 AI가 되묻기 질문 생성. 2회 실패 시 프론트 데스크 Fallback 이관
+96,AI - NLU 자가튜닝 (Self-Tuning),Epic,,,,,,오답노트 퓨샷주입 점진고도화
+97,N3: 관리자 수동 정정 데이터(오답노트) DB 적재 로직 구현,Task,96,High,2026-05-18,2026-05-19,구현 Feature AI,관리자가 AI 분류를 수동 정정(예: HK→FC 부서 변경)한 이력을 오답노트 테이블에 저장
+98,N3: 다음 추론 시 프롬프트에 퓨샷 예시를 동적 주입하는 로직,Task,96,High,2026-05-19,2026-05-20,구현 Feature AI,오답노트 DB에서 최근 정정 사례를 조회하여 NLU 추론 시 프롬프트에 few-shot 예시로 동적 주입
+99,N3: 퓨샷 주입 전/후 분류 정확도 비교 검증 로직 구현,Task,96,High,2026-05-20,2026-05-20,구현 Feature AI,개선율 측정 및 품질 보증
+100,AI - 데이터/NLG 요약 (인수인계),Epic,,,,,,정형데이터표 호텔리어톤 요약 BE어댑터
+101,N4: 교대 시간 기준 태스크 필터 쿼리 설계 (미처리/상위보고/긴급),Task,100,High,2026-05-20,2026-05-20,구현 Feature AI,교대 시간 기준 ①미처리(PENDING/IN_PROGRESS) ②에스컬레이션 이력 ③긴급/중요 완료 건 자동 필터링
+102,N4: 미처리 업무/특이사항 데이터 표 가공 및 취합 쿼리,Task,100,High,2026-05-20,2026-05-21,구현 Feature AI,대시보드용 정형 데이터 추출
+103,N4: 호텔리어 톤앤매너 텍스트 요약 프롬프트 튜닝,Task,100,High,2026-05-21,2026-05-21,구현 Feature AI,표 데이터 기반 요약 포맷팅
+104,N4: 인수인계 브리핑 API 및 DB 어댑터 구현,Task,100,High,2026-05-21,2026-05-21,구현 Feature BE,REST API 및 영속성
+105,N4: 관리자용 인수인계 브리핑 조회 화면 개발,Task,100,High,2026-05-21,2026-05-21,구현 Feature FE,데이터 표 + AI 요약 뷰
+106,테스트/배포,Epic,,,,,,E2E통합테스트 버그수정 프로덕션배포 PWA
+107,고객요청→직원처리 핵심 루프 E2E 통합 테스트,Task,106,Highest,2026-05-22,2026-05-22,테스트 QA Full,시나리오 검증
+108,"최종 점검, 긴급 버그 수정 및 Swagger API 점검",Task,106,Highest,2026-05-22,2026-05-22,테스트 QA Full,런칭 준비
+109,"도커 프로덕션 빌드, HTTPS 설정 및 최종 배포",Task,106,Highest,2026-05-26,2026-05-26,이행 Deploy Full,프로덕션 환경
+110,PWA 서비스워커 설정 및 접근용 QR 코드 생성,Task,106,Highest,2026-05-26,2026-05-26,이행 Deploy Full,모바일 앱 세팅
