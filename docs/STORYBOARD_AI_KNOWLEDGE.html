@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면 설계서 - AI 지식 관리</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', 'Apple SD Gothic Neo', sans-serif; background-color: #e5e7eb; margin: 0; padding: 40px; color: #333; }
+        .document-container { max-width: 1800px; margin: 0 auto; background: #fff; border: 2px solid #333; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-radius: 4px; overflow: visible; }
+        
+        /* Header Table */
+        .header-table { width: 100%; border-collapse: collapse; border-bottom: 2px solid #333; }
+        .header-table th, .header-table td { border: 1px solid #ccc; padding: 14px 20px; font-size: 14px; }
+        .header-table th { background-color: #f8f9fa; width: 120px; text-align: left; font-weight: bold; }
+        .header-table td { width: calc(50% - 120px); }
+        .header-table tr:first-child th, .header-table tr:first-child td { border-top: none; }
+        .header-table tr th:first-child, .header-table tr td:first-child { border-left: none; }
+        .header-table tr th:last-child, .header-table tr td:last-child { border-right: none; }
+        .path-row th, .path-row td { border-bottom: none; }
+
+        /* Content Area */
+        .content-area { display: flex; width: 100%; min-height: 800px; position: relative; }
+
+        /* Left Panel */
+        .left-panel { width: 70%; background-color: #f1f5f9; border-right: 2px solid #333; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+
+        /* HTML Mockup Container */
+        .mockup-wrapper { 
+            width: 100%; 
+            background: #fafafa; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            padding: 40px 50px; 
+            border: 1px solid #e2e8f0; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .mu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .mu-title-wrap { display: flex; flex-direction: column; }
+        .mu-subtitle { font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.2px; }
+        .mu-title { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        .mu-add-btn { background: #0f172a; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .mu-add-btn:hover { background: #1e293b; }
+
+        .mu-grid { display: grid; grid-template-columns: 65% calc(35% - 24px); gap: 24px; }
+        
+        /* Left Col: Library */
+        .mu-lib-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; }
+        .mu-lib-title { margin: 0 0 24px 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a; }
+        .mu-item-list { display: flex; flex-direction: column; }
+        .mu-item { padding: 24px 0; border-bottom: 1px solid #f1f5f9; position: relative; }
+        .mu-item:first-child { padding-top: 0; }
+        .mu-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .mu-badge { background: #f1f5f9; color: #64748b; font-size: 10px; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; font-weight: 700; letter-spacing: -0.2px;}
+        .mu-item-title { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.3px; }
+        .mu-item-desc { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
+        .mu-item-date { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; font-weight: 500; }
+
+        /* Right Col */
+        .mu-right-col { display: flex; flex-direction: column; gap: 24px; }
+        
+        /* AI Engine Status */
+        .mu-status-card { background: #0f172a; border-radius: 12px; padding: 24px; color: #fff; position: relative; }
+        .mu-st-head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .mu-st-icon { width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .mu-st-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.3px;}
+        .mu-st-sub { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .mu-st-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
+        .mu-st-list { display: flex; flex-direction: column; gap: 12px; }
+        .mu-st-row { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .mu-st-lbl { font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .mu-st-val { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+
+        /* System Categories */
+        .mu-cat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; position: relative; }
+        .mu-cat-title { margin: 0 0 20px 0; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px; color: #0f172a; }
+        .mu-cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .mu-cat-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .mu-cat-btn:hover { border-color: #cbd5e1; background: #f8fafc; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .mu-cat-icon { font-size: 22px; }
+        .mu-cat-lbl { font-size: 12px; font-weight: 700; color: #334155; }
+
+        /* Markers overlay */
+        .marker { position: absolute; width: 26px; height: 26px; background-color: #ef4444; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: 900; box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5); z-index: 10; border: 2px solid #fff; }
+
+        /* Right Panel (Descriptions) */
+        .right-panel { width: 30%; display: flex; flex-direction: column; background-color: #fff; position: sticky; top: 0; height: fit-content; max-height: 100vh; overflow-y: auto; }
+        .section-header { background: #f8fafc; text-align: center; padding: 16px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #ccc; letter-spacing: 1px; color: #0f172a; position: sticky; top: 0; z-index: 5; }
+        .summary-box { padding: 24px; border-bottom: 1px solid #ccc; background: #fff; }
+        .summary-box h4 { margin: 0 0 12px 0; font-style: italic; font-size: 15px; color: #334155; }
+        .summary-box ul { margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6; }
+
+        .desc-table { width: 100%; border-collapse: collapse; }
+        .desc-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .desc-table td:first-child { width: 40px; text-align: center; color: #ef4444; font-weight: bold; font-size: 16px; border-right: 1px solid #e2e8f0; }
+        .desc-table p { margin: 4px 0; color: #334155; }
+
+        .event-header { background: #eff6ff; color: #1d4ed8; text-align: center; padding: 16px; font-weight: bold; font-size: 15px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+        .event-table { width: 100%; border-collapse: collapse; }
+        .event-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .event-table td:first-child { width: 50px; text-align: center; color: #1d4ed8; font-weight: bold; font-size: 15px; border-right: 1px solid #e2e8f0; }
+        .event-title-text { font-weight: bold; margin-bottom: 8px; display: block; color: #0f172a; font-size: 15px; }
+        .event-table p { margin: 4px 0; color: #475569; }
+
+        .checkpoint-box { padding: 24px; border-top: 1px solid #ccc; background: #fff; flex-grow: 1; }
+        .checkpoint-box h4 { margin: 0 0 16px 0; color: #1d4ed8; font-size: 15px; }
+        .checkpoint-box p { margin: 8px 0; font-size: 14px; color: #475569; padding-left: 12px; position: relative; }
+        .checkpoint-box p::before { content: '·'; position: absolute; left: 0; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+    <div class="document-container">
+        <table class="header-table">
+            <tr>
+                <th>Page Title.</th>
+                <td>AI 지식 관리 대시보드</td>
+                <th>Screen ID</th>
+                <td>A-05</td>
+                <th>Author</th>
+                <td>팀3 아늑</td>
+                <th>Date</th>
+                <td>2026.04.27</td>
+            </tr>
+            <tr class="path-row">
+                <th>Screen Path</th>
+                <td colspan="7">관리자 > AI 지식 관리</td>
+            </tr>
+        </table>
+
+        <div class="content-area">
+            <!-- Left Panel: UI HTML Mockup -->
+            <div class="left-panel">
+
+                <div class="mockup-wrapper">
+                    
+                    <div class="mu-header" style="position:relative;">
+                        <div class="mu-title-wrap">
+                            <span class="mu-subtitle">호텔 운영 관리 시스템</span>
+                            <h1 class="mu-title">AI 지식 관리</h1>
+                        </div>
+                        <button class="mu-add-btn" style="position:relative;">
+                            + 지식 정보 추가
+                            <div class="marker" style="top: -15px; right: -15px;">1</div>
+                        </button>
+                    </div>
+
+                    <div class="mu-grid">
+                        
+                        <!-- 지식 라이브러리 -->
+                        <div class="mu-lib-card" style="position:relative;">
+                            <div class="marker" style="top: -15px; left: -15px;">2</div>
+                            <h3 class="mu-lib-title">📄 지식 라이브러리</h3>
+                            
+                            <div class="mu-item-list">
+                                <div class="mu-item">
+                                    <span class="mu-badge">체크인/아웃</span>
+                                    <div class="mu-item-title">체크아웃 시간 연장(Late Checkout)</div>
+                                    <div class="mu-item-desc">오후 2시까지 연장 가능하며, 시간당 2,500엔의 추가 비용이 발생합니다. 멤버십 등급에 따라 무료 연장이 가능할 수 있으니 프론트에 문의 바랍니다.</div>
+                                    <div class="mu-item-date">🕒 최종 업데이트: 2024-04-15</div>
+                                </div>
+                                <div class="mu-item">
+                                    <span class="mu-badge">부대시설</span>
+                                    <div class="mu-item-title">천연 온천(대욕장) 이용 안내</div>
+                                    <div class="mu-item-desc">호텔 12층에 위치한 천연 온천은 오후 3시부터 익일 오전 10시까지 이용 가능합니다. 문신이 있으신 고객님은 제공해 드리는 커버 씰을 부착해 주시기 바랍니다.</div>
+                                    <div class="mu-item-date">🕒 최종 업데이트: 2024-04-10</div>
+                                </div>
+                                <div class="mu-item">
+                                    <span class="mu-badge">주변 관광</span>
+                                    <div class="mu-item-title">도쿄 타워(Tokyo Tower) 방문 가이드</div>
+                                    <div class="mu-item-desc">호텔 서쪽 출구에서 도보로 약 10분 거리에 위치해 있습니다. 메인 데크 예매권은 호텔 컨시어지 데스크에서 할인된 가격으로 구매 가능합니다.</div>
+                                    <div class="mu-item-date">🕒 최종 업데이트: 2024-04-18</div>
+                                </div>
+                                <div class="mu-item">
+                                    <span class="mu-badge">교통 정보</span>
+                                    <div class="mu-item-title">나리타 공항 리무진 버스</div>
+                                    <div class="mu-item-desc" style="margin-bottom: 0;">공항 리무진 버스는 로비 정문 앞에서 매시간 정각에 출발합니다. 좌석 예약은 필수이며, 최소 하루 전 프론트 데스크를 통해 예약해 주시기 바랍니다.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Col -->
+                        <div class="mu-right-col">
+                            
+                            <!-- AI 엔진 상태 -->
+                            <div class="mu-status-card">
+                                <div class="marker" style="top: -15px; right: -15px;">3</div>
+                                <div class="mu-st-head">
+                                    <div class="mu-st-icon">🗄️</div>
+                                    <div>
+                                        <div class="mu-st-title">AI 엔진 상태</div>
+                                        <div class="mu-st-sub"><span class="mu-st-dot"></span> 정상 작동 중</div>
+                                    </div>
+                                </div>
+                                <div class="mu-st-list">
+                                    <div class="mu-st-row">
+                                        <span class="mu-st-lbl">총 지식 문서 수</span>
+                                        <span class="mu-st-val">128</span>
+                                    </div>
+                                    <div class="mu-st-row">
+                                        <span class="mu-st-lbl">동기화 주기</span>
+                                        <span class="mu-st-val">3.5h</span>
+                                    </div>
+                                    <div class="mu-st-row">
+                                        <span class="mu-st-lbl">학습 정확도</span>
+                                        <span class="mu-st-val">98.2%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 시스템 카테고리 -->
+                            <div class="mu-cat-card">
+                                <div class="marker" style="top: -15px; left: -15px;">4</div>
+                                <h3 class="mu-cat-title">📍 시스템 카테고리</h3>
+                                <div class="mu-cat-grid">
+                                    <button class="mu-cat-btn">
+                                        <span class="mu-cat-icon">🗺️</span>
+                                        <span class="mu-cat-lbl">관광 가이드</span>
+                                    </button>
+                                    <button class="mu-cat-btn">
+                                        <span class="mu-cat-icon">📋</span>
+                                        <span class="mu-cat-lbl">서비스 정책</span>
+                                    </button>
+                                    <button class="mu-cat-btn">
+                                        <span class="mu-cat-icon">🏨</span>
+                                        <span class="mu-cat-lbl">시설 안내</span>
+                                    </button>
+                                    <button class="mu-cat-btn">
+                                        <span class="mu-cat-icon">🕒</span>
+                                        <span class="mu-cat-lbl">운영 시간</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Panel: Descriptions -->
+            <div class="right-panel">
+                <div class="section-header">Description</div>
+
+                <div class="summary-box">
+                    <h4>Summary.</h4>
+                    <ul>
+                        <li>호텔 AI 어시스턴트(컨시어지)가 응답 시 참고하는 지식 기반(RAG) 문서를 관리하는 화면</li>
+                        <li>호텔 운영 정책, 관광 가이드, 시설 안내 등의 데이터를 추가/수정/삭제 가능</li>
+                        <li>현재 AI 엔진의 동작 상태 및 학습(동기화) 현황을 한눈에 파악할 수 있음</li>
+                    </ul>
+                </div>
+
+                <table class="desc-table">
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <p><strong>+ 지식 정보 추가 (Add Knowledge)</strong></p>
+                            <p>· 새로운 호텔 규정, 이벤트, 메뉴얼 등을 AI가 학습하도록 텍스트나 파일(PDF 등) 형태로 추가하는 진입점</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <p><strong>지식 라이브러리 (Knowledge Library)</strong></p>
+                            <p>· 현재 AI가 학습하여 알고 있는 문서 리스트</p>
+                            <p>· 카테고리 태그(체크인/아웃, 부대시설 등)와 제목, 상세 설명 노출</p>
+                            <p>· 최종 업데이트 일자를 명시하여 데이터의 최신성 관리</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <p><strong>AI 엔진 상태 (Engine Status)</strong></p>
+                            <p>· <strong>정상 작동 중</strong>: AI 모델 서버(Ollama/Python)의 Health 상태 표시</p>
+                            <p>· <strong>총 지식 문서 수</strong>: RAG 벡터 DB에 적재된 총 문서량</p>
+                            <p>· <strong>동기화 주기</strong>: VectorDB가 최신화된 시간</p>
+                            <p>· <strong>학습 정확도</strong>: 고객 질문 대비 적절한 문서를 찾은 비율(Hit Rate 등)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>
+                            <p><strong>시스템 카테고리 (Category Filter)</strong></p>
+                            <p>· 좌측 지식 라이브러리를 빠르게 필터링할 수 있는 퀵 메뉴 (관광 가이드, 서비스 정책, 시설 안내 등)</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="event-header">🎯 Event Description</div>
+
+                <table class="event-table">
+                    <tr>
+                        <td>E1</td>
+                        <td>
+                            <span class="event-title-text">지식 정보 등록/수정</span>
+                            <p>· 새로운 지식을 추가하거나 기존 지식을 편집한 경우, 백엔드에서 Python 서버로 임베딩(Vectorization) 요청을 즉시 보내어 pgvector DB에 반영(동기화)해야 함</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="checkpoint-box">
+                    <h4>Check Point</h4>
+                    <p>보안: 민감한 내부 규정(예: 직원용 매뉴얼)과 고객 응대용 매뉴얼의 권한(Scope) 분리 설계 고려</p>
+                    <p>AI 엔진 통신 실패 시, 우측 상단 상태 패널에 즉시 붉은색 에러 아이콘 노출 처리</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
