@@ -5,8 +5,7 @@
 ```mermaid
 erDiagram
     department {
-        bigint id PK
-        varchar code UK "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
+        varchar id PK "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
         varchar name "하우스키핑, 식음료, 시설관리, 컨시어지, 프론트데스크, 긴급대응"
     }
 
@@ -22,7 +21,7 @@ erDiagram
         varchar name
         varchar pin "4자리 PIN"
         varchar role "STAFF, MANAGER"
-        bigint department_id FK
+        varchar department_id FK
     }
 
     guest {
@@ -36,7 +35,7 @@ erDiagram
         bigint id PK
         varchar status "PENDING, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED"
         varchar priority "LOW, NORMAL, HIGH, URGENT"
-        varchar domain_code "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
+        varchar department_id FK "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
         varchar intent "REQ_ITEM, REPORT_ISSUE, ORDER_FOOD, BOOK_SERVICE, FAQ, EMERGENCY 등"
         jsonb entities "부서별 가변 데이터 (품목/수량/증상/목적지 등)"
         text raw_text "고객 발화 원문"
@@ -44,7 +43,6 @@ erDiagram
         float confidence "AI 확신도 0.0~1.0"
         bigint room_id FK
         bigint assigned_staff_id FK "nullable"
-        bigint department_id FK
         int version "낙관적 락"
         timestamp created_at
         timestamp updated_at
@@ -129,6 +127,7 @@ erDiagram
     room ||--o{ guest_note : "특이사항"
 
     staff ||--o{ request : "배정된 직원"
+    staff ||--o{ fewshot_example : "정정자"
 
     request ||--o{ message : "관련 대화"
 ```
@@ -156,7 +155,8 @@ erDiagram
 |------|-----------|-----------|
 | Guest 인증 | `qr_token` (동적 토큰) | **정적 QR** (URL에 방번호 내장, 토큰 불필요) |
 | 요청 데이터 | `item_code` + `quantity` (고정 컬럼) | **`jsonb entities`** (부서별 가변 데이터) |
-| 부서 분류 | `department_code` (4개) | **`domain_code`** (6개: HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) |
+| 부서 PK | `bigint id` + `varchar code` (분리) | **`varchar id`** (코드 자체가 PK, 6개: HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) |
+| 부서 참조 | `bigint department_id FK` + `domain_code` 중복 | **`varchar department_id FK`** 하나로 통합 |
 | 의도 분류 | 없음 | **`intent`** 컬럼 추가 (REQ_ITEM, REPORT_ISSUE, ORDER_FOOD 등) |
 | AI 학습 | 없음 | **`fewshot_example`** 테이블 추가 |
 | 투숙객 메모 | 없음 | **`guest_note`** 테이블 추가 (알러지 등) |
@@ -168,9 +168,10 @@ erDiagram
 2. **room → request**: 1:N (한 객실에서 여러 요청 발생)
 3. **room → message**: 1:N (한 객실에서 여러 대화 발생)
 4. **room → guest_note**: 1:N (한 투숙객에 여러 특이사항 가능)
-5. **request → department**: N:1 (요청은 하나의 부서로 라우팅)
+5. **request → department**: N:1 (요청은 하나의 부서로 라우팅, `varchar department_id FK`)
 6. **request → staff**: N:1 (요청은 한 직원에게 배정, nullable)
 7. **request → message**: 1:N (요청과 관련된 대화)
+8. **staff → fewshot_example**: 1:N (직원이 정정한 학습 데이터)
 
 ## `entities` JSONB 예시 (부서별)
 
