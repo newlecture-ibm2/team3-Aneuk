@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './ChatHistory.module.css';
-import { DoorOpen, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export interface ChatHistoryData {
   id: string | number;
@@ -30,9 +30,6 @@ export default function ChatHistory({ title = '객실 선택', rooms, activeRoom
               className={`${styles.item} ${isActive ? styles.itemActive : ''}`}
               onClick={() => onRoomSelect && onRoomSelect(room.id)}
             >
-              <div className={`${styles.iconBox} ${isActive ? styles.iconBoxActive : ''}`}>
-                <DoorOpen size={24} className={isActive ? styles.iconActive : styles.icon} />
-              </div>
               <div className={styles.textContainer}>
                 <span className={styles.roomNumber}>{room.roomNumber}호</span>
                 <span className={styles.statusText}>{room.statusText}</span>

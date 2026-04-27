@@ -1,12 +1,10 @@
 import React from 'react';
 import styles from './RagCandidateCard.module.css';
 import Button from '@/components/ui/Button/Button';
-import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
 
 export interface RagCandidateCardProps {
   category?: string;
   roomNumber?: string;
-  consultationTitle: string;
   consultationContent: string;
   timestamp: string;
   onAddRag: (extractedContent: string) => void;
@@ -16,7 +14,6 @@ export interface RagCandidateCardProps {
 export default function RagCandidateCard({
   category = '수동 상담',
   roomNumber,
-  consultationTitle,
   consultationContent,
   timestamp,
   onAddRag,
@@ -48,30 +45,32 @@ export default function RagCandidateCard({
 
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.badgeGroup}>
-          <StatusBadge variant="purple">지식 후보</StatusBadge>
-          <span className={styles.category}>{category}</span>
+      {roomNumber && (
+        <div className={styles.roomBox}>
+          <span className={styles.roomType}>객실</span>
+          <span className={styles.roomNumber}>{roomNumber}</span>
         </div>
-        <span className={styles.timeText}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          {timestamp}
-        </span>
-      </div>
+      )}
 
-      <div className={styles.body}>
+      <div className={styles.contentSection}>
+        <div className={styles.contentHeader}>
+          <span className={styles.category}>{category}</span>
+          <span className={styles.timeText}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            {timestamp}
+          </span>
+        </div>
         <h3 className={styles.title}>
-          {roomNumber && <span className={styles.roomText}>[{roomNumber}호]</span>} {consultationTitle}
+          {displayContent}
         </h3>
-        <p className={styles.content}>{displayContent}</p>
       </div>
 
-      <div className={styles.actions}>
-        <Button variant="secondary" onClick={onReject} style={{ flex: 1 }}>제외</Button>
-        <Button variant="primary" onClick={() => onAddRag(displayContent.replace(/(^"|"$)/g, ''))} style={{ flex: 1 }}>RAG 추가</Button>
+      <div className={styles.actionSection}>
+        <Button variant="primary" onClick={() => onAddRag(displayContent.replace(/(^"|"$)/g, ''))} style={{ width: '100%', padding: 'var(--space-8)' }}>RAG 추가</Button>
+        <Button variant="secondary" onClick={onReject} style={{ width: '100%', padding: 'var(--space-8)' }}>제외</Button>
       </div>
     </div>
   );

@@ -1,26 +1,49 @@
 .card {
   display: flex;
-  flex-direction: column;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-24);
-  gap: var(--space-16);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease-in-out;
+  align-items: flex-start;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-16);
+  gap: var(--space-24);
+  transition: background-color var(--transition);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  background-color: var(--color-surface);
 }
 
-.header {
+.roomBox {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  width: var(--space-80);
+  height: var(--space-80);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
 }
 
-.badgeGroup {
+.roomType {
+  font: var(--text-caption-medium);
+  color: var(--color-gray-500);
+}
+
+.roomNumber {
+  font: var(--text-h2-bold);
+  color: var(--color-gray-900);
+}
+
+.contentSection {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-8);
+}
+
+.contentHeader {
   display: flex;
   align-items: center;
   gap: var(--space-8);
@@ -35,45 +58,20 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  font: var(--text-caption-regular);
+  font: var(--text-caption-medium);
   color: var(--color-gray-500);
 }
 
-.body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
 .title {
-  font: var(--text-body-bold);
+  font: var(--text-h3-bold);
   color: var(--color-gray-900);
   margin: 0;
 }
 
-.roomText {
-  color: var(--color-primary);
-  margin-right: var(--space-4);
-}
-
-.content {
-  font: var(--text-body-regular);
-  color: var(--color-gray-700);
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background-color: var(--color-gray-50);
-  padding: var(--space-12);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-gray-100);
-  white-space: pre-wrap;
-}
-
-.actions {
+.actionSection {
   display: flex;
-  gap: var(--space-12);
-  margin-top: var(--space-8);
+  flex-direction: column;
+  gap: var(--space-8);
+  flex-shrink: 0;
+  width: 120px;
 }

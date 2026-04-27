@@ -1,10 +1,12 @@
 .container {
   display: flex;
   flex-direction: column;
-  padding: var(--space-24) 0;
-  border-bottom: 1px solid var(--color-surface);
+  padding: var(--space-24);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-16);
   cursor: pointer;
-  transition: opacity var(--transition);
+  transition: background-color var(--transition);
 }
 
 .container:last-child {
@@ -12,7 +14,7 @@
 }
 
 .container:hover {
-  opacity: 0.8;
+  background-color: var(--color-surface);
 }
 
 .title {
@@ -35,10 +37,10 @@
 }
 
 .clockIcon {
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
 }
 
 .dateText {
   font: var(--text-caption-medium);
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
 }

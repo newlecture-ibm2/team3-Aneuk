@@ -12,10 +12,15 @@
   min-width: 140px;
   min-height: 100px;
   box-sizing: border-box;
+  transition: background-color var(--transition);
+}
+
+.summaryCard:hover {
+  background-color: var(--color-surface);
 }
 
 .title {
-  font: var(--text-body-medium);
+  font: var(--text-h3-bold);
   color: var(--color-gray-500);
 }
 

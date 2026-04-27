@@ -41,6 +41,12 @@ const lucideIcons = {
 };
 import { useUiStore } from '@/stores/useUiStore';
 
+const ComponentLabel = ({ path }: { path: string }) => (
+  <div style={{ font: 'var(--text-caption-regular)', color: 'var(--color-primary)', marginBottom: 'var(--space-8)', padding: 'var(--space-4) var(--space-8)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-sm)', display: 'inline-block' }}>
+    <code style={{ fontFamily: 'monospace' }}>{path}</code>
+  </div>
+);
+
 export default function ComponentShowcasePage() {
   const { showToast } = useUiStore();
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -133,7 +139,8 @@ export default function ComponentShowcasePage() {
             1. Header Component
           </h2>
           <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)' }}>
-            <Header />
+            <ComponentLabel path="components/layout/Header.tsx" />
+              <Header />
           </div>
         </section>
 
@@ -156,6 +163,7 @@ export default function ComponentShowcasePage() {
             </h2>
             <div style={{ borderRadius: 'var(--radius-lg)' }}>
               <div style={{ width: '100%' }}>
+                <ComponentLabel path="components/layout/Sidebar.tsx" />
                 <Sidebar 
                   role={sidebarRole} 
                   fakePathname={sidebarActivePath}
@@ -186,6 +194,7 @@ export default function ComponentShowcasePage() {
                   ))}
                 </div>
 
+                <ComponentLabel path="components/ui/Modal/ConfirmModal.tsx" />
                 <ConfirmModal 
                   isOpen={activeModal === 'ConfirmModal'} 
                   onClose={closeModal} 
@@ -197,6 +206,7 @@ export default function ComponentShowcasePage() {
                 />
 
                 {/* 기본 ModalOverlay + ModalCard 조합 테스트 */}
+                <ComponentLabel path="components/ui/Modal/ModalOverlay.tsx & ModalCard.tsx" />
                 <ModalOverlay isOpen={activeModal === '기본 모달 (ModalOverlay+Card)'} onClose={closeModal}>
                   <ModalCard size="sm">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
@@ -235,6 +245,7 @@ export default function ComponentShowcasePage() {
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>1. Buttons & Controls</h3>
               <div>
                 <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Buttons</h4>
+                <ComponentLabel path="components/ui/Button/Button.tsx" />
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-16)', alignItems: 'center' }}>
                   <Button variant="primary">Primary</Button>
                   <Button variant="secondary">Secondary</Button>
@@ -247,10 +258,12 @@ export default function ComponentShowcasePage() {
               <div style={{ display: 'flex', gap: 'var(--space-32)', marginTop: 'var(--space-12)' }}>
                 <div>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Toggle</h4>
+                  <ComponentLabel path="components/ui/Button/Toggle.tsx" />
                   <Toggle checked={isToggled} onChange={(e) => setIsToggled(e.target.checked)} label="Toggle On/Off" />
                 </div>
                 <div>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Filter Button</h4>
+                  <ComponentLabel path="components/ui/FilterButton/FilterButton.tsx" />
                   <FilterButton 
                     filterOptions={[{ label: '최신순', value: 'latest' }, { label: '오래된순', value: 'oldest' }, { label: '우선순위', value: 'priority' }]}
                     selectedFilter="latest"
@@ -266,12 +279,14 @@ export default function ComponentShowcasePage() {
               <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', gap: 'var(--space-16)', flexDirection: 'column', flex: 1, minWidth: '300px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-8)' }}>InputField</h4>
+                  <ComponentLabel path="components/ui/InputField/InputField.tsx" />
                   <InputField label="기본 입력" placeholder="텍스트를 입력하세요" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
                   <InputField variant="search" placeholder="검색어를 입력하세요..." />
                   <InputField label="에러 상태" error="올바르지 않은 값입니다." value="Error test" readOnly />
                 </div>
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-8)' }}>Dropdown</h4>
+                  <ComponentLabel path="components/ui/Dropdown/Dropdown.tsx" />
                   <Dropdown 
                     label="옵션 선택" 
                     options={[{label: '옵션 1', value: '1'}, {label: '옵션 2', value: '2'}, {label: '옵션 3', value: '3'}]} 
@@ -287,6 +302,7 @@ export default function ComponentShowcasePage() {
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>3. Navigation & Status</h3>
               <div>
                 <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Status Badges</h4>
+                <ComponentLabel path="components/ui/StatusBadge/StatusBadge.tsx" />
                 <div style={{ display: 'flex', gap: 'var(--space-16)', alignItems: 'center', flexWrap: 'wrap' }}>
                   <StatusBadge variant="gray">기본(Gray)</StatusBadge>
                   <StatusBadge variant="red">위험(Red)</StatusBadge>
@@ -297,6 +313,7 @@ export default function ComponentShowcasePage() {
               <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', marginTop: 'var(--space-12)' }}>
                 <div style={{ flex: 1, minWidth: '300px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Tabs</h4>
+                  <ComponentLabel path="components/ui/Tab/Tabs.tsx" />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
                     <Tabs variant="line" options={[{label: '전체', value: 'tab1', count: 12}, {label: '진행중', value: 'tab2', count: 3}, {label: '완료', value: 'tab3', count: 9}]} activeValue={tabValue} onChange={setTabValue} />
                     <Tabs variant="pill" options={[{label: '알림', value: 'tab1'}, {label: '설정', value: 'tab2'}]} activeValue={tabValue} onChange={setTabValue} />
@@ -304,6 +321,7 @@ export default function ComponentShowcasePage() {
                 </div>
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Pagination</h4>
+                  <ComponentLabel path="components/ui/Pagenation/Pagination.tsx" />
                   <Pagination currentPage={currentPage} totalPages={10} onPageChange={setCurrentPage} />
                 </div>
               </div>
@@ -315,6 +333,7 @@ export default function ComponentShowcasePage() {
               <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '300px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Bubbles</h4>
+                  <ComponentLabel path="components/ui/ChatBubble/ChatBubble.tsx" />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', padding: 'var(--space-24)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-surface)', background: 'var(--color-bg)' }}>
                     <ChatBubble variant="received">안녕하세요! 그랜드 호텔 AI 서비스입니다. 무엇을 도와드릴까요?</ChatBubble>
                     <ChatBubble variant="sent">에어컨이 작동하지 않아요. 그리고 수건에서 하얀 실밥이 떨어져요. 수건 좀 교체해주세요.</ChatBubble>
@@ -322,6 +341,7 @@ export default function ComponentShowcasePage() {
                 </div>
                 <div style={{ flex: 1, minWidth: '300px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Input</h4>
+                  <ComponentLabel path="components/ui/ChatInput/ChatInput.tsx" />
                   <div style={{ padding: 'var(--space-16)', background: 'var(--color-bg)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
                     <ChatInput onSend={(text) => alert(`전송: ${text}`)} />
                   </div>
@@ -335,30 +355,35 @@ export default function ComponentShowcasePage() {
               
               <div>
                 <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Table (세부 접속 로그)</h4>
-                <Table columns="1.5fr 4fr 1fr 1.5fr">
+                <ComponentLabel path="components/ui/Table/Table.tsx" />
+                <Table columns="1.5fr 4fr 1fr 1.5fr 1fr">
                   <TableHeader>
                     <TableCell>시간</TableCell>
                     <TableCell>요청 미리보기</TableCell>
                     <TableCell>총 토큰</TableCell>
                     <TableCell>지연시간</TableCell>
+                    <TableCell></TableCell>
                   </TableHeader>
                   <TableRow>
                     <TableCell>2026.10.26 14:05:12</TableCell>
                     <TableCell>수건 2장 더 가져다주세요. 그리고 가습기가 있으면 좋겠어요.</TableCell>
                     <TableCell><b>1,520</b></TableCell>
                     <TableCell><b>850ms</b></TableCell>
+                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>2026.10.26 14:12:45</TableCell>
                     <TableCell>화장실 전구가 나갔어요. 확인 부탁드립니다.</TableCell>
                     <TableCell><b>1,430</b></TableCell>
                     <TableCell><b style={{ color: 'red' }}>3100ms</b></TableCell>
+                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>2026.10.26 14:15:33</TableCell>
                     <TableCell>저녁 7시에 이탈리안 레스토랑 예약 가능한가요?</TableCell>
                     <TableCell><b>1,650</b></TableCell>
                     <TableCell><b>920ms</b></TableCell>
+                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
                   </TableRow>
                 </Table>
               </div>
@@ -369,12 +394,14 @@ export default function ComponentShowcasePage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
                     <div style={{ flex: 1 }}>
                       <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Request Card</h5>
+                      <ComponentLabel path="components/ui/card/RequestCard.tsx" />
                       <div style={{ width: '100%' }}>
                         <RequestCard roomNumber={1502} createdAt={new Date(Date.now() - 34 * 60 * 1000).toISOString()} title="비건 메뉴 중에 견과류가 아예 안 들어간 메뉴가 있나요?" onPrimaryAction={() => alert('상담 시작')} onSecondaryAction={() => alert('무시하기')} />
                       </div>
                     </div>
                     <div style={{ flex: 1 }}>
                       <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Summary Card</h5>
+                      <ComponentLabel path="components/ui/card/SummaryCard.tsx" />
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-12)' }}>
                         <SummaryCard title="오늘 총 요청" value="7" changeValue="+12%" changeType="positive" />
                         <SummaryCard title="평균 응답 시간" value="1.5m" changeValue="-0.2m" changeType="neutral" />
@@ -387,19 +414,20 @@ export default function ComponentShowcasePage() {
                   {/* RAG Candidate Card 추가 */}
                   <div>
                     <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>RAG Candidate Card (신규 지식 후보 검토)</h5>
+                    <ComponentLabel path="components/ui/card/RagCandidateCard.tsx" />
                     <div style={{ width: '100%', maxWidth: '800px' }}>
                       <RagCandidateCard 
                         roomNumber="1204"
                         category="수동 상담 (하우스키핑)"
-                        consultationTitle="아기 침구류(가드) 설치 문의"
                         consultationContent="고객: 혹시 아기용 침대 가드 설치가 가능한가요?&#10;직원: 네, 고객님. 12개월 미만 유아용 침대 가드는 재고 확인 후 무상으로 설치해 드리고 있습니다. 바로 준비해드리겠습니다."
                         timestamp="2026.10.26 15:30"
                         onAddRag={(content) => {
                           setSelectedKnowledge({
                             category: "수동 상담 (하우스키핑)",
-                            title: "아기 침구류(가드) 설치 문의",
+                            title: "", // 지식 제목을 새로 입력할 수 있도록 비워둠
                             description: content,
-                            updatedAt: "방금 전"
+                            updatedAt: "방금 전",
+                            isNew: true
                           });
                           setIsEditModalOpen(true);
                         }}
@@ -410,6 +438,7 @@ export default function ComponentShowcasePage() {
 
                   <div>
                     <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Task Ticket Column</h5>
+                    <ComponentLabel path="components/ui/TaskBoard/TaskColumn.tsx & TaskTicket.tsx" />
                     <div style={{ display: 'flex', gap: 'var(--space-24)', overflowX: 'auto', paddingBottom: 'var(--space-8)' }}>
                       <TaskColumn title="진행 전" count={1}><TaskTicket status="TODO" ticketId="1204" priority="HIGH" title="에어컨 수리" description="에어컨 작동 안 됨" createdAt={new Date(Date.now() - 45 * 60 * 1000).toISOString()} /></TaskColumn>
                       <TaskColumn title="진행 중" count={1}><TaskTicket status="IN_PROGRESS" ticketId="1205" priority="MEDIUM" title="수건 추가" description="수건 2장 요청" createdAt={new Date(Date.now() - 120 * 60 * 1000).toISOString()} updatedAt={new Date(Date.now() - 15 * 60 * 1000).toISOString()} /></TaskColumn>
@@ -430,6 +459,7 @@ export default function ComponentShowcasePage() {
           </h2>
           <div style={{ display: 'flex', gap: 'var(--space-24)', height: '600px' }}>
             <div style={{ width: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+              <ComponentLabel path="components/ui/ChatHistory/ChatHistory.tsx" />
               <ChatHistory 
                 rooms={sampleRooms} 
                 activeRoomId={activeRoomId} 
@@ -446,14 +476,16 @@ export default function ComponentShowcasePage() {
           </h2>
           <div style={{ background: 'var(--color-bg)', padding: '0 var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
             {sampleKnowledges.map((item, idx) => (
-              <KnowledgeItem 
-                key={idx}
-                category={item.category}
-                title={item.title}
-                description={item.description}
-                updatedAt={item.updatedAt}
-                onClick={() => setSelectedKnowledge(item)}
-              />
+              <div key={idx}>
+                <ComponentLabel path="components/ui/Knowledge/KnowledgeItem.tsx" />
+                <KnowledgeItem 
+                  category={item.category}
+                  title={item.title}
+                  description={item.description}
+                  updatedAt={item.updatedAt}
+                  onClick={() => setSelectedKnowledge(item)}
+                />
+              </div>
             ))}
           </div>
           <div style={{ marginTop: 'var(--space-8)' }}>
@@ -468,6 +500,7 @@ export default function ComponentShowcasePage() {
           <h2 style={{ font: 'var(--text-h2-bold)', color: 'var(--color-gray-900)' }}>
             Handover Record (인수인계 문서)
           </h2>
+          <ComponentLabel path="components/ui/HandoverRecord/HandoverRecord.tsx" />
           <HandoverRecord 
             managerName="박단희"
             workingHours="09:00 - 18:00"

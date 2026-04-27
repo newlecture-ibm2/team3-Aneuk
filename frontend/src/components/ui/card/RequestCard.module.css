@@ -7,6 +7,11 @@
   border: 1px solid var(--color-surface);
   border-radius: var(--radius-md);
   background: var(--color-bg);
+  transition: background-color var(--transition);
+}
+
+.requestCard:hover {
+  background-color: var(--color-surface);
 }
 
 .roomBox {
@@ -54,7 +59,7 @@
 }
 
 .title {
-  font: var(--text-h2-bold);
+  font: var(--text-h3-bold);
   color: var(--color-gray-900);
   margin: 0;
 }
