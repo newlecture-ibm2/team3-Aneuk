@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면 설계서 - 프론트 데스크 대시보드</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #e5e7eb;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+        .document-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: #fff;
+            border: 2px solid #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            overflow: visible; /* sticky 동작을 위해 visible로 변경 */
+        }
+
+        /* Header Table */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-bottom: 2px solid #333;
+        }
+        .header-table th, .header-table td {
+            border: 1px solid #ccc;
+            padding: 14px 20px;
+            font-size: 14px;
+        }
+        .header-table th {
+            background-color: #f8f9fa;
+            width: 120px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .header-table td { width: calc(50% - 120px); }
+        .header-table tr:first-child th, .header-table tr:first-child td { border-top: none; }
+        .header-table tr th:first-child, .header-table tr td:first-child { border-left: none; }
+        .header-table tr th:last-child, .header-table tr td:last-child { border-right: none; }
+        .path-row th, .path-row td { border-bottom: none; }
+
+        /* Content Area */
+        .content-area {
+            display: flex;
+            width: 100%;
+            min-height: 800px;
+            position: relative;
+        }
+
+        /* Left Panel (UI Image) */
+        .left-panel {
+            width: 70%;
+            background-color: #f1f5f9;
+            border-right: 2px solid #333;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column; /* 세로로 이미지 배치 */
+            align-items: center;
+            gap: 60px; /* 이미지 사이 간격 */
+        }
+
+        .ui-image-container {
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ui-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Markers overlay on image */
+        .marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 900;
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
+            z-index: 10;
+            border: 2px solid #fff;
+        }
+        
+        /* 프론트 데스크 화면 마커 위치 */
+        .m1 { top: 20%; left: 16%; }
+        .m2 { top: 35%; left: 8%; } 
+        .m3 { top: 48%; left: 20%; }
+        .m4 { top: 46%; right: 4%; }
+        
+        /* 모달 화면 마커 위치 */
+        .m5 { top: 20%; left: 45%; } 
+
+        /* Right Panel (Descriptions) */
+        .right-panel {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            /* 좌측 패널을 스크롤할 때 우측 설명은 화면에 고정 */
+            position: sticky;
+            top: 0;
+            height: fit-content;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .section-header {
+            background: #f8fafc;
+            text-align: center;
+            padding: 16px;
+            font-weight: bold;
+            font-size: 16px;
+            border-bottom: 1px solid #ccc;
+            letter-spacing: 1px;
+            color: #0f172a;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .summary-box { padding: 24px; border-bottom: 1px solid #ccc; background: #fff; }
+        .summary-box h4 { margin: 0 0 12px 0; font-style: italic; font-size: 15px; color: #334155; }
+        .summary-box ul { margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6; }
+
+        .desc-table { width: 100%; border-collapse: collapse; }
+        .desc-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .desc-table td:first-child { width: 40px; text-align: center; color: #ef4444; font-weight: bold; font-size: 16px; border-right: 1px solid #e2e8f0; }
+        .desc-table p { margin: 4px 0; color: #334155; }
+        .desc-table code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a; font-size: 13px; }
+
+        .event-header { background: #eff6ff; color: #1d4ed8; text-align: center; padding: 16px; font-weight: bold; font-size: 15px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+        .event-table { width: 100%; border-collapse: collapse; }
+        .event-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .event-table td:first-child { width: 50px; text-align: center; color: #1d4ed8; font-weight: bold; font-size: 15px; border-right: 1px solid #e2e8f0; }
+        .event-title-text { font-weight: bold; margin-bottom: 8px; display: block; color: #0f172a; font-size: 15px; }
+        .event-table p { margin: 4px 0; color: #475569; }
+
+        .checkpoint-box { padding: 24px; border-top: 1px solid #ccc; background: #fff; flex-grow: 1; }
+        .checkpoint-box h4 { margin: 0 0 16px 0; color: #1d4ed8; font-size: 15px; }
+        .checkpoint-box p { margin: 8px 0; font-size: 14px; color: #475569; padding-left: 12px; position: relative; }
+        .checkpoint-box p::before { content: '·'; position: absolute; left: 0; font-weight: bold;}
+
+    </style>
+</head>
+<body>
+
+<div class="document-container">
+    <table class="header-table">
+        <tr>
+            <th>Page Title.</th><td>프론트 데스크 대시보드 및 상세 모달</td>
+            <th>Screen ID</th><td>A-02, A-02-M</td>
+            <th>Author</th><td>팀3 아늑</td>
+            <th>Date</th><td>2026.04.27</td>
+        </tr>
+        <tr class="path-row">
+            <th>Screen Path</th><td colspan="7">관리자 > 프론트 데스크 > 대시보드</td>
+        </tr>
+    </table>
+
+    <div class="content-area">
+        <!-- Left Panel: UI Image -->
+        <div class="left-panel">
+            
+            <!-- 첫 번째 이미지: 대시보드 원본 -->
+            <div class="ui-image-container">
+                <img src="../스크린샷%202026-04-27%20115521.png" alt="프론트 데스크 대시보드 화면">
+                
+                <!-- 붉은색 번호 마커 -->
+                <div class="marker m1">1</div>
+                <div class="marker m2">2</div>
+                <div class="marker m3">3</div>
+                <div class="marker m4">4</div>
+            </div>
+
+            <!-- 두 번째 이미지: 상담 상세 모달 (밑으로 나란히 배치) -->
+            <div class="ui-image-container" style="max-width: 600px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border-radius: 12px;">
+                <img src="../스크린샷%202026-04-27%20115526.png" alt="상담 모달 창" style="border-radius: 12px;">
+                
+                <div class="marker" style="top: 15%; left: 8%;">5</div>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Descriptions (스크롤 시 고정됨) -->
+        <div class="right-panel">
+            <div class="section-header">Description</div>
+            
+            <div class="summary-box">
+                <h4>Summary.</h4>
+                <ul>
+                    <li>프론트 데스크 미처리/예외 요청 대시보드 및 상세 채팅 모달(A-02-M)</li>
+                    <li>상태별 현황 제공 및 가장 시급한 예외 건 우선 노출</li>
+                    <li>빠른 고객 응대를 위한 실시간 채팅(상담) 진입 지원</li>
+                </ul>
+            </div>
+
+            <table class="desc-table">
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <p><strong>상단 현황 요약 (Status Cards)</strong></p>
+                        <p>· <strong>대기 중:</strong> AI 처리가 불가하여 직원 개입이 필요한 건</p>
+                        <p>· <strong>진행 중:</strong> 직원이 배정되어 처리 중인 건</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>
+                        <p><strong>섹션 타이틀 & 배지</strong></p>
+                        <p>우선순위가 가장 높은 "미처리 / 예외 요청"을 표시하며 붉은색 배지로 경각심 부여</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>
+                        <p><strong>요청 리스트 정보</strong></p>
+                        <p>· <strong>AI 요약 제목</strong> 및 연회색 박스에 <strong>고객 발화 원문</strong> 동시 제공</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>
+                        <p><strong>상담 개입 액션</strong></p>
+                        <p>· <strong>상담 시작:</strong> 아래의 5번 화면(모달창)을 열어 상세 대화 확인</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>
+                        <p><strong>상담 상세 모달 (A-02-M)</strong></p>
+                        <p>· 고객과 AI의 대화 내역(히스토리) 확인</p>
+                        <p>· 하단 입력창을 통해 직원이 직접 텍스트 입력 시 실시간 고객 응대 가능</p>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="event-header">🎯 Event Description</div>
+            
+            <table class="event-table">
+                <tr>
+                    <td>E1</td>
+                    <td>
+                        <span class="event-title-text">상담 모달 진입 (상담 시작)</span>
+                        <p>· 트리거: 특정 카드의 '상담 시작' 버튼 클릭 (4번)</p>
+                        <p>· 동작: 배경 Dim 처리 후 채팅 상세 히스토리 모달(5번 화면) 노출</p>
+                        <p>· API: GET <code>/api/staff/requests/{id}/chat</code></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>E2</td>
+                    <td>
+                        <span class="event-title-text">요청 취소 (무시하기)</span>
+                        <p>· 트리거: '무시하기' 버튼 클릭</p>
+                        <p>· 동작: 리스트 항목 숨김 처리 및 상태 DB 업데이트</p>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="checkpoint-box">
+                <h4>Check Point</h4>
+                <p>WebSocket 연동을 통한 리스트 실시간 업데이트 필수</p>
+                <p>직원이 모달에서 직접 메시지 발송 시, 해당 세션의 AI 자동 응대는 일시 중지됨</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

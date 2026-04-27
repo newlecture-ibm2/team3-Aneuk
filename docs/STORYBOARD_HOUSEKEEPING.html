@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면 설계서 - 하우스키핑 대시보드</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #e5e7eb;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+        .document-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: #fff;
+            border: 2px solid #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            overflow: visible;
+        }
+
+        /* Header Table */
+        .header-table { width: 100%; border-collapse: collapse; border-bottom: 2px solid #333; }
+        .header-table th, .header-table td { border: 1px solid #ccc; padding: 14px 20px; font-size: 14px; }
+        .header-table th { background-color: #f8f9fa; width: 120px; text-align: left; font-weight: bold; }
+        .header-table td { width: calc(50% - 120px); }
+        .header-table tr:first-child th, .header-table tr:first-child td { border-top: none; }
+        .header-table tr th:first-child, .header-table tr td:first-child { border-left: none; }
+        .header-table tr th:last-child, .header-table tr td:last-child { border-right: none; }
+        .path-row th, .path-row td { border-bottom: none; }
+
+        /* Content Area */
+        .content-area { display: flex; width: 100%; min-height: 800px; position: relative; }
+
+        /* Left Panel (UI Images) */
+        .left-panel {
+            width: 70%;
+            background-color: #f1f5f9;
+            border-right: 2px solid #333;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .ui-image-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 두번째, 세번째 이미지는 부분 캡쳐이므로 크기 조절 */
+        .ui-image-container.partial-view {
+            max-width: 600px;
+        }
+
+        .ui-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* Markers overlay on image */
+        .marker {
+            position: absolute; width: 28px; height: 28px; background-color: #ef4444; color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 14px; font-weight: 900; box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5);
+            z-index: 10; border: 2px solid #fff;
+        }
+        
+        /* Markers for Image 1 (Dashboard) */
+        .m1 { top: 35%; left: 3%; }   /* 칸반 보드 컬럼 */
+        .m2 { top: 50%; left: 15%; }  /* 요청 카드 */
+        .m3 { top: 75%; left: 28%; }  /* 직원 배정 버튼 */
+
+        /* Markers for Image 2 (Dropdown) */
+        .m4 { top: 55%; right: 15%; } /* 드롭다운 메뉴 */
+
+        /* Markers for Image 3 (Assigned) */
+        .m5 { top: 58%; left: 15%; }  /* 배정된 스태프 영역 */
+        .m6 { top: 78%; right: 5%; }  /* 담당자 변경 버튼 */
+
+        /* Right Panel (Descriptions) */
+        .right-panel {
+            width: 30%; display: flex; flex-direction: column; background-color: #fff;
+            position: sticky; top: 0; height: fit-content; max-height: 100vh; overflow-y: auto;
+        }
+        
+        .section-header { background: #f8fafc; text-align: center; padding: 16px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #ccc; letter-spacing: 1px; color: #0f172a; position: sticky; top: 0; z-index: 5; }
+        .summary-box { padding: 24px; border-bottom: 1px solid #ccc; background: #fff; }
+        .summary-box h4 { margin: 0 0 12px 0; font-style: italic; font-size: 15px; color: #334155; }
+        .summary-box ul { margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6; }
+
+        .desc-table { width: 100%; border-collapse: collapse; }
+        .desc-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .desc-table td:first-child { width: 40px; text-align: center; color: #ef4444; font-weight: bold; font-size: 16px; border-right: 1px solid #e2e8f0; }
+        .desc-table p { margin: 4px 0; color: #334155; }
+
+        .event-header { background: #eff6ff; color: #1d4ed8; text-align: center; padding: 16px; font-weight: bold; font-size: 15px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+        .event-table { width: 100%; border-collapse: collapse; }
+        .event-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .event-table td:first-child { width: 50px; text-align: center; color: #1d4ed8; font-weight: bold; font-size: 15px; border-right: 1px solid #e2e8f0; }
+        .event-title-text { font-weight: bold; margin-bottom: 8px; display: block; color: #0f172a; font-size: 15px; }
+        .event-table p { margin: 4px 0; color: #475569; }
+
+        .checkpoint-box { padding: 24px; border-top: 1px solid #ccc; background: #fff; flex-grow: 1; }
+        .checkpoint-box h4 { margin: 0 0 16px 0; color: #1d4ed8; font-size: 15px; }
+        .checkpoint-box p { margin: 8px 0; font-size: 14px; color: #475569; padding-left: 12px; position: relative; }
+        .checkpoint-box p::before { content: '·'; position: absolute; left: 0; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+<div class="document-container">
+    <table class="header-table">
+        <tr>
+            <th>Page Title.</th><td>하우스키핑 대시보드 (직원 배정 흐름)</td>
+            <th>Screen ID</th><td>A-03</td>
+            <th>Author</th><td>팀3 아늑</td>
+            <th>Date</th><td>2026.04.27</td>
+        </tr>
+        <tr class="path-row">
+            <th>Screen Path</th><td colspan="7">관리자 > 하우스키핑 > 대시보드</td>
+        </tr>
+    </table>
+
+    <div class="content-area">
+        <!-- Left Panel: UI Images -->
+        <div class="left-panel">
+            
+            <!-- 첫 번째 이미지: 대시보드 원본 -->
+            <div class="ui-image-container">
+                <img src="../스크린샷%202026-04-27%20115533.png" alt="하우스키핑 대시보드 메인">
+                <div class="marker m1">1</div>
+                <div class="marker m2">2</div>
+                <div class="marker m3">3</div>
+            </div>
+
+            <!-- 두 번째 이미지: 드롭다운 -->
+            <div class="ui-image-container partial-view">
+                <img src="../스크린샷%202026-04-27%20115540.png" alt="직원 배정 드롭다운">
+                <div class="marker m4">4</div>
+            </div>
+
+            <!-- 세 번째 이미지: 배정 완료 -->
+            <div class="ui-image-container partial-view">
+                <img src="../스크린샷%202026-04-27%20121928.png" alt="직원 배정 완료 카드">
+                <div class="marker m5">5</div>
+                <div class="marker m6">6</div>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Descriptions (스크롤 시 고정됨) -->
+        <div class="right-panel">
+            <div class="section-header">Description</div>
+            
+            <div class="summary-box">
+                <h4>Summary.</h4>
+                <ul>
+                    <li>하우스키핑 부서 전용 칸반(Kanban) 보드 대시보드</li>
+                    <li>고객 요청 상태(대기 중/진행 중/완료됨) 직관적 시각화</li>
+                    <li>관리자가 현장 스태프를 직접 지정하여 업무를 할당하는 흐름(Flow)</li>
+                </ul>
+            </div>
+
+            <table class="desc-table">
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <p><strong>상태별 칸반 보드 (Columns)</strong></p>
+                        <p>· 대기 중, 진행 중, 완료됨 등 처리 단계에 따라 카드를 분류</p>
+                        <p>· 상단에 해당 상태의 총 요청 건수를 숫자로 표시</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>
+                        <p><strong>요청 카드 정보</strong></p>
+                        <p>· 객실 번호 (#1204, #502 등)</p>
+                        <p>· 우선순위 배지 (MEDIUM, HIGH 등)</p>
+                        <p>· 요청 분류(수건 교체, 침구류 정리 등) 및 상세 내용 노출</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>
+                        <p><strong>직원 배정 액션</strong></p>
+                        <p>· 아직 업무가 할당되지 않은 요청 건에 대해 담당자를 배정하는 버튼</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>
+                        <p><strong>스태프 리스트 드롭다운 (Popup)</strong></p>
+                        <p>· '직원 배정' 클릭 시 노출되는 선택 메뉴</p>
+                        <p>· 현재 근무 중인 하우스키핑 소속 직원(매니저, 현장 스태프) 목록 제공</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>
+                        <p><strong>배정된 담당자 정보 표시</strong></p>
+                        <p>· 담당자가 배정되면 카드 내부에 프로필 아이콘과 이름(예: 이영희)을 명확하게 노출</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>
+                        <p><strong>담당자 변경 액션</strong></p>
+                        <p>· 담당자가 배정된 이후에는 버튼 텍스트가 '담당자 변경'으로 전환되어, 업무 재할당을 지원</p>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="event-header">🎯 Event Description</div>
+            
+            <table class="event-table">
+                <tr>
+                    <td>E1</td>
+                    <td>
+                        <span class="event-title-text">직원 배정 드롭다운 오픈</span>
+                        <p>· 트리거: 요청 카드의 하단 '직원 배정' 텍스트 버튼 클릭</p>
+                        <p>· 동작: 활성화된 직원 리스트(Floating Menu) 노출</p>
+                        <p>· API: GET <code>/api/staff/available?dept=HOUSEKEEPING</code></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>E2</td>
+                    <td>
+                        <span class="event-title-text">담당자 할당 완료</span>
+                        <p>· 트리거: 드롭다운 내 특정 스태프 선택 (클릭)</p>
+                        <p>· 동작: 할당 API 호출 후 팝업 닫힘. 카드에 담당자 정보 UI 반영 및 상태 변경(대기중 -> 진행중 등 필요 시)</p>
+                        <p>· API: PATCH <code>/api/requests/{id}/assignee</code> (body: staffId)</p>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="checkpoint-box">
+                <h4>Check Point</h4>
+                <p>배정된 직원의 디바이스(앱/웹)로 실시간 푸시 알림(FCM) 발송 처리 필요</p>
+                <p>다른 관리자가 동시에 배정할 경우를 대비하여 Optimistic UI 처리 또는 DB Lock 고민</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
