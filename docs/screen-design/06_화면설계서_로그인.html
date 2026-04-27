@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>화면 설계서 - 로그인</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Sans KR',sans-serif;background:#fff;color:#222;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{width:1200px;margin:20px auto;border:1.5px solid #333;background:#fff;page-break-after:always}
+    .meta-header{display:grid;grid-template-columns:1fr 1fr;border-bottom:1.5px solid #333}
+    .meta-left,.meta-right{display:grid;grid-template-columns:auto 1fr auto 1fr}
+    .meta-left{border-right:1.5px solid #333}
+    .meta-label{background:#f5f5f5;font-weight:700;font-size:12px;padding:10px 14px;border-right:1px solid #ccc;display:flex;align-items:center;white-space:nowrap}
+    .meta-value{font-size:12px;padding:10px 14px;display:flex;align-items:center;border-right:1px solid #ccc}
+    .meta-value:last-child{border-right:none}
+    .meta-row2{display:grid;grid-template-columns:auto 1fr;border-bottom:1.5px solid #333}
+    .main-content{display:grid;grid-template-columns:75% 25%;min-height:700px}
+    .screen-area{border-right:1.5px solid #333;padding:20px;position:relative;background:#fafafa}
+    .wire{border:1px solid #ddd;border-radius:8px;background:#f8fafc;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);height:650px;display:flex;justify-content:center;align-items:center}
+    .marker{position:absolute;width:24px;height:24px;border-radius:50%;background:#FF4D6A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,77,106,.4);z-index:10;border:2px solid #fff}
+    .description-area{display:flex;flex-direction:column;border-left:1.5px solid #333;margin-left:-1.5px}
+    .desc-title{background:#f5f5f5;font-weight:700;font-size:13px;padding:10px 14px;border-bottom:1.5px solid #333;text-align:center;letter-spacing:1px}
+    .desc-table{width:100%;border-collapse:collapse;flex:1}
+    .desc-table tr{border-bottom:1px solid #ddd}
+    .desc-table tr:last-child{border-bottom:none}
+    .desc-table td{padding:12px;vertical-align:top;font-size:12px;line-height:1.6}
+    .desc-table .num{width:36px;text-align:center;font-weight:700;color:#FF4D6A;font-size:13px;vertical-align:middle;border-right:1px solid #eee}
+    .desc-table .desc-text{color:#333}
+    .desc-text strong{color:#0f172a;display:block;margin-bottom:4px;font-size:13px}
+  </style>
+</head>
+<body>
+
+<!-- ====== PAGE 1: 통합 로그인 ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">통합 로그인</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-LOGIN</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">/ (루트) → 로그인</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)">
+        <div style="background:#fff;width:400px;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.08);padding:40px;position:relative">
+          <!-- Logo -->
+          <div style="text-align:center;margin-bottom:32px;position:relative">
+            <div class="marker" style="top:-16px;left:-16px">1</div>
+            <div style="width:48px;height:48px;background:#0f172a;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:20px;margin-bottom:12px">⚏</div>
+            <div style="font-size:20px;font-weight:800;color:#0f172a">GRAND HOTEL</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:4px">호텔 운영 관리 시스템</div>
+          </div>
+
+          <!-- PIN Input -->
+          <div style="position:relative">
+            <div class="marker" style="top:-12px;left:-16px">2</div>
+            <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:10px;text-align:center">PIN 코드 입력</label>
+            <div style="display:flex;gap:10px;justify-content:center;margin-bottom:8px">
+              <div style="width:52px;height:60px;border:2px solid #0f172a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#0f172a">●</div>
+              <div style="width:52px;height:60px;border:2px solid #0f172a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#0f172a">●</div>
+              <div style="width:52px;height:60px;border:2px solid #0f172a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#0f172a">●</div>
+              <div style="width:52px;height:60px;border:2px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#cbd5e1">_</div>
+              <div style="width:52px;height:60px;border:2px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#cbd5e1">_</div>
+              <div style="width:52px;height:60px;border:2px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#cbd5e1">_</div>
+            </div>
+            <div style="text-align:center;font-size:11px;color:#94a3b8;margin-top:4px">발급받은 PIN 번호를 입력하세요</div>
+          </div>
+
+          <!-- Button -->
+          <div style="margin-top:24px;position:relative">
+            <div class="marker" style="top:-12px;right:-16px">3</div>
+            <div style="width:100%;background:#0f172a;color:#fff;text-align:center;padding:14px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer">로그인</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>호텔 로고 + 타이틀</strong>· '호텔 운영 관리 시스템' 서브 타이틀<br>· 관리자/직원 구분 없는 단일 로그인 화면</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>PIN 코드 입력</strong>· 관리자와 직원 모두 동일한 화면에서 PIN 입력<br>· 입력된 PIN에 따라 서버가 역할(ADMIN/STAFF) 자동 판별<br>· 개별 칸 자동 포커스 이동, ● 마스킹</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>로그인 버튼</strong>· 6자리 입력 완료 시 자동 제출 또는 버튼 클릭<br>· 서버가 PIN → 역할 판별 → JWT 발급(role, deptCode 포함)<br>· <b>ADMIN</b>: 관리자 대시보드(A-02)로 이동<br>· <b>STAFF</b>: 소속 부서 요청 대시보드(S-02)로 이동</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>통합 PIN 로그인</strong><br>· API: POST <code>/auth/login</code> (단일 엔드포인트)<br>· 서버가 PIN으로 DB 조회 → role(ADMIN/STAFF) 자동 판별<br>· JWT payload: { role, deptCode, staffId, name }<br>· 프론트: role에 따라 관리자/직원 메인 페이지로 자동 라우팅</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">로그인 화면은 하나, PIN 번호가 역할을 결정 (관리자/직원 구분 UI 없음)</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">1코드 1기기 원칙: 동일 PIN 새 기기 접속 시 기존 세션 강제 만료</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C3</td><td class="desc-text">비활성화(Blocked) 계정: "비활성화된 계정입니다. 관리자에게 문의하세요"</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C4</td><td class="desc-text">5회 연속 실패 시 30초 대기 (Brute-force 방지)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
