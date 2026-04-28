@@ -9,11 +9,21 @@ erDiagram
         varchar name "하우스키핑, 식음료, 시설관리, 컨시어지, 프론트데스크, 긴급대응"
     }
 
+    room_type {
+        varchar id PK "STANDARD, DELUXE, SUITE"
+        varchar name "스탠다드, 디럭스, 스위트"
+    }
+
+    staff_role {
+        varchar id PK "STAFF, MANAGER"
+        varchar name "직원, 관리자"
+    }
+
     room {
         bigint id PK
         varchar number UK "101, 302, 501"
         int floor
-        varchar type "STANDARD, DELUXE, SUITE"
+        varchar type_id FK "STANDARD, DELUXE, SUITE"
     }
 
     staff {
@@ -28,6 +38,7 @@ erDiagram
         bigint id PK
         bigint room_id FK "UK — 1방 1게스트"
         varchar language "ko, en, ja, zh 등"
+        jsonb notes "nullable — 특이사항 (알러지, 선호도 등)"
         timestamp created_at "체크인 시각"
     }
 
@@ -36,7 +47,6 @@ erDiagram
         varchar status "PENDING, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED"
         varchar priority "LOW, NORMAL, HIGH, URGENT"
         varchar department_id FK "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
-        varchar intent "REQ_ITEM, REPORT_ISSUE, ORDER_FOOD, BOOK_SERVICE, FAQ, EMERGENCY 등"
         jsonb entities "부서별 가변 데이터 (품목/수량/증상/목적지 등)"
         text raw_text "고객 발화 원문"
         text summary "AI 요약 (직원 대시보드 카드 제목)"
@@ -58,13 +68,6 @@ erDiagram
         timestamp created_at
     }
 
-    guest_note {
-        bigint id PK
-        bigint room_id FK
-        varchar note_type "ALLERGY, PREFERENCE, VIP, OTHER"
-        text content "땅콩알러지, 비건 등"
-        timestamp created_at
-    }
 
     knowledge_entry {
         bigint id PK
@@ -121,10 +124,12 @@ erDiagram
     department ||--o{ staff : "소속"
     department ||--o{ request : "담당 부서"
 
+    room_type ||--o{ room : "객실 타입"
+    staff_role ||--o{ staff : "역할"
+
     room ||--o| guest : "투숙 중"
     room ||--o{ request : "요청 발생"
     room ||--o{ message : "대화 발생"
-    room ||--o{ guest_note : "특이사항"
 
     staff ||--o{ request : "배정된 직원"
     staff ||--o{ fewshot_example : "정정자"
@@ -137,12 +142,13 @@ erDiagram
 | 테이블 | 설명 | 레코드 수명 |
 |--------|------|-----------|
 | **department** | 부서 (HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) | 영구 |
+| **room_type** | 객실 타입 (STANDARD, DELUXE, SUITE) | 영구 |
+| **staff_role** | 직원 역할 (STAFF, MANAGER) | 영구 |
 | **room** | 객실 정보 | 영구 |
 | **staff** | 직원 (PIN 로그인) | 영구 |
-| **guest** | 객실 ↔ 투숙객 매핑 (정적 QR 인증 전용) | 체크아웃 시 **Hard Delete** |
+| **guest** | 객실 ↔ 투숙객 매핑 (정적 QR, `notes` JSONB로 특이사항 통합) | 체크아웃 시 **Hard Delete** |
 | **request** | 고객 요청 (핵심 테이블, `entities` JSONB로 가변 데이터 저장) | 영구 보존 |
 | **message** | AI 대화 메시지 | 영구 보존 (원문 증거) |
-| **guest_note** | 투숙객 특이사항 (알러지, 선호도 등) | 체크아웃 시 **Hard Delete** |
 | **knowledge_entry** | RAG 지식 DB (도메인별 분류 가능) | 영구 (승인된 것만 검색 대상) |
 | **unanswered_question** | 미답변 질문 (플라이휠 소스) | 승인 후 knowledge_entry로 승격 |
 | **fewshot_example** | AI 자가 튜닝용 정답 데이터 (Few-Shot) | 영구 (누적 학습) |
@@ -157,9 +163,8 @@ erDiagram
 | 요청 데이터 | `item_code` + `quantity` (고정 컬럼) | **`jsonb entities`** (부서별 가변 데이터) |
 | 부서 PK | `bigint id` + `varchar code` (분리) | **`varchar id`** (코드 자체가 PK, 6개: HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) |
 | 부서 참조 | `bigint department_id FK` + `domain_code` 중복 | **`varchar department_id FK`** 하나로 통합 |
-| 의도 분류 | 없음 | **`intent`** 컬럼 추가 (REQ_ITEM, REPORT_ISSUE, ORDER_FOOD 등) |
 | AI 학습 | 없음 | **`fewshot_example`** 테이블 추가 |
-| 투숙객 메모 | 없음 | **`guest_note`** 테이블 추가 (알러지 등) |
+| 투숙객 메모 | 없음 | **`guest.notes`** JSONB 컬럼으로 통합 (별도 테이블 없음) |
 | 지식 DB | 단일 | **`domain_code`** 추가 (부서별 지식 분류) |
 
 ## 핵심 관계 설명
@@ -167,11 +172,10 @@ erDiagram
 1. **guest ↔ room**: 1:1 (정적 QR — URL의 방번호로 인증, 체크아웃 시 Hard Delete)
 2. **room → request**: 1:N (한 객실에서 여러 요청 발생)
 3. **room → message**: 1:N (한 객실에서 여러 대화 발생)
-4. **room → guest_note**: 1:N (한 투숙객에 여러 특이사항 가능)
-5. **request → department**: N:1 (요청은 하나의 부서로 라우팅, `varchar department_id FK`)
-6. **request → staff**: N:1 (요청은 한 직원에게 배정, nullable)
-7. **request → message**: 1:N (요청과 관련된 대화)
-8. **staff → fewshot_example**: 1:N (직원이 정정한 학습 데이터)
+4. **request → department**: N:1 (요청은 하나의 부서로 라우팅, `varchar department_id FK`)
+5. **request → staff**: N:1 (요청은 한 직원에게 배정, nullable)
+6. **request → message**: 1:N (요청과 관련된 대화)
+7. **staff → fewshot_example**: 1:N (직원이 정정한 학습 데이터)
 
 ## `entities` JSONB 예시 (부서별)
 
