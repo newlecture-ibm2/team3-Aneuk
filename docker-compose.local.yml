@@ -35,9 +35,9 @@ services:
       - "8000:8000"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - POSTGRES_USER=anook
-      - POSTGRES_PASSWORD=anook1234
       - POSTGRES_DB=anook_dev
+      - POSTGRES_USER=anook_user
+      - POSTGRES_PASSWORD=anook2026
       - POSTGRES_HOST=db
     volumes:
       - ./ai:/app # 파이썬 코드 수정 시 즉시 반영 (Hot Reload)
