@@ -22,14 +22,11 @@ public class RoomJpaEntity {
     @Column(nullable = false, unique = true)
     private String number;
 
-    @Column(nullable = false)
-    private Integer floor;
-
     @Column(name = "type_id", nullable = false)
-    private String typeId;
+    private Long typeId;
 
     // === Entity → Domain ===
     public Room toDomain() {
-        return new Room(id, number, floor, typeId);
+        return new Room(id, number, typeId);
     }
 }
