@@ -60,7 +60,7 @@
 
   <div class="main-content">
     <div class="screen-area">
-      <div class="wire" style="background:#f8fafc">
+      <div class="wire" style="background:#f8fafc;position:relative">
         <!-- Sidebar -->
         <div class="sim-sidebar">
           <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
@@ -80,13 +80,15 @@
           <div class="sim-menu-item">AI 라우팅 로그</div>
           <div class="sim-menu-title">운영 관리</div>
           <div class="sim-menu-item">인수인계</div>
-          <div class="sim-menu-item">직원 관리</div>
           <div class="sim-menu-item active" style="position:relative">
             <div class="marker" style="top:-8px;right:-8px">1</div>
             객실 손님 관리
           </div>
           <div class="sim-menu-title">설정</div>
           <div class="sim-menu-item">기본 설정</div>
+          <div class="sim-menu-item">부서 관리</div>
+          <div class="sim-menu-item">객실 관리</div>
+          <div class="sim-menu-item">직원 관리</div>
         </div>
 
         <!-- Main -->
@@ -138,13 +140,60 @@
 
         </div>
       </div>
+
+      <!-- Modal Showcase -->
+      <div style="margin-top:24px;display:flex;gap:24px;align-items:flex-start">
+        <div style="width:360px;background:#1e293b;padding:40px;border-radius:12px;display:flex;justify-content:center;position:relative;flex-shrink:0">
+          <div class="marker" style="top:-12px;left:-12px">2</div>
+          <div style="background:#fff;width:320px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.5);padding:24px;">
+            <h2 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:16px">손님 추가 (체크인)</h2>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">객실 번호</label>
+              <select style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff;color:#0f172a">
+                <option>선택</option>
+                <option>101호</option>
+                <option>102호</option>
+                <option>201호</option>
+              </select>
+            </div>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">이름</label>
+              <input type="text" placeholder="투숙객 이름 입력" style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px">
+            </div>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">체크인</label>
+              <input type="datetime-local" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px" value="2026-04-28T15:00">
+            </div>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">체크아웃 (예정)</label>
+              <input type="datetime-local" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px" value="2026-04-29T11:00">
+            </div>
+            <div style="margin-bottom:16px;padding:12px;background:#f8fafc;border-radius:6px;border:1px dashed #cbd5e1">
+              <p style="font-size:11px;color:#64748b;margin:0;line-height:1.4">✅ 체크인 완료 시 모바일 키(QR) URL이 자동 발급됩니다.</p>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+              <button style="padding:8px 16px;background:#f1f5f9;color:#475569;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">취소</button>
+              <button style="padding:8px 16px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">체크인</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;">
+          <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:12px">✨ UI 뷰: 손님 추가 팝업</h3>
+          <p style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:8px">
+            리스트 우측 상단의 <b>'+ 손님 추가 (체크인)'</b> 버튼을 클릭하면 화면 전체가 어두워지며 중앙에 나타나는 모달(Modal) 팝업입니다.
+          </p>
+          <p style="font-size:13px;color:#475569;line-height:1.6">
+            메인 화면 위에 독립된 레이어로 배치되며, 모달 바깥 영역을 클릭하거나 취소 버튼을 누르면 팝업이 닫힙니다.
+          </p>
+        </div>
+      </div>
     </div>
 
     <div class="description-area">
       <div class="desc-title">Description</div>
       <table class="desc-table">
         <tr><td class="num">1</td><td class="desc-text"><strong>객실 손님 관리 (가상 PMS 역할)</strong><br>· 개발 및 테스트 목적으로 손님 데이터를 수동 생성하는 숨김/개발자용 메뉴<br>· 실제 PMS(호텔운영시스템) 연동 전, 객실 할당 역할을 시뮬레이션</td></tr>
-        <tr><td class="num">2</td><td class="desc-text"><strong>+ 손님 추가 (체크인 시뮬레이션)</strong><br>· 객실 번호와 이름을 입력하여 가상의 손님을 추가<br>· 체크인 시 투숙객 앱(G-01)에 접근할 수 있는 모바일 키(QR 코드) URL이 발급되며, PIN 번호는 사용하지 않음 (화면에 표시되지 않음)</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>+ 손님 추가 (모달)</strong><br>· 객실 번호, 이름, 체크인 일시, 체크아웃 일시를 수동으로 설정할 수 있는 모달 팝업<br>· 프론트 연동 없이 임의의 투숙 데이터를 생성하기 위한 목적<br>· 체크인 시 투숙객 앱(G-01)에 접근할 수 있는 모바일 키(QR 코드) URL이 발급되며, PIN 번호는 사용하지 않음 (화면에 표시되지 않음)</td></tr>
         <tr><td class="num">3</td><td class="desc-text"><strong>객실 손님 리스트</strong><br>· 리스트에는 현재 <b>'투숙 중'</b>인 손님 데이터만 표시됨<br>· <b>체크아웃 예정</b>: 손님의 체크아웃 예정 날짜 표시<br>· <b>✏️ (수정)</b>: 손님 정보 편집<br>· <b>🗑️ (체크아웃/삭제)</b>: 클릭 시 체크아웃 처리되며, 데이터베이스에서 <b>Hard Delete(완전 삭제)</b> 되어 리스트에서 사라짐</td></tr>
       </table>
 
