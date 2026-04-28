@@ -51,7 +51,7 @@ services:
       context: ./frontend # 향후 프론트엔드 폴더(Dockerfile 위치)를 지정하세요
       dockerfile: Dockerfile
     ports:
-      - "${FRONTEND_PORT}:3456"
+      - "${FRONTEND_PORT}:3000"
     networks:
       - Anook-network
 
