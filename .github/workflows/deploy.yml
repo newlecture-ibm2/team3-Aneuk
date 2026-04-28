@@ -9,7 +9,7 @@ name: Anook Deploy
 
 on:
   push:
-    branches: [ main ] # 아늑 프로젝트는 main 브랜치 기준
+    branches: [ dev ] # 아늑 프로젝트는 main 브랜치 기준
 
 jobs:
   deploy:
