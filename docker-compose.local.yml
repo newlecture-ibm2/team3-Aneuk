@@ -13,13 +13,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=anook_dev
+      - POSTGRES_DB=anook_db
       - POSTGRES_USER=anook_user
       - POSTGRES_PASSWORD=anook2026
     volumes:
       - local-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U anook -d anook_dev"]
+      test: ["CMD-SHELL", "pg_isready -U anook_user -d anook_db"]
       interval: 5s
       timeout: 5s
       retries: 5
