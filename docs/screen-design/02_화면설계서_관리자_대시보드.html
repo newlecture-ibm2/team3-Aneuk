@@ -224,6 +224,125 @@
   </div>
 </div>
 
+<!-- ====== PAGE 2: 전체 요청 (칸반 보드) ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">관리자 대시보드 - 전체 요청 (Kanban)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-002</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; 전체 요청</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire">
+        <!-- Sidebar -->
+        <div class="sim-sidebar">
+          <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
+          <div class="sim-menu-item">대시보드</div>
+          <div class="sim-menu-item">프론트 데스크</div>
+          <div class="sim-menu-item">하우스키핑</div>
+          <div class="sim-menu-item">식음료</div>
+          <div class="sim-menu-item">시설</div>
+          <div class="sim-menu-item">컨시어지</div>
+          <div class="sim-menu-item">긴급 대응</div>
+          <div class="sim-menu-title">요청 관리</div>
+          <div class="sim-menu-item active" data-marker="1">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            전체 요청
+          </div>
+          <div class="sim-menu-item">채팅 히스토리</div>
+          <div class="sim-menu-title">AI 시스템</div>
+          <div class="sim-menu-item">AI 학습 관리</div>
+          <div class="sim-menu-item">AI 지식 관리</div>
+          <div class="sim-menu-item">AI 라우팅 로그</div>
+          <div class="sim-menu-title">운영 관리</div>
+          <div class="sim-menu-item">인수인계</div>
+          <div class="sim-menu-item">직원 관리</div>
+          <div class="sim-menu-title">설정</div>
+          <div class="sim-menu-item">기본 설정</div>
+        </div>
+
+        <!-- Main -->
+        <div class="sim-main">
+          <div class="sim-top">
+            <div class="sim-title">
+              <span>호텔 운영 관리 시스템</span>
+              <h1>전체 요청</h1>
+            </div>
+            <div class="sim-actions" data-marker="2">
+              <div class="sim-search"><svg viewBox="0 0 24 24" width="14" fill="#94a3b8"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="검색어를 입력하세요..."></div>
+              <div class="sim-filter"><svg viewBox="0 0 24 24" width="14" fill="#64748b"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></div>
+            </div>
+          </div>
+
+          <div class="kanban">
+            <div class="kb-col" data-marker="3">
+              <div class="kb-hdr">대기 중 <span>4</span></div>
+              <div class="kb-card">
+                <div class="kb-c-hdr"><span class="kb-c-id">#1204</span><span class="badge high">HIGH</span></div>
+                <div class="kb-c-title">에어컨 수리</div>
+                <div class="kb-c-desc">에어컨 작동 안 됨</div>
+                <div class="kb-c-ftr"><span class="kb-c-time">🕒 10:15 AM</span><button class="kb-btn">직원 배정</button></div>
+              </div>
+              <div class="kb-card">
+                <div class="kb-c-hdr"><span class="kb-c-id">#1204</span><span class="badge medium">MEDIUM</span></div>
+                <div class="kb-c-title">수건 교체</div>
+                <div class="kb-c-desc">새 수건 3장 추가 요청</div>
+                <div class="kb-c-ftr"><span class="kb-c-time">🕒 10:16 AM</span><button class="kb-btn">직원 배정</button></div>
+              </div>
+            </div>
+            
+            <div class="kb-col" data-marker="4">
+              <div class="kb-hdr">진행 중 <span>2</span></div>
+              <div class="kb-card">
+                <div class="kb-c-hdr"><span class="kb-c-id">#502</span><span class="badge high">HIGH</span></div>
+                <div class="kb-c-title">침구류 정리</div>
+                <div class="kb-c-desc">엑스트라 베드 설치 요청</div>
+                <div class="kb-c-ftr"><span class="kb-c-time">🕒 10:05 AM</span><button class="kb-btn assigned">이영희 매니저</button></div>
+              </div>
+            </div>
+            
+            <div class="kb-col">
+              <div class="kb-hdr">완료됨 <span>1</span></div>
+              <div class="kb-card" style="opacity:0.7">
+                <div class="kb-c-hdr"><span class="kb-c-id">#302</span><span class="badge low">LOW</span></div>
+                <div class="kb-c-title">샤워기 헤드 교체</div>
+                <div class="kb-c-desc">수압 약함</div>
+                <div class="kb-c-ftr"><span class="kb-c-time">🕒 09:45 AM</span><span class="kb-btn" style="color:#94a3b8">완료됨</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>전체 요청 메뉴</strong>· 호텔 내 접수된 모든 부서의 요청을 한 눈에 볼 수 있는 마스터 뷰</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>검색 및 필터</strong>· 객실번호, 키워드로 요청 검색 기능<br>· 필터: 부서별, 우선순위별 조회</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>대기 중 (To Do)</strong>· AI가 접수했으나 아직 담당 직원이 배정되지 않은 상태<br>· 우선순위 배지(HIGH, MEDIUM, LOW) 노출<br>· "직원 배정" 버튼 활성화</td></tr>
+        <tr><td class="num">4</td><td class="desc-text"><strong>진행 중 (In Progress)</strong>· 직원이 배정되어 처리 중인 상태<br>· 하단에 담당자 이름(예: 이영희 매니저) 표기<br>· 칸반 보드 내 카드 Drag & Drop 이동 가능</td></tr>
+      </table>
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>직원 배정 클릭</strong><br>· 클릭 시 드롭다운 팝업 노출, 활성 직원 목록 선택<br>· 배정 완료 시 카드가 '진행 중'으로 자동 이동</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- ====== PAGE 3: 하우스키핑 부서 뷰 ====== -->
 <div class="page">
   <div class="meta-header">

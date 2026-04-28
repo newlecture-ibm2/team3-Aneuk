@@ -1,0 +1,74 @@
+/* src/components/layout/Sidebar.module.css */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-24) var(--space-12);
+  gap: var(--space-8);
+  width: 240px;
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-xl);
+  flex: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-height: 400px;
+}
+
+/* ── SidebarItem ── */
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-8);
+  gap: var(--space-8);
+  width: 216px;
+  height: 37px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+  text-decoration: none;
+  box-sizing: border-box;
+  flex: none;
+  align-self: stretch;
+}
+
+.default {
+  background-color: transparent;
+  color: var(--color-gray-500);
+}
+
+.default:hover {
+  background-color: var(--color-surface);
+  color: var(--color-gray-500);
+}
+
+.selected {
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+}
+
+.selected:hover {
+  color: var(--color-white);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.label {
+  font: var(--text-body-medium);
+}
+
+.danger {
+  background-color: transparent;
+  color: var(--color-error);
+}
+
+.danger .icon {
+  stroke: var(--color-error);
+}
+
+.danger:hover {
+  background-color: var(--color-surface);
+}

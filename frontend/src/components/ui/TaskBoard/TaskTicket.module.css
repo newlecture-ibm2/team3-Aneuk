@@ -1,0 +1,70 @@
+/* src/components/ui/card/TaskTicket.module.css */
+.taskTicket {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-24);
+  gap: var(--space-16);
+  border: 1px solid var(--color-surface); /* 연한 회색 테두리 */
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+
+.taskTicket:hover {
+  border-color: var(--color-gray-300);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticketId {
+  font: var(--text-body-bold);
+  color: var(--color-gray-500);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.title {
+  font: var(--text-h3-bold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.description {
+  font: var(--text-body-regular);
+  color: var(--color-gray-700);
+  margin: 0;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-surface);
+  width: 100%;
+  margin: var(--space-8) 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeText {
+  font: var(--text-caption-medium);
+  color: var(--color-gray-500);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+
