@@ -21,8 +21,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5412:5432" # 로컬 직접 실행 시 접속 포트
     volumes:
       - db-data:/var/lib/postgresql/data # 데이터 영구 저장
     networks:
