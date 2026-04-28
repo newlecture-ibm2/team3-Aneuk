@@ -13,7 +13,7 @@ import Tabs from '@/components/ui/Tab/Tabs';
 import Pagination from '@/components/ui/Pagenation/Pagination';
 import RequestCard from '@/components/ui/Card/RequestCard';
 import RagCandidateCard from '@/components/ui/Card/RagCandidateCard';
-import ChatScreen from '@/components/ui/ChatScreen/ChatScreen';
+import ChatScreen from '@/app/guest/chat/_components/ChatScreen';
 import { HandoverRecord } from '@/components/ui/HandoverRecord';
 import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import TaskColumn from '@/components/ui/TaskBoard/TaskColumn';
@@ -41,6 +41,7 @@ const lucideIcons = {
   MessageSquare, Users, Monitor, Layers, FileSearch, FileText
 };
 import { useUiStore } from '@/stores/useUiStore';
+import { useChat } from '@/app/guest/chat/useChat';
 
 const ComponentLabel = ({ path }: { path: string }) => (
   <div style={{ font: 'var(--text-caption-regular)', color: 'var(--color-primary)', marginBottom: 'var(--space-8)', padding: 'var(--space-4) var(--space-8)', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-sm)', display: 'inline-block' }}>
@@ -50,6 +51,7 @@ const ComponentLabel = ({ path }: { path: string }) => (
 
 export default function ComponentShowcasePage() {
   const { showToast } = useUiStore();
+  const { messages, isTyping, sendMessage } = useChat();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [sidebarRole, setSidebarRole] = useState<'admin' | 'housekeeping' | 'facility' | 'fb' | 'concierge'>('admin');
   const [sidebarActivePath, setSidebarActivePath] = useState('/admin/dashboard');
@@ -347,9 +349,9 @@ export default function ComponentShowcasePage() {
               <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Screen</h4>
-                  <ComponentLabel path="components/ui/ChatScreen/ChatScreen.tsx" />
+                  <ComponentLabel path="app/guest/chat/_components/ChatScreen.tsx" />
                   <div style={{ width: '100%', padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', display: 'flex', justifyContent: 'center' }}>
-                    <ChatScreen />
+                    <ChatScreen messages={messages} isTyping={isTyping} onSendMessage={sendMessage} />
                   </div>
                 </div>
               </div>

@@ -18,6 +18,7 @@ export default function ChatInput({ placeholder = '무엇이든 물어보세요.
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return;
     if (e.key === 'Enter') {
       handleSend();
     }
