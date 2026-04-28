@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,11 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
@@ -43,8 +48,10 @@
 
         svg.lines {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
         }
@@ -67,14 +74,14 @@
             border-radius: 12px;
             min-width: 220px;
             z-index: 2;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
             overflow: hidden;
         }
 
         .table-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 32px rgba(59,130,246,0.2);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
         }
 
         .table-header {
@@ -87,7 +94,9 @@
             gap: 8px;
         }
 
-        .table-header .icon { font-size: 16px; }
+        .table-header .icon {
+            font-size: 16px;
+        }
 
         .table-body {
             padding: 0 16px 12px;
@@ -101,7 +110,9 @@
             border-bottom: 1px solid #1f1f35;
         }
 
-        .col-row:last-child { border-bottom: none; }
+        .col-row:last-child {
+            border-bottom: none;
+        }
 
         .col-name {
             flex: 1;
@@ -123,9 +134,20 @@
             margin-left: 4px;
         }
 
-        .badge-pk { background: #3b82f6; color: #fff; }
-        .badge-fk { background: #f59e0b; color: #000; }
-        .badge-uk { background: #8b5cf6; color: #fff; }
+        .badge-pk {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .badge-fk {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .badge-uk {
+            background: #8b5cf6;
+            color: #fff;
+        }
 
         .col-desc {
             color: #666;
@@ -134,14 +156,45 @@
         }
 
         /* 테이블 색상 테마 */
-        .theme-blue .table-header { background: linear-gradient(135deg, #1e3a5f, #1a2744); color: #60a5fa; }
-        .theme-green .table-header { background: linear-gradient(135deg, #1a3f2e, #1a2e24); color: #6ee7b7; }
-        .theme-purple .table-header { background: linear-gradient(135deg, #2e1a4f, #241a3e); color: #a78bfa; }
-        .theme-orange .table-header { background: linear-gradient(135deg, #3f2a1a, #2e2018); color: #fbbf24; }
-        .theme-red .table-header { background: linear-gradient(135deg, #3f1a1a, #2e1818); color: #f87171; }
-        .theme-cyan .table-header { background: linear-gradient(135deg, #1a3f3f, #182e2e); color: #67e8f9; }
-        .theme-pink .table-header { background: linear-gradient(135deg, #3f1a2e, #2e1824); color: #f9a8d4; }
-        .theme-gray .table-header { background: linear-gradient(135deg, #2a2a2a, #222222); color: #a0a0a0; }
+        .theme-blue .table-header {
+            background: linear-gradient(135deg, #1e3a5f, #1a2744);
+            color: #60a5fa;
+        }
+
+        .theme-green .table-header {
+            background: linear-gradient(135deg, #1a3f2e, #1a2e24);
+            color: #6ee7b7;
+        }
+
+        .theme-purple .table-header {
+            background: linear-gradient(135deg, #2e1a4f, #241a3e);
+            color: #a78bfa;
+        }
+
+        .theme-orange .table-header {
+            background: linear-gradient(135deg, #3f2a1a, #2e2018);
+            color: #fbbf24;
+        }
+
+        .theme-red .table-header {
+            background: linear-gradient(135deg, #3f1a1a, #2e1818);
+            color: #f87171;
+        }
+
+        .theme-cyan .table-header {
+            background: linear-gradient(135deg, #1a3f3f, #182e2e);
+            color: #67e8f9;
+        }
+
+        .theme-pink .table-header {
+            background: linear-gradient(135deg, #3f1a2e, #2e1824);
+            color: #f9a8d4;
+        }
+
+        .theme-gray .table-header {
+            background: linear-gradient(135deg, #2a2a2a, #222222);
+            color: #a0a0a0;
+        }
 
         /* 범례 */
         .legend {
@@ -161,12 +214,14 @@
         }
 
         .legend-dot {
-            width: 12px; height: 12px;
+            width: 12px;
+            height: 12px;
             border-radius: 3px;
         }
 
         .legend-line {
-            width: 30px; height: 2px;
+            width: 30px;
+            height: 2px;
             border-top: 2px dashed;
         }
 
@@ -219,297 +274,394 @@
             display: inline-block;
         }
 
-        .lifetime-permanent { color: #6ee7b7; }
-        .lifetime-delete { color: #f87171; }
+        .lifetime-permanent {
+            color: #6ee7b7;
+        }
+
+        .lifetime-delete {
+            color: #f87171;
+        }
     </style>
 </head>
+
 <body>
 
-<h1>🏨 아늑(Aneuk) ERD</h1>
-<p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v2.0 (12 Tables)</p>
+    <h1>🏨 아늑(Aneuk) ERD</h1>
+    <p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v2.0 (12 Tables)</p>
 
-<div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> PK</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> FK</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> UK</div>
-    <div class="legend-item"><div class="legend-line" style="border-color:#4a6fa5"></div> 1:N 관계</div>
-    <div class="legend-item"><div class="legend-line" style="border-color:#6ee7b7"></div> 1:1 관계</div>
-</div>
-
-<div class="erd-container">
-    <svg class="lines">
-        <!-- department → staff (소속) -->
-        <line x1="170" y1="110" x2="170" y2="200" stroke="#4a6fa5"/>
-        <text x="178" y="160">소속 1:N</text>
-
-        <!-- department → request (담당 부서) -->
-        <line x1="300" y1="80" x2="500" y2="530" stroke="#4a6fa5"/>
-        <text x="400" y="310">담당 부서 N:1</text>
-
-        <!-- room → guest (투숙 중) -->
-        <line x1="600" y1="140" x2="600" y2="200" stroke="#6ee7b7"/>
-        <text x="610" y="175">투숙 중 1:1</text>
-
-        <!-- room → request (요청 발생) -->
-        <line x1="540" y1="150" x2="540" y2="530" stroke="#4a6fa5"/>
-        <text x="460" y="360">요청 발생 1:N</text>
-
-        <!-- room → message (대화 발생) -->
-        <line x1="720" y1="100" x2="1020" y2="200" stroke="#4a6fa5"/>
-        <text x="870" y="140">대화 발생 1:N</text>
-
-        <!-- room → guest_note (특이사항) -->
-        <line x1="720" y1="140" x2="1020" y2="420" stroke="#4a6fa5"/>
-        <text x="880" y="280">특이사항 1:N</text>
-
-        <!-- staff → request (배정된 직원) -->
-        <line x1="300" y1="400" x2="470" y2="560" stroke="#4a6fa5"/>
-        <text x="360" y="480">배정 N:1</text>
-
-        <!-- staff → fewshot_example (정정자) -->
-        <line x1="170" y1="410" x2="170" y2="530" stroke="#4a6fa5" opacity="0.4"/>
-        <text x="178" y="475" fill="#666">정정자 1:N</text>
-
-        <!-- request → message (관련 대화) -->
-        <line x1="830" y1="600" x2="1020" y2="380" stroke="#4a6fa5"/>
-        <text x="930" y="490">관련 대화 1:N</text>
-
-        <!-- knowledge → unanswered (승격) -->
-        <line x1="640" y1="1300" x2="640" y2="1450" stroke="#a78bfa"/>
-        <text x="650" y="1380">승격</text>
-
-        <!-- staff → knowledge_entry (승인자) -->
-        <line x1="300" y1="380" x2="500" y2="1120" stroke="#4a6fa5" opacity="0.4"/>
-        <text x="380" y="760" fill="#666">승인자</text>
-    </svg>
-
-    <!-- Row 1: department, room -->
-    <div class="table-card theme-blue" style="left:40px; top:20px; width:300px;">
-        <div class="table-header"><span class="icon">🏢</span> department</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">varchar</span><span class="badge badge-pk">PK</span><span class="col-desc">HK, FB, FACILITY 등</span></div>
-            <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span class="col-desc">부서명</span></div>
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot" style="background:#3b82f6"></div> PK
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background:#f59e0b"></div> FK
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background:#8b5cf6"></div> UK
+        </div>
+        <div class="legend-item">
+            <div class="legend-line" style="border-color:#4a6fa5"></div> 1:N 관계
+        </div>
+        <div class="legend-item">
+            <div class="legend-line" style="border-color:#6ee7b7"></div> 1:1 관계
         </div>
     </div>
 
-    <!-- room -->
-    <div class="table-card theme-green" style="left:480px; top:20px; width:280px;">
-        <div class="table-header"><span class="icon">🚪</span> room</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar</span><span class="badge badge-uk">UK</span><span class="col-desc">101, 302</span></div>
-            <div class="col-row"><span class="col-name">floor</span><span class="col-type">int</span></div>
-            <div class="col-row"><span class="col-name">type</span><span class="col-type">varchar</span><span class="col-desc">STANDARD, DELUXE, SUITE</span></div>
+    <div class="erd-container">
+        <svg class="lines">
+            <!-- department → staff (소속) -->
+            <line x1="170" y1="110" x2="170" y2="200" stroke="#4a6fa5" />
+            <text x="178" y="160">소속 1:N</text>
+
+            <!-- department → request (담당 부서) -->
+            <line x1="300" y1="80" x2="500" y2="530" stroke="#4a6fa5" />
+            <text x="400" y="310">담당 부서 N:1</text>
+
+            <!-- room → guest (투숙 중) -->
+            <line x1="600" y1="140" x2="600" y2="200" stroke="#6ee7b7" />
+            <text x="610" y="175">투숙 중 1:1</text>
+
+            <!-- room → request (요청 발생) -->
+            <line x1="540" y1="150" x2="540" y2="530" stroke="#4a6fa5" />
+            <text x="460" y="360">요청 발생 1:N</text>
+
+            <!-- room → message (대화 발생) -->
+            <line x1="720" y1="100" x2="1020" y2="200" stroke="#4a6fa5" />
+            <text x="870" y="140">대화 발생 1:N</text>
+
+            <!-- room → guest_note (특이사항) -->
+            <line x1="720" y1="140" x2="1020" y2="420" stroke="#4a6fa5" />
+            <text x="880" y="280">특이사항 1:N</text>
+
+            <!-- staff → request (배정된 직원) -->
+            <line x1="300" y1="400" x2="470" y2="560" stroke="#4a6fa5" />
+            <text x="360" y="480">배정 N:1</text>
+
+            <!-- staff → fewshot_example (정정자) -->
+            <line x1="170" y1="410" x2="170" y2="530" stroke="#4a6fa5" opacity="0.4" />
+            <text x="178" y="475" fill="#666">정정자 1:N</text>
+
+            <!-- request → message (관련 대화) -->
+            <line x1="830" y1="600" x2="1020" y2="380" stroke="#4a6fa5" />
+            <text x="930" y="490">관련 대화 1:N</text>
+
+            <!-- knowledge → unanswered (승격) -->
+            <line x1="640" y1="1300" x2="640" y2="1450" stroke="#a78bfa" />
+            <text x="650" y="1380">승격</text>
+
+            <!-- staff → knowledge_entry (승인자) -->
+            <line x1="300" y1="380" x2="500" y2="1120" stroke="#4a6fa5" opacity="0.4" />
+            <text x="380" y="760" fill="#666">승인자</text>
+        </svg>
+
+        <!-- Row 1: department, room -->
+        <div class="table-card theme-blue" style="left:40px; top:20px; width:300px;">
+            <div class="table-header"><span class="icon">🏢</span> department</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">varchar</span><span
+                        class="badge badge-pk">PK</span><span class="col-desc">HK, FB, FACILITY 등</span></div>
+                <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span
+                        class="col-desc">부서명</span></div>
+            </div>
+        </div>
+
+        <!-- room -->
+        <div class="table-card theme-green" style="left:480px; top:20px; width:280px;">
+            <div class="table-header"><span class="icon">🚪</span> room</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar</span><span
+                        class="badge badge-uk">UK</span><span class="col-desc">101, 302</span></div>
+                <div class="col-row"><span class="col-name">floor</span><span class="col-type">int</span></div>
+                <div class="col-row"><span class="col-name">type</span><span class="col-type">varchar</span><span
+                        class="col-desc">STANDARD, DELUXE, SUITE</span></div>
+            </div>
+        </div>
+
+        <!-- Row 2: staff, guest, message -->
+        <div class="table-card theme-blue" style="left:40px; top:200px; width:300px;">
+            <div class="table-header"><span class="icon">👤</span> staff</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span></div>
+                <div class="col-row"><span class="col-name">pin</span><span class="col-type">varchar</span><span
+                        class="col-desc">6자리 PIN</span></div>
+                <div class="col-row"><span class="col-name">role</span><span class="col-type">varchar</span><span
+                        class="col-desc">STAFF, MANAGER</span></div>
+                <div class="col-row"><span class="col-name">department_id</span><span
+                        class="col-type">varchar</span><span class="badge badge-fk">FK</span></div>
+            </div>
+        </div>
+
+        <!-- guest -->
+        <div class="table-card theme-red" style="left:480px; top:200px; width:280px;">
+            <div class="table-header"><span class="icon">🔑</span> guest <span
+                    style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span><span class="badge badge-uk">UK</span><span class="col-desc">1방
+                        1게스트</span></div>
+                <div class="col-row"><span class="col-name">language</span><span class="col-type">varchar</span><span
+                        class="col-desc">ko, en, ja, zh</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span
+                        class="col-type">timestamp</span><span class="col-desc">체크인</span></div>
+            </div>
+        </div>
+
+        <!-- Row 3: fewshot_example, request -->
+        <div class="table-card theme-orange" style="left:400px; top:530px; width:380px;">
+            <div class="table-header"><span class="icon">⭐</span> request <span
+                    style="font-size:10px; color:#fbbf24; font-weight:400;">핵심 테이블</span></div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span
+                        class="col-desc">PENDING → COMPLETED</span></div>
+                <div class="col-row"><span class="col-name">priority</span><span class="col-type">varchar</span><span
+                        class="col-desc">LOW ~ URGENT</span></div>
+                <div class="col-row"><span class="col-name">department_id</span><span
+                        class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">HK,
+                        FB, FACILITY 등</span></div>
+                <div class="col-row"><span class="col-name">intent</span><span class="col-type">varchar</span><span
+                        class="col-desc">REQ_ITEM, FAQ 등</span></div>
+                <div class="col-row"><span class="col-name">entities</span><span class="col-type">jsonb</span><span
+                        class="col-desc">부서별 가변 데이터</span></div>
+                <div class="col-row"><span class="col-name">raw_text</span><span class="col-type">text</span><span
+                        class="col-desc">고객 발화 원문</span></div>
+                <div class="col-row"><span class="col-name">summary</span><span class="col-type">text</span><span
+                        class="col-desc">AI 요약 (카드 제목)</span></div>
+                <div class="col-row"><span class="col-name">confidence</span><span class="col-type">float</span><span
+                        class="col-desc">0.0~1.0</span></div>
+                <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span></div>
+                <div class="col-row"><span class="col-name">assigned_staff_id</span><span
+                        class="col-type">bigint</span><span class="badge badge-fk">FK</span><span
+                        class="col-desc">nullable</span></div>
+                <div class="col-row"><span class="col-name">version</span><span class="col-type">int</span><span
+                        class="col-desc">낙관적 락</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+                <div class="col-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- message -->
+        <div class="table-card theme-cyan" style="left:960px; top:200px; width:300px;">
+            <div class="table-header"><span class="icon">💬</span> message</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">sender_type</span><span class="col-type">varchar</span><span
+                        class="col-desc">GUEST, AI, STAFF</span></div>
+                <div class="col-row"><span class="col-name">content</span><span class="col-type">text</span><span
+                        class="col-desc">원문</span></div>
+                <div class="col-row"><span class="col-name">translated_content</span><span
+                        class="col-type">text</span><span class="col-desc">번역문</span></div>
+                <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span></div>
+                <div class="col-row"><span class="col-name">request_id</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span><span class="col-desc">nullable</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: knowledge_entry, handover_briefing, dispatch_log -->
+        <div class="table-card theme-purple" style="left:460px; top:1100px; width:340px;">
+            <div class="table-header"><span class="icon">📚</span> knowledge_entry</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">question</span><span class="col-type">text</span><span
+                        class="col-desc">질문</span></div>
+                <div class="col-row"><span class="col-name">answer</span><span class="col-type">text</span><span
+                        class="col-desc">답변</span></div>
+                <div class="col-row"><span class="col-name">embedding</span><span class="col-type">vector</span><span
+                        class="col-desc">pgvector</span></div>
+                <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span
+                        class="col-desc">부서 전용 지식</span></div>
+                <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span
+                        class="col-desc">PENDING, APPROVED, REJECTED</span></div>
+                <div class="col-row"><span class="col-name">approved_by</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span><span class="col-desc">staff_id</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+                <div class="col-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 5: unanswered_question -->
+        <div class="table-card theme-purple" style="left:460px; top:1450px; width:340px;">
+            <div class="table-header"><span class="icon">❓</span> unanswered_question</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">question</span><span class="col-type">text</span><span
+                        class="col-desc">고객 원문 질문</span></div>
+                <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span
+                        class="col-desc">실패 도메인</span></div>
+                <div class="col-row"><span class="col-name">cluster_id</span><span class="col-type">varchar</span><span
+                        class="col-desc">군집 ID</span></div>
+                <div class="col-row"><span class="col-name">suggested_answer</span><span
+                        class="col-type">text</span><span class="col-desc">AI 답변 초안</span></div>
+                <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span
+                        class="col-desc">NEW → PROMOTED</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- guest_note -->
+        <div class="table-card theme-red" style="left:960px; top:500px; width:300px;">
+            <div class="table-header"><span class="icon">📝</span> guest_note <span
+                    style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span></div>
+                <div class="col-row"><span class="col-name">note_type</span><span class="col-type">varchar</span><span
+                        class="col-desc">ALLERGY, VIP 등</span></div>
+                <div class="col-row"><span class="col-name">content</span><span class="col-type">text</span><span
+                        class="col-desc">특이사항 내용</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- fewshot_example -->
+        <div class="table-card theme-cyan" style="left:40px; top:530px; width:310px;">
+            <div class="table-header"><span class="icon">🧠</span> fewshot_example</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">input_text</span><span class="col-type">text</span><span
+                        class="col-desc">고객 원문</span></div>
+                <div class="col-row"><span class="col-name">correct_output</span><span
+                        class="col-type">jsonb</span><span class="col-desc">정답 JSON</span></div>
+                <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span
+                        class="col-desc">해당 도메인</span></div>
+                <div class="col-row"><span class="col-name">corrected_by</span><span class="col-type">bigint</span><span
+                        class="badge badge-fk">FK</span><span class="col-desc">staff_id</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- handover_briefing -->
+        <div class="table-card theme-pink" style="left:40px; top:1100px; width:350px;">
+            <div class="table-header"><span class="icon">📋</span> handover_briefing <span
+                    style="font-size:10px; color:#f9a8d4; font-weight:400;">AI 자동</span></div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">shift_start</span><span
+                        class="col-type">timestamp</span><span class="col-desc">교대 시작</span></div>
+                <div class="col-row"><span class="col-name">shift_end</span><span class="col-type">timestamp</span><span
+                        class="col-desc">교대 종료</span></div>
+                <div class="col-row"><span class="col-name">total_request_count</span><span
+                        class="col-type">int</span><span class="col-desc">총 요청 수</span></div>
+                <div class="col-row"><span class="col-name">pending_count</span><span class="col-type">int</span><span
+                        class="col-desc">미처리 수</span></div>
+                <div class="col-row"><span class="col-name">escalated_count</span><span class="col-type">int</span><span
+                        class="col-desc">에스컬레이션 수</span></div>
+                <div class="col-row"><span class="col-name">summary</span><span class="col-type">text</span><span
+                        class="col-desc">AI 브리핑 요약</span></div>
+                <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- dispatch_log -->
+        <div class="table-card theme-gray" style="left:960px; top:1100px; width:300px;">
+            <div class="table-header"><span class="icon">📡</span> dispatch_log</div>
+            <div class="table-body">
+                <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span
+                        class="badge badge-pk">PK</span></div>
+                <div class="col-row"><span class="col-name">target</span><span class="col-type">varchar</span><span
+                        class="col-desc">수신 대상</span></div>
+                <div class="col-row"><span class="col-name">event_type</span><span class="col-type">varchar</span><span
+                        class="col-desc">NEW_REQUEST 등</span></div>
+                <div class="col-row"><span class="col-name">payload</span><span class="col-type">text</span><span
+                        class="col-desc">JSON</span></div>
+                <div class="col-row"><span class="col-name">sent_at</span><span class="col-type">timestamp</span></div>
+            </div>
         </div>
     </div>
 
-    <!-- Row 2: staff, guest, message -->
-    <div class="table-card theme-blue" style="left:40px; top:200px; width:300px;">
-        <div class="table-header"><span class="icon">👤</span> staff</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span></div>
-            <div class="col-row"><span class="col-name">pin</span><span class="col-type">varchar</span><span class="col-desc">4자리 PIN</span></div>
-            <div class="col-row"><span class="col-name">role</span><span class="col-type">varchar</span><span class="col-desc">STAFF, MANAGER</span></div>
-            <div class="col-row"><span class="col-name">department_id</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span></div>
+    <!-- 테이블 요약 -->
+    <div class="info-section">
+        <h2>📊 테이블 요약</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="label">🏢 department</div>
+                <div class="desc">부서 (HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) — varchar PK</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">🚪 room</div>
+                <div class="desc">객실 번호, 층, 타입</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">👤 staff</div>
+                <div class="desc">직원 정보 (PIN 로그인)</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">🔑 guest</div>
+                <div class="desc">객실 ↔ 투숙객 매핑 (정적 QR, 개인정보 없음)</div>
+                <div class="lifetime lifetime-delete">체크아웃 시 Hard Delete</div>
+            </div>
+            <div class="info-card">
+                <div class="label">⭐ request</div>
+                <div class="desc">고객 요청 (entities JSONB로 가변 데이터 저장)</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">💬 message</div>
+                <div class="desc">AI 대화 메시지 (원문 + 번역)</div>
+                <div class="lifetime lifetime-permanent">영구 보존 (원문 증거)</div>
+            </div>
+            <div class="info-card">
+                <div class="label">📝 guest_note</div>
+                <div class="desc">투숙객 특이사항 (알러지, 선호도 등)</div>
+                <div class="lifetime lifetime-delete">체크아웃 시 Hard Delete</div>
+            </div>
+            <div class="info-card">
+                <div class="label">🧠 fewshot_example</div>
+                <div class="desc">AI 자가 튜닝용 정답 데이터 (Few-Shot)</div>
+                <div class="lifetime lifetime-permanent">영구 (누적 학습)</div>
+            </div>
+            <div class="info-card">
+                <div class="label">📚 knowledge_entry</div>
+                <div class="desc">RAG 지식 DB (도메인별 분류 가능)</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">❓ unanswered_question</div>
+                <div class="desc">미답변 질문 → knowledge_entry로 승격</div>
+                <div class="lifetime lifetime-permanent">승격 후 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">📋 handover_briefing</div>
+                <div class="desc">교대 인수인계 (AI 자동 생성)</div>
+                <div class="lifetime lifetime-permanent">영구 보존</div>
+            </div>
+            <div class="info-card">
+                <div class="label">📡 dispatch_log</div>
+                <div class="desc">실시간 알림 발송 이력</div>
+                <div class="lifetime lifetime-permanent">영구 (감사 로그)</div>
+            </div>
         </div>
     </div>
-
-    <!-- guest -->
-    <div class="table-card theme-red" style="left:480px; top:200px; width:280px;">
-        <div class="table-header"><span class="icon">🔑</span> guest <span style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="badge badge-uk">UK</span><span class="col-desc">1방 1게스트</span></div>
-            <div class="col-row"><span class="col-name">language</span><span class="col-type">varchar</span><span class="col-desc">ko, en, ja, zh</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span><span class="col-desc">체크인</span></div>
-        </div>
-    </div>
-
-    <!-- Row 3: fewshot_example, request -->
-    <div class="table-card theme-orange" style="left:400px; top:530px; width:380px;">
-        <div class="table-header"><span class="icon">⭐</span> request <span style="font-size:10px; color:#fbbf24; font-weight:400;">핵심 테이블</span></div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span class="col-desc">PENDING → COMPLETED</span></div>
-            <div class="col-row"><span class="col-name">priority</span><span class="col-type">varchar</span><span class="col-desc">LOW ~ URGENT</span></div>
-            <div class="col-row"><span class="col-name">department_id</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">HK, FB, FACILITY 등</span></div>
-            <div class="col-row"><span class="col-name">intent</span><span class="col-type">varchar</span><span class="col-desc">REQ_ITEM, FAQ 등</span></div>
-            <div class="col-row"><span class="col-name">entities</span><span class="col-type">jsonb</span><span class="col-desc">부서별 가변 데이터</span></div>
-            <div class="col-row"><span class="col-name">raw_text</span><span class="col-type">text</span><span class="col-desc">고객 발화 원문</span></div>
-            <div class="col-row"><span class="col-name">summary</span><span class="col-type">text</span><span class="col-desc">AI 요약 (카드 제목)</span></div>
-            <div class="col-row"><span class="col-name">confidence</span><span class="col-type">float</span><span class="col-desc">0.0~1.0</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span></div>
-            <div class="col-row"><span class="col-name">assigned_staff_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">nullable</span></div>
-            <div class="col-row"><span class="col-name">version</span><span class="col-type">int</span><span class="col-desc">낙관적 락</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-            <div class="col-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- message -->
-    <div class="table-card theme-cyan" style="left:960px; top:200px; width:300px;">
-        <div class="table-header"><span class="icon">💬</span> message</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">sender_type</span><span class="col-type">varchar</span><span class="col-desc">GUEST, AI, STAFF</span></div>
-            <div class="col-row"><span class="col-name">content</span><span class="col-type">text</span><span class="col-desc">원문</span></div>
-            <div class="col-row"><span class="col-name">translated_content</span><span class="col-type">text</span><span class="col-desc">번역문</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span></div>
-            <div class="col-row"><span class="col-name">request_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">nullable</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- Row 4: knowledge_entry, handover_briefing, dispatch_log -->
-    <div class="table-card theme-purple" style="left:460px; top:1100px; width:340px;">
-        <div class="table-header"><span class="icon">📚</span> knowledge_entry</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">question</span><span class="col-type">text</span><span class="col-desc">질문</span></div>
-            <div class="col-row"><span class="col-name">answer</span><span class="col-type">text</span><span class="col-desc">답변</span></div>
-            <div class="col-row"><span class="col-name">embedding</span><span class="col-type">vector</span><span class="col-desc">pgvector</span></div>
-            <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span class="col-desc">부서 전용 지식</span></div>
-            <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span class="col-desc">PENDING, APPROVED, REJECTED</span></div>
-            <div class="col-row"><span class="col-name">approved_by</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">staff_id</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-            <div class="col-row"><span class="col-name">updated_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- Row 5: unanswered_question -->
-    <div class="table-card theme-purple" style="left:460px; top:1450px; width:340px;">
-        <div class="table-header"><span class="icon">❓</span> unanswered_question</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">question</span><span class="col-type">text</span><span class="col-desc">고객 원문 질문</span></div>
-            <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span class="col-desc">실패 도메인</span></div>
-            <div class="col-row"><span class="col-name">cluster_id</span><span class="col-type">varchar</span><span class="col-desc">군집 ID</span></div>
-            <div class="col-row"><span class="col-name">suggested_answer</span><span class="col-type">text</span><span class="col-desc">AI 답변 초안</span></div>
-            <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar</span><span class="col-desc">NEW → PROMOTED</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- guest_note -->
-    <div class="table-card theme-red" style="left:960px; top:500px; width:300px;">
-        <div class="table-header"><span class="icon">📝</span> guest_note <span style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span></div>
-            <div class="col-row"><span class="col-name">note_type</span><span class="col-type">varchar</span><span class="col-desc">ALLERGY, VIP 등</span></div>
-            <div class="col-row"><span class="col-name">content</span><span class="col-type">text</span><span class="col-desc">특이사항 내용</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- fewshot_example -->
-    <div class="table-card theme-cyan" style="left:40px; top:530px; width:310px;">
-        <div class="table-header"><span class="icon">🧠</span> fewshot_example</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">input_text</span><span class="col-type">text</span><span class="col-desc">고객 원문</span></div>
-            <div class="col-row"><span class="col-name">correct_output</span><span class="col-type">jsonb</span><span class="col-desc">정답 JSON</span></div>
-            <div class="col-row"><span class="col-name">domain_code</span><span class="col-type">varchar</span><span class="col-desc">해당 도메인</span></div>
-            <div class="col-row"><span class="col-name">corrected_by</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">staff_id</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- handover_briefing -->
-    <div class="table-card theme-pink" style="left:40px; top:1100px; width:350px;">
-        <div class="table-header"><span class="icon">📋</span> handover_briefing <span style="font-size:10px; color:#f9a8d4; font-weight:400;">AI 자동</span></div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">shift_start</span><span class="col-type">timestamp</span><span class="col-desc">교대 시작</span></div>
-            <div class="col-row"><span class="col-name">shift_end</span><span class="col-type">timestamp</span><span class="col-desc">교대 종료</span></div>
-            <div class="col-row"><span class="col-name">total_request_count</span><span class="col-type">int</span><span class="col-desc">총 요청 수</span></div>
-            <div class="col-row"><span class="col-name">pending_count</span><span class="col-type">int</span><span class="col-desc">미처리 수</span></div>
-            <div class="col-row"><span class="col-name">escalated_count</span><span class="col-type">int</span><span class="col-desc">에스컬레이션 수</span></div>
-            <div class="col-row"><span class="col-name">summary</span><span class="col-type">text</span><span class="col-desc">AI 브리핑 요약</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-
-    <!-- dispatch_log -->
-    <div class="table-card theme-gray" style="left:960px; top:1100px; width:300px;">
-        <div class="table-header"><span class="icon">📡</span> dispatch_log</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">target</span><span class="col-type">varchar</span><span class="col-desc">수신 대상</span></div>
-            <div class="col-row"><span class="col-name">event_type</span><span class="col-type">varchar</span><span class="col-desc">NEW_REQUEST 등</span></div>
-            <div class="col-row"><span class="col-name">payload</span><span class="col-type">text</span><span class="col-desc">JSON</span></div>
-            <div class="col-row"><span class="col-name">sent_at</span><span class="col-type">timestamp</span></div>
-        </div>
-    </div>
-</div>
-
-<!-- 테이블 요약 -->
-<div class="info-section">
-    <h2>📊 테이블 요약</h2>
-    <div class="info-grid">
-        <div class="info-card">
-            <div class="label">🏢 department</div>
-            <div class="desc">부서 (HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) — varchar PK</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">🚪 room</div>
-            <div class="desc">객실 번호, 층, 타입</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">👤 staff</div>
-            <div class="desc">직원 정보 (PIN 로그인)</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">🔑 guest</div>
-            <div class="desc">객실 ↔ 투숙객 매핑 (정적 QR, 개인정보 없음)</div>
-            <div class="lifetime lifetime-delete">체크아웃 시 Hard Delete</div>
-        </div>
-        <div class="info-card">
-            <div class="label">⭐ request</div>
-            <div class="desc">고객 요청 (entities JSONB로 가변 데이터 저장)</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">💬 message</div>
-            <div class="desc">AI 대화 메시지 (원문 + 번역)</div>
-            <div class="lifetime lifetime-permanent">영구 보존 (원문 증거)</div>
-        </div>
-        <div class="info-card">
-            <div class="label">📝 guest_note</div>
-            <div class="desc">투숙객 특이사항 (알러지, 선호도 등)</div>
-            <div class="lifetime lifetime-delete">체크아웃 시 Hard Delete</div>
-        </div>
-        <div class="info-card">
-            <div class="label">🧠 fewshot_example</div>
-            <div class="desc">AI 자가 튜닝용 정답 데이터 (Few-Shot)</div>
-            <div class="lifetime lifetime-permanent">영구 (누적 학습)</div>
-        </div>
-        <div class="info-card">
-            <div class="label">📚 knowledge_entry</div>
-            <div class="desc">RAG 지식 DB (도메인별 분류 가능)</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">❓ unanswered_question</div>
-            <div class="desc">미답변 질문 → knowledge_entry로 승격</div>
-            <div class="lifetime lifetime-permanent">승격 후 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">📋 handover_briefing</div>
-            <div class="desc">교대 인수인계 (AI 자동 생성)</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
-            <div class="label">📡 dispatch_log</div>
-            <div class="desc">실시간 알림 발송 이력</div>
-            <div class="lifetime lifetime-permanent">영구 (감사 로그)</div>
-        </div>
-    </div>
-</div>
 
 </body>
+
 </html>
