@@ -35,7 +35,7 @@ services:
       - "8000:8000"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - POSTGRES_DB=anook_dev
+      - POSTGRES_DB=anook_db
       - POSTGRES_USER=anook_user
       - POSTGRES_PASSWORD=anook2026
       - POSTGRES_HOST=db
