@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import Footer from '@/components/layout/Footer';
-import { ConfirmModal, ModalOverlay, ModalCard } from '@/components/ui/Modal';
+import { ConfirmModal, ModalOverlay, ModalCard, LogDataModal } from '@/components/ui/Modal';
 import * as Icons from '@/components/icons';
 import Button from '@/components/ui/Button/Button';
 import InputField from '@/components/ui/Inputfield/InputField';
@@ -57,6 +57,7 @@ export default function ComponentShowcasePage() {
   const [selectedKnowledge, setSelectedKnowledge] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
 
   const sampleRooms = [
     { id: '1001', roomNumber: '1001', statusText: '보관됨' },
@@ -374,23 +375,26 @@ export default function ComponentShowcasePage() {
                     <TableCell>수건 2장 더 가져다주세요. 그리고 가습기가 있으면 좋겠어요.</TableCell>
                     <TableCell><b>1,520</b></TableCell>
                     <TableCell><b>850ms</b></TableCell>
-                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
+                    <TableCell><Button variant="secondary" size="medium" onClick={() => setIsLogModalOpen(true)}>상세보기</Button></TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>2026.10.26 14:12:45</TableCell>
                     <TableCell>화장실 전구가 나갔어요. 확인 부탁드립니다.</TableCell>
                     <TableCell><b>1,430</b></TableCell>
                     <TableCell><b style={{ color: 'red' }}>3100ms</b></TableCell>
-                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
+                    <TableCell><Button variant="secondary" size="medium" onClick={() => setIsLogModalOpen(true)}>상세보기</Button></TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>2026.10.26 14:15:33</TableCell>
                     <TableCell>저녁 7시에 이탈리안 레스토랑 예약 가능한가요?</TableCell>
                     <TableCell><b>1,650</b></TableCell>
                     <TableCell><b>920ms</b></TableCell>
-                    <TableCell><Button variant="secondary" size="medium">상세보기</Button></TableCell>
+                    <TableCell><Button variant="secondary" size="medium" onClick={() => setIsLogModalOpen(true)}>상세보기</Button></TableCell>
                   </TableRow>
                 </Table>
+                <div style={{ marginTop: 'var(--space-16)' }}>
+                  <Button variant="primary" size="medium" onClick={() => setIsLogModalOpen(true)}>로그 데이터 분석 모달 열기</Button>
+                </div>
               </div>
 
               <div style={{ marginTop: 'var(--space-24)' }}>
@@ -660,6 +664,12 @@ export default function ComponentShowcasePage() {
       <ChatModal
         isOpen={isChatModalOpen}
         onClose={() => setIsChatModalOpen(false)}
+      />
+
+      {/* Log Data Modal */}
+      <LogDataModal
+        isOpen={isLogModalOpen}
+        onClose={() => setIsLogModalOpen(false)}
       />
     </div>
   );
