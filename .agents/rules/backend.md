@@ -12,12 +12,13 @@ trigger: always_on
 - **Command:** `{동작}{도메인}Command` (SubmitRequestCommand)
 - **Result:** `{동작}{도메인}Result` (GetRequestDetailResult)
 
-## API 경로 규칙
-- 투숙객 API: `/api/auth/guest`, `/api/chat/**`
-- 직원 API: `/api/auth/staff`, `/api/staff/requests/**`
-- 관리자 API: `/api/auth/admin`, `/api/admin/requests/**`, `/api/admin/handover/**`
-- 인증 방식: Guest(객실번호+이름), Staff(PIN→JWT), Admin(ID+PW→JWT)
-- JWT는 HttpOnly Cookie로 전달 (BFF 패턴)
+## API 경로 규칙 (BFF 패턴 적용)
+- 백엔드 Controller는 `@RequestMapping`에 `/api` 접두어를 절대 사용하지 않는다. (BFF가 `/api`를 제거하고 전달)
+- 투숙객 API: `/auth/guest`, `/chat/**`
+- 직원 API: `/auth/staff`, `/staff/requests/**`
+- 관리자 API: `/auth/admin`, `/admin/requests/**`, `/admin/handover/**`
+- 인증 방식: Guest(방번호→JWT), Staff(PIN→JWT), Admin(ID+PW→JWT)
+- JWT는 HttpOnly Cookie로 전달
 
 ## AI 연동 규칙
 - AI 호출은 반드시 Port(Out) 인터페이스를 통해 추상화
@@ -26,6 +27,11 @@ trigger: always_on
 - 각 모듈은 자체 AI Port를 정의 (다른 모듈의 AI Port import 금지 → 패키지 의존 방지)
 - AI 출력 포맷: 파이프 코드 (`HK|NORM|REQ_ITEM|TOWEL|2`)
 - PII 마스킹은 AI 호출 전 `global/util/PiiMaskingUtil`로 선처리
+
+## 실시간 통신 (WebSocket) 규칙
+- WebSocket(STOMP) 메시지 발송 로직은 Service에서 템플릿(SimpMessagingTemplate)을 직접 호출하지 않는다.
+- 반드시 `application/port/out/DispatchPort` 인터페이스를 통해 추상화하고, `adapter/out/websocket/` 에서 구현체를 작성한다.
+- 채널 네이밍 규칙: `/topic/room/{roomNo}`, `/topic/dept/{deptCode}`, `/topic/admin`
 
 ## 금지 패턴
 - ❌ Service에서 JPA Repository 직접 import
