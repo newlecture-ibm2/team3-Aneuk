@@ -1,7 +1,8 @@
 package com.anook.backend.guest.adapter.out.persistence;
 
 import com.anook.backend.guest.application.port.out.RoomQueryPort;
-import com.anook.backend.guest.domain.exception.RoomNotFoundException;
+import com.anook.backend.global.exception.BusinessException;
+import com.anook.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class RoomQueryAdapter implements RoomQueryPort {
                 "SELECT number FROM room WHERE id = ?",
                 rs -> {
                     if (rs.next()) return rs.getString("number");
-                    throw new RoomNotFoundException("객실을 찾을 수 없습니다. roomId=" + roomId);
+                    throw new BusinessException(ErrorCode.ROOM_NOT_FOUND, "roomId=" + roomId);
                 },
                 roomId
         );

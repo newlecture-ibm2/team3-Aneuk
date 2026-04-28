@@ -10,10 +10,8 @@ import com.anook.backend.guest.application.port.in.GetGuestUseCase;
 import com.anook.backend.guest.application.port.out.GuestRepositoryPort;
 import com.anook.backend.guest.application.port.out.RequestQueryPort;
 import com.anook.backend.guest.application.port.out.RoomQueryPort;
-import com.anook.backend.guest.domain.exception.AlreadyCheckedInException;
-import com.anook.backend.guest.domain.exception.GuestNotFoundException;
-import com.anook.backend.guest.domain.exception.RoomNotFoundException;
-import com.anook.backend.guest.domain.exception.UnsettledBillingException;
+import com.anook.backend.global.exception.BusinessException;
+import com.anook.backend.global.exception.ErrorCode;
 import com.anook.backend.guest.domain.model.Guest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,12 +41,12 @@ public class GuestService implements CheckInGuestUseCase, CheckOutGuestUseCase, 
     public CheckInGuestResult checkIn(CheckInGuestCommand command) {
         // 1) 객실 존재 여부 확인
         if (!roomQueryPort.existsById(command.roomId())) {
-            throw new RoomNotFoundException("존재하지 않는 객실입니다. roomId=" + command.roomId());
+            throw new BusinessException(ErrorCode.ROOM_NOT_FOUND, "roomId=" + command.roomId());
         }
 
         // 2) 이미 해당 방에 투숙객이 있는지 확인
         if (guestRepository.existsByRoomId(command.roomId())) {
-            throw new AlreadyCheckedInException("해당 객실에 이미 투숙객이 있습니다.");
+            throw new BusinessException(ErrorCode.ALREADY_CHECKED_IN);
         }
 
         // 3) 도메인 모델 생성 및 저장
@@ -73,7 +71,7 @@ public class GuestService implements CheckInGuestUseCase, CheckOutGuestUseCase, 
     public void checkOut(Long guestId) {
         // 1) 투숙객 존재 확인
         Guest guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new GuestNotFoundException("투숙객을 찾을 수 없습니다. guestId=" + guestId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.GUEST_NOT_FOUND, "guestId=" + guestId));
 
         // 2) 미정산 F&B 건 확인
         boolean hasUnsettled = requestQueryPort
@@ -82,7 +80,7 @@ public class GuestService implements CheckInGuestUseCase, CheckOutGuestUseCase, 
                 );
 
         if (hasUnsettled) {
-            throw new UnsettledBillingException("미정산 F&B 내역이 있습니다. 결제를 먼저 완료해주세요.");
+            throw new BusinessException(ErrorCode.UNSETTLED_BILLING);
         }
 
         // 3) roomNumber 조회 (삭제 전에 미리 가져옴)

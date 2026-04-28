@@ -4,8 +4,8 @@ import com.anook.backend.request.application.dto.response.SettleRequestResult;
 import com.anook.backend.request.application.port.in.SettleRequestUseCase;
 import com.anook.backend.request.application.port.out.RequestRepositoryPort;
 import com.anook.backend.request.application.port.out.RequestRepositoryPort.RequestStatusDto;
-import com.anook.backend.request.domain.exception.InvalidSettlementException;
-import com.anook.backend.request.domain.exception.RequestNotFoundException;
+import com.anook.backend.global.exception.BusinessException;
+import com.anook.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,18 +33,18 @@ public class SettleRequestService implements SettleRequestUseCase {
     public SettleRequestResult settle(Long taskId) {
         // 1) 요청 존재 확인
         RequestStatusDto request = requestRepository.findStatusById(taskId)
-                .orElseThrow(() -> new RequestNotFoundException("요청을 찾을 수 없습니다. taskId=" + taskId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.REQUEST_NOT_FOUND, "taskId=" + taskId));
 
         // 2) FB 부서 확인
         if (!FB_DEPARTMENT.equals(request.departmentId())) {
-            throw new InvalidSettlementException(
-                    "F&B 요청만 정산할 수 있습니다. 현재 부서: " + request.departmentId());
+            throw new BusinessException(ErrorCode.INVALID_SETTLEMENT,
+                    "현재 부서: " + request.departmentId());
         }
 
         // 3) COMPLETED 상태 확인
         if (!COMPLETED.equals(request.status())) {
-            throw new InvalidSettlementException(
-                    "서비스 완료(COMPLETED) 상태에서만 정산할 수 있습니다. 현재 상태: " + request.status());
+            throw new BusinessException(ErrorCode.INVALID_SETTLEMENT,
+                    "현재 상태: " + request.status());
         }
 
         // 4) 상태 변경 → SETTLED
