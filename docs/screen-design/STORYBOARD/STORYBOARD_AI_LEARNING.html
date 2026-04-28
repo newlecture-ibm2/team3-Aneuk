@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면 설계서 - AI 학습 관리</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', 'Apple SD Gothic Neo', sans-serif; background-color: #e5e7eb; margin: 0; padding: 40px; color: #333; }
+        .document-container { max-width: 1800px; margin: 0 auto; background: #fff; border: 2px solid #333; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border-radius: 4px; overflow: visible; }
+        
+        /* Header Table */
+        .header-table { width: 100%; border-collapse: collapse; border-bottom: 2px solid #333; }
+        .header-table th, .header-table td { border: 1px solid #ccc; padding: 14px 20px; font-size: 14px; }
+        .header-table th { background-color: #f8f9fa; width: 120px; text-align: left; font-weight: bold; }
+        .header-table td { width: calc(50% - 120px); }
+        .header-table tr:first-child th, .header-table tr:first-child td { border-top: none; }
+        .header-table tr th:first-child, .header-table tr td:first-child { border-left: none; }
+        .header-table tr th:last-child, .header-table tr td:last-child { border-right: none; }
+        .path-row th, .path-row td { border-bottom: none; }
+
+        /* Content Area */
+        .content-area { display: flex; width: 100%; min-height: 800px; position: relative; }
+
+        /* Left Panel */
+        .left-panel { width: 70%; background-color: #f1f5f9; border-right: 2px solid #333; padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 40px; }
+
+        /* Mockup Base */
+        .mockup-wrapper { 
+            width: 100%; 
+            background: #fafafa; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            padding: 40px 50px; 
+            border: 1px solid #e2e8f0; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden;
+            min-height: 800px;
+        }
+        
+        .mu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .mu-title-wrap { display: flex; flex-direction: column; }
+        .mu-subtitle { font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.2px; }
+        .mu-title { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        
+        .mu-search-area { display: flex; gap: 8px; }
+        .mu-search { position: relative; }
+        .mu-search::before { content: 'Q'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-family: monospace; }
+        .mu-search input { padding: 10px 16px 10px 36px; border: 1px solid #cbd5e1; border-radius: 6px; width: 240px; font-size: 13px; outline: none; }
+        .mu-filter-btn { width: 40px; height: 40px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #64748b; font-size: 16px; font-family: monospace; }
+
+        .mu-list { display: flex; flex-direction: column; gap: 16px; }
+        
+        .mu-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .mu-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateY(-1px); }
+        
+        .mu-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .mu-time { font-size: 12px; color: #94a3b8; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+        .mu-badge { background: #f1f5f9; color: #64748b; font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; }
+        
+        .mu-chat-area { display: flex; flex-direction: column; gap: 12px; background: #f8fafc; padding: 20px; border-radius: 8px; }
+        .mu-bubble-right { align-self: flex-end; background: #0f172a; color: #fff; padding: 12px 16px; border-radius: 16px 16px 0 16px; font-size: 13px; font-weight: 500; max-width: 80%; line-height: 1.5; }
+        .mu-bubble-left { align-self: flex-start; background: #fff; color: #0f172a; padding: 12px 16px; border-radius: 16px 16px 16px 0; font-size: 13px; font-weight: 500; border: 1px solid #e2e8f0; max-width: 80%; line-height: 1.5; }
+
+        /* Modal Overlay */
+        .mu-modal-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.4); 
+            display: none; /* Hidden by default, toggled via JS */
+            justify-content: center; align-items: center; 
+            z-index: 100; backdrop-filter: blur(2px);
+        }
+        .mu-modal { background: #f8fafc; width: 100%; max-width: 500px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .mu-m-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 16px 16px 0 0; }
+        .mu-m-title-wrap { display: flex; align-items: center; gap: 12px; }
+        .mu-m-icon { width: 36px; height: 36px; background: #0f172a; color: #fff; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 16px; }
+        .mu-m-texts { display: flex; flex-direction: column; gap: 2px; }
+        .mu-m-title { font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; }
+        .mu-m-date { font-size: 11px; color: #94a3b8; font-weight: 500; }
+        .mu-m-close { color: #94a3b8; font-size: 20px; cursor: pointer; border: none; background: none; font-weight: 300; }
+        
+        .mu-m-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; background: #fff; min-height: 250px; }
+        
+        .mu-m-footer { padding: 16px 24px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; border-radius: 0 0 16px 16px; }
+        .mu-btn-save { flex: 1; background: #0f172a; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .mu-btn-exclude { flex: 1; background: #fff; color: #64748b; border: 1px solid #cbd5e1; padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+
+        /* Markers overlay */
+        .marker { position: absolute; width: 26px; height: 26px; background-color: #ef4444; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: 900; box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5); z-index: 200; border: 2px solid #fff; pointer-events: none; }
+
+        /* Right Panel (Descriptions) */
+        .right-panel { width: 30%; display: flex; flex-direction: column; background-color: #fff; position: sticky; top: 0; height: fit-content; max-height: 100vh; overflow-y: auto; }
+        .section-header { background: #f8fafc; text-align: center; padding: 16px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #ccc; letter-spacing: 1px; color: #0f172a; position: sticky; top: 0; z-index: 5; }
+        .summary-box { padding: 24px; border-bottom: 1px solid #ccc; background: #fff; }
+        .summary-box h4 { margin: 0 0 12px 0; font-style: italic; font-size: 15px; color: #334155; }
+        .summary-box ul { margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 1.6; }
+
+        .desc-table { width: 100%; border-collapse: collapse; }
+        .desc-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .desc-table td:first-child { width: 40px; text-align: center; color: #ef4444; font-weight: bold; font-size: 16px; border-right: 1px solid #e2e8f0; }
+        .desc-table p { margin: 4px 0; color: #334155; }
+
+        .event-header { background: #eff6ff; color: #1d4ed8; text-align: center; padding: 16px; font-weight: bold; font-size: 15px; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+        .event-table { width: 100%; border-collapse: collapse; }
+        .event-table td { border-bottom: 1px solid #e2e8f0; padding: 20px; font-size: 14px; line-height: 1.6; vertical-align: top; }
+        .event-table td:first-child { width: 50px; text-align: center; color: #1d4ed8; font-weight: bold; font-size: 15px; border-right: 1px solid #e2e8f0; }
+        .event-title-text { font-weight: bold; margin-bottom: 8px; display: block; color: #0f172a; font-size: 15px; }
+        .event-table p { margin: 4px 0; color: #475569; }
+
+        .checkpoint-box { padding: 24px; border-top: 1px solid #ccc; background: #fff; flex-grow: 1; }
+        .checkpoint-box h4 { margin: 0 0 16px 0; color: #1d4ed8; font-size: 15px; }
+        .checkpoint-box p { margin: 8px 0; font-size: 14px; color: #475569; padding-left: 12px; position: relative; }
+        .checkpoint-box p::before { content: '·'; position: absolute; left: 0; font-weight: bold;}
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1d4ed8;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 10px 25px rgba(29, 78, 216, 0.4);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="document-container">
+        <table class="header-table">
+            <tr>
+                <th>Page Title.</th>
+                <td>AI 학습 관리 대시보드</td>
+                <th>Screen ID</th>
+                <td>A-07</td>
+                <th>Author</th>
+                <td>팀3 아늑</td>
+                <th>Date</th>
+                <td>2026.04.27</td>
+            </tr>
+            <tr class="path-row">
+                <th>Screen Path</th>
+                <td colspan="7">관리자 > 시스템 로깅 > AI 학습 관리</td>
+            </tr>
+        </table>
+
+        <div class="content-area">
+            <!-- Left Panel: UI HTML Mockup -->
+            <div class="left-panel">
+
+                <div class="mockup-wrapper">
+                    
+                    <div class="mu-header">
+                        <div class="mu-title-wrap">
+                            <span class="mu-subtitle">호텔 운영 관리 시스템</span>
+                            <h1 class="mu-title">AI 학습 관리</h1>
+                        </div>
+                        <div class="mu-search-area">
+                            <div class="mu-search">
+                                <input type="text" placeholder="검색어를 입력하세요...">
+                            </div>
+                            <button class="mu-filter-btn">Y</button>
+                        </div>
+                    </div>
+
+                    <div class="mu-list">
+                        
+                        <!-- Card 1 -->
+                        <div class="mu-card" id="card-1" onclick="openModal()" style="position:relative;">
+                            <div class="marker" style="top: -10px; left: -10px;">1</div>
+                            <div class="mu-card-header">
+                                <div class="mu-time">🕒 2026.10.27 10:15:33</div>
+                                <div class="mu-badge" id="badge-1">상담 로그</div>
+                            </div>
+                            <div class="mu-chat-area">
+                                <div class="mu-bubble-right">가습기가 하나 더 필요한데 갖다주실 수 있나요?</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="mu-card">
+                            <div class="mu-card-header">
+                                <div class="mu-time">🕒 2026.10.27 11:42:10</div>
+                                <div class="mu-badge">상담 로그</div>
+                            </div>
+                            <div class="mu-chat-area">
+                                <div class="mu-bubble-right">체크아웃 시간을 2시간만 연장할 수 있을까요?</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="mu-card">
+                            <div class="mu-card-header">
+                                <div class="mu-time">🕒 2026.10.27 09:20:05</div>
+                                <div class="mu-badge">상담 로그</div>
+                            </div>
+                            <div class="mu-chat-area">
+                                <div class="mu-bubble-right">근처에 아침 식사가 가능한 맛집이 있을까요?</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Modal Overlay (Interactive) -->
+                    <div class="mu-modal-overlay" id="detailModal">
+                        <div class="mu-modal" style="position:relative;">
+                            <div class="marker" style="top: -15px; left: -15px;">2</div>
+                            
+                            <div class="mu-m-header">
+                                <div class="mu-m-title-wrap">
+                                    <div class="mu-m-icon">💬</div>
+                                    <div class="mu-m-texts">
+                                        <h2 class="mu-m-title">로그 데이터 상세</h2>
+                                        <span class="mu-m-date">2026.10.27 10:15:33</span>
+                                    </div>
+                                </div>
+                                <button class="mu-m-close" onclick="closeModal(event)">✕</button>
+                            </div>
+                            
+                            <div class="mu-m-body">
+                                <div class="mu-bubble-right" style="max-width:90%;">가습기가 하나 더 필요한데 갖다주실 수 있나요?</div>
+                                <div class="mu-bubble-left" style="max-width:90%;">네, 알겠습니다. 하우스키핑 부서에 전달하여 가습기를 객실로 보내드리겠습니다.</div>
+                            </div>
+                            
+                            <div class="mu-m-footer" style="position:relative;">
+                                <button class="mu-btn-save" onclick="saveKnowledge(event)">
+                                    <span style="font-size:16px;">✓</span> 지식으로 저장
+                                </button>
+                                <button class="mu-btn-exclude" onclick="excludeKnowledge(event)">
+                                    <span style="font-size:16px;">✕</span> 제외
+                                </button>
+                                <div class="marker" style="top: -15px; right: -15px;">3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Right Panel: Descriptions -->
+            <div class="right-panel">
+                <div class="section-header">Description</div>
+
+                <div class="summary-box">
+                    <h4>Summary.</h4>
+                    <ul>
+                        <li>과거 고객과의 상담 로그를 모니터링하고 AI의 응답 품질을 관리하는 화면</li>
+                        <li>의미 있는 고객 질의 및 AI의 우수 응답을 선별하여 <strong>'지식(RAG)'으로 재학습</strong>시키는 기능 제공</li>
+                        <li><strong style="color:#ef4444;">[인터랙션] 좌측 화면의 첫 번째 카드를 클릭해 보세요! 상세 모달창이 나타납니다.</strong></li>
+                    </ul>
+                </div>
+
+                <table class="desc-table">
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <p><strong>상담 로그 리스트 항목 (Clickable)</strong></p>
+                            <p>· 고객이 남긴 텍스트 원문(우측 정렬된 블랙 버블)을 프리뷰 형태로 제공</p>
+                            <p>· 해당 카드를 클릭 시, AI가 어떻게 답변했는지 확인할 수 있는 상세 모달 팝업 오픈</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <p><strong>로그 데이터 상세 팝업 (Modal)</strong></p>
+                            <p>· 고객의 발화(블랙)와 AI의 실제 답변(화이트)이 대화형 UI로 출력됨</p>
+                            <p>· AI가 환각(Hallucination) 없이 부서를 잘 안내했는지 관리자가 검수 가능</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <p><strong>학습 데이터 처리 액션</strong></p>
+                            <p>· <strong>지식으로 저장</strong>: 해당 응답 세트를 우수 사례로 판단하여 Vector DB에 저장 (추후 유사 질문 시 참고)</p>
+                            <p>· <strong>제외</strong>: 단순 변심, 욕설, 무의미한 로그이거나 AI 답변이 부적절한 경우 학습에서 제외 처리</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="event-header">🎯 Event Description</div>
+
+                <table class="event-table">
+                    <tr>
+                        <td>E1</td>
+                        <td>
+                            <span class="event-title-text">카드 클릭 시 모달창 팝업</span>
+                            <p>· 트리거: 로그 리스트 항목 클릭</p>
+                            <p>· 동작: 백그라운드가 딤 처리되며 대화 내용이 담긴 모달 오픈</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>E2</td>
+                        <td>
+                            <span class="event-title-text">지식으로 저장 처리</span>
+                            <p>· 트리거: '지식으로 저장' 버튼 클릭</p>
+                            <p>· 동작: 해당 Q&A 페어를 텍스트 파일이나 임베딩 데이터로 변환 후 AI 지식 라이브러리에 반영</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="checkpoint-box">
+                    <h4>Check Point</h4>
+                    <p>학습 데이터로 추가 시, 시스템 프롬프트 가이드라인에 부합하는지 관리자의 2차 확인 프로세스 필요</p>
+                    <p>이미 처리 완료된 로그와 미처리 로그를 구분할 수 있는 필터링 기능 연동</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <span>✅</span> 지식이 성공적으로 저장되었습니다!
+        </div>
+    </div>
+
+    <script>
+        // Modal Interaction Logic
+        function openModal() {
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+        
+        function closeModal(event) {
+            if(event) {
+                event.stopPropagation(); // Prevent triggering background click
+            }
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside the modal box
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if(e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Add interactive features
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = '<span>✅</span> ' + message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveKnowledge(event) {
+            event.stopPropagation();
+            closeModal();
+            showToast('AI 지식 라이브러리에 성공적으로 저장되었습니다!');
+            
+            // Update the card UI to show it's saved
+            const targetBadge = document.getElementById('badge-1');
+            if(targetBadge) {
+                targetBadge.textContent = '지식 저장 완료';
+                targetBadge.style.backgroundColor = '#dbeafe'; // Light blue
+                targetBadge.style.color = '#1d4ed8'; // Dark blue
+            }
+            const targetCard = document.getElementById('card-1');
+            if(targetCard) {
+                targetCard.style.borderColor = '#3b82f6';
+                targetCard.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.15)';
+            }
+        }
+
+        function excludeKnowledge(event) {
+            event.stopPropagation();
+            closeModal();
+            showToast('해당 로그가 학습 데이터에서 제외되었습니다.');
+            
+            const targetBadge = document.getElementById('badge-1');
+            if(targetBadge) {
+                targetBadge.textContent = '제외됨';
+                targetBadge.style.backgroundColor = '#fee2e2'; // Light red
+                targetBadge.style.color = '#b91c1c'; // Dark red
+            }
+        }
+    </script>
+
+</body>
+</html>

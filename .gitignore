@@ -88,7 +88,6 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-docker-compose.local.yml
 
 # ══════════════════════════════════════
 # Misc

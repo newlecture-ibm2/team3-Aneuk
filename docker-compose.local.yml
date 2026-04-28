@@ -1,8 +1,30 @@
-version: '3.8'
+# ============================================================
+# Aneuk 로컬 개발용 Docker Compose
+# ============================================================
+# 사용법: docker compose -f docker-compose.local.yml up -d
+# DB만 Docker로 실행, 백엔드/프론트엔드는 IDE에서 직접 실행
+# ============================================================
 
 services:
-  # 로컬 개발 시 호스트 컴퓨터에서 DB에 직접 접근하기 위한 포트 노출
+  # ─── PostgreSQL + pgvector (로컬 개발용) ─────────────
   db:
+    image: pgvector/pgvector:pg16
+    container_name: anook-local-db
     ports:
-      - "5412:5432"
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=anook_dev
+      - POSTGRES_USER=anook
+      - POSTGRES_PASSWORD=anook1234
+    volumes:
+      - local-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anook -d anook_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
+volumes:
+  local-db-data:
+    name: anook-local-db-data
