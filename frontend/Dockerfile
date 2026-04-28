@@ -9,7 +9,7 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && mkdir -p /app/public
+RUN npm run build
 
 # 3. Run stage
 FROM node:22-alpine

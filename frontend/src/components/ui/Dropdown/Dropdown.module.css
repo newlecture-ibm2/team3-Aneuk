@@ -1,0 +1,127 @@
+/* src/components/ui/Dropdown.module.css */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--space-4);
+  width: 100%;
+  position: relative; /* 자식인 드롭다운 리스트를 absolute로 띄우기 위함 */
+}
+
+/* --------- 라벨 영역 --------- */
+.labelWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px var(--space-4);
+  height: 18px;
+}
+
+.label {
+  font: var(--text-caption-medium);
+  color: var(--color-gray-500); /* var(--color-gray-500) */
+  margin: 0;
+}
+
+/* --------- 드롭다운 트리거 박스 --------- */
+.trigger {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-12) var(--space-16);
+  width: 100%;
+  height: 48px;
+  background: var(--color-bg); /* var(--color-white) */
+  border: 1px solid var(--color-gray-300); /* var(--color-gray-300) */
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition);
+}
+
+.trigger:hover {
+  border-color: var(--color-gray-500);
+}
+
+.textPlaceholder {
+  font: var(--text-body-medium);
+  color: var(--color-gray-500); /* var(--color-gray-500) */
+}
+
+.textSelected {
+  font: var(--text-body-medium);
+  color: var(--color-gray-700); /* var(--color-gray-700) */
+}
+
+/* 화살표 아이콘 영역 */
+.iconWrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-gray-500);
+  transition: transform var(--transition);
+}
+
+.iconExpanded {
+  transform: rotate(180deg);
+}
+
+/* --------- 드롭다운 메뉴 리스트 (팝업) --------- */
+.list {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-8) 1px;
+  gap: var(--space-4);
+  
+  position: absolute;
+  top: 100%; /* 트리거 박스 바로 아래로 띄움 */
+  left: 0;
+  width: 100%;
+  margin-top: var(--space-4); /* 트리거와 4px 간격 */
+  z-index: 50; /* 다른 UI 요소들 위에 뜨도록 z-index 부여 */
+
+  background: var(--color-bg); /* var(--color-white) */
+  border: 1px solid var(--color-gray-300); /* var(--color-gray-300) */
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* --------- 드롭다운 아이템 (옵션 1개) --------- */
+.menuItem {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-8) var(--space-12);
+  gap: var(--space-8);
+  width: 100%;
+  cursor: pointer;
+  background: var(--color-bg); /* var(--color-white) */
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.menuItem:hover {
+  background: var(--color-surface); /* var(--color-surface) (Grey/100 호버 시) */
+}
+
+.menuItemText {
+  font: var(--text-body-medium);
+  color: var(--color-gray-500); /* var(--color-gray-500) */
+}
+
+/* 선택된 아이템의 경우 글씨를 좀 더 진하게 하는 등 처리 가능 */
+.menuItemSelected .menuItemText {
+  color: var(--color-gray-700); /* var(--color-gray-700) */
+}

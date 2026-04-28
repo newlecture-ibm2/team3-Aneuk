@@ -1,0 +1,53 @@
+/* src/components/ui/ChatInput/ChatInput.module.css */
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+}
+
+.input {
+  flex: 1;
+  background-color: var(--color-surface);
+  /* #F3F4F6 */
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-12) var(--space-24);
+  font: var(--text-body-regular);
+  color: var(--color-gray-900);
+  outline: none;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--color-gray-500);
+}
+
+.input:focus {
+  /* 접근성 및 사용성을 위해 포커스 효과 부여, 필요에 따라 조정 가능 */
+  box-shadow: 0 0 0 2px var(--color-gray-300);
+}
+
+.sendButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  /* 검은색 버튼 */
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.sendButton:active {
+  transform: scale(0.95);
+}
+
+.sendButton:hover {
+  opacity: 0.9;
+}
