@@ -655,6 +655,12 @@ export default function ComponentShowcasePage() {
           }}
         />
       )}
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatModalOpen}
+        onClose={() => setIsChatModalOpen(false)}
+      />
     </div>
   );
 }
