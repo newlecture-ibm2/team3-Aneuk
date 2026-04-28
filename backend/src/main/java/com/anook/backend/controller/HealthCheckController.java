@@ -17,7 +17,11 @@ public class HealthCheckController {
     public String aiStatusCheck() {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String aiUrl = "http://ai:8000/api/v1/test-ai";
+            String baseUrl = System.getenv("AI_SERVER_URL");
+            if (baseUrl == null) {
+                baseUrl = "http://localhost:8000"; // 로컬 개발 시 기본값
+            }
+            String aiUrl = baseUrl + "/api/v1/test-ai";
             ResponseEntity<String> response = restTemplate.getForEntity(aiUrl, String.class);
             return "✅ Backend successfully communicated with hidden AI server! AI Response: " + response.getBody();
         } catch (Exception e) {
