@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>화면 설계서 - 객실 관리</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Sans KR',sans-serif;background:#fff;color:#222;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{width:1200px;margin:20px auto;border:1.5px solid #333;background:#fff;page-break-after:always}
+    .meta-header{display:grid;grid-template-columns:1fr 1fr;border-bottom:1.5px solid #333}
+    .meta-left,.meta-right{display:grid;grid-template-columns:auto 1fr auto 1fr}
+    .meta-left{border-right:1.5px solid #333}
+    .meta-label{background:#f5f5f5;font-weight:700;font-size:12px;padding:10px 14px;border-right:1px solid #ccc;display:flex;align-items:center;white-space:nowrap}
+    .meta-value{font-size:12px;padding:10px 14px;display:flex;align-items:center;border-right:1px solid #ccc}
+    .meta-value:last-child{border-right:none}
+    .meta-row2{display:grid;grid-template-columns:auto 1fr;border-bottom:1.5px solid #333}
+    .main-content{display:grid;grid-template-columns:75% 25%;min-height:700px}
+    .screen-area{border-right:1.5px solid #333;padding:20px;position:relative;background:#fafafa}
+    .wire{border:1px solid #ddd;border-radius:8px;background:#f8fafc;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);height:500px;display:flex}
+    .marker{position:absolute;width:24px;height:24px;border-radius:50%;background:#FF4D6A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,77,106,.4);z-index:10;border:2px solid #fff}
+    .description-area{display:flex;flex-direction:column;border-left:1.5px solid #333;margin-left:-1.5px}
+    .desc-title{background:#f5f5f5;font-weight:700;font-size:13px;padding:10px 14px;border-bottom:1.5px solid #333;text-align:center;letter-spacing:1px}
+    .desc-table{width:100%;border-collapse:collapse;flex:1}
+    .desc-table tr{border-bottom:1px solid #ddd}
+    .desc-table tr:last-child{border-bottom:none}
+    .desc-table td{padding:12px;vertical-align:top;font-size:12px;line-height:1.6}
+    .desc-table .num{width:36px;text-align:center;font-weight:700;color:#FF4D6A;font-size:13px;vertical-align:middle;border-right:1px solid #eee}
+    .desc-table .desc-text{color:#333}
+    .desc-text strong{color:#0f172a;display:block;margin-bottom:4px;font-size:13px}
+    .sim-sidebar{width:200px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding-top:16px}
+    .sim-logo{display:flex;align-items:center;padding:12px 16px;font-weight:800;font-size:14px;color:#0f172a}
+    .sim-logo .icon{background:#0f172a;color:#fff;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;margin-right:6px;font-size:10px}
+    .sim-menu-title{font-size:9px;color:#94a3b8;font-weight:700;padding:0 16px;margin-bottom:6px;margin-top:14px}
+    .sim-menu-item{display:flex;align-items:center;padding:8px 16px;color:#64748b;font-size:12px;cursor:pointer;font-weight:500}
+    .sim-menu-item.active{background:#0f172a;color:#fff;border-radius:0 16px 16px 0;margin-right:16px;font-weight:700}
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">객실 관리</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">A-06-Room</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.28</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; 설정 &gt; 객실 관리</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc;position:relative">
+        <!-- Sidebar -->
+        <div class="sim-sidebar">
+          <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
+          <div class="sim-menu-item">대시보드</div>
+          <div class="sim-menu-item">프론트 데스크</div>
+          <div class="sim-menu-item">하우스키핑</div>
+          <div class="sim-menu-title">설정</div>
+          <div class="sim-menu-item">부서 관리</div>
+          <div class="sim-menu-item active" style="position:relative">
+            <div class="marker" style="top:-8px;right:-8px">1</div>
+            객실 관리
+          </div>
+          <div class="sim-menu-item">직원 관리</div>
+        </div>
+
+        <!-- Main -->
+        <div style="flex:1;padding:24px;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+            <div>
+              <h1 style="color:#0f172a;font-size:20px;font-weight:800;margin-bottom:4px">객실 관리</h1>
+              <p style="font-size:12px;color:#94a3b8;margin:0">호텔 내 객실 정보를 등록하고 관리합니다.</p>
+            </div>
+            <button style="background:#0f172a;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px">+ 객실 추가</button>
+          </div>
+
+          <!-- Table Header -->
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 2fr 1fr 0.4fr;padding:10px 16px;font-size:10px;color:#94a3b8;font-weight:600;border-bottom:1px solid #e2e8f0">
+            <span>객실 번호</span><span>층</span><span>타입</span><span>상태</span><span></span>
+          </div>
+
+          <!-- Row 1 -->
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 2fr 1fr 0.4fr;padding:14px 16px;align-items:center;border-bottom:1px solid #f1f5f9">
+            <span style="font-size:14px;font-weight:700;color:#0f172a">101호</span>
+            <span style="font-size:13px;color:#475569">1층</span>
+            <span style="font-size:13px;color:#475569">STANDARD</span>
+            <span style="font-size:11px;color:#16a34a;font-weight:700">● 이용 가능</span>
+            <div style="display:flex;gap:6px">
+              <span style="font-size:14px;color:#94a3b8;cursor:pointer">✏️</span><span style="font-size:14px;color:#94a3b8;cursor:pointer">🗑️</span>
+            </div>
+          </div>
+          <!-- Row 2 -->
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 2fr 1fr 0.4fr;padding:14px 16px;align-items:center;border-bottom:1px solid #f1f5f9">
+            <span style="font-size:14px;font-weight:700;color:#0f172a">201호</span>
+            <span style="font-size:13px;color:#475569">2층</span>
+            <span style="font-size:13px;color:#475569">DELUXE</span>
+            <span style="font-size:11px;color:#16a34a;font-weight:700">● 이용 가능</span>
+            <div style="display:flex;gap:6px">
+              <span style="font-size:14px;color:#94a3b8;cursor:pointer">✏️</span><span style="font-size:14px;color:#94a3b8;cursor:pointer">🗑️</span>
+            </div>
+          </div>
+          <!-- Row 3 -->
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 2fr 1fr 0.4fr;padding:14px 16px;align-items:center;border-bottom:1px solid #f1f5f9">
+            <span style="font-size:14px;font-weight:700;color:#0f172a">301호</span>
+            <span style="font-size:13px;color:#475569">3층</span>
+            <span style="font-size:13px;color:#475569">SUITE</span>
+            <span style="font-size:11px;color:#3b82f6;font-weight:700">● 투숙 중</span>
+            <div style="display:flex;gap:6px">
+              <span style="font-size:14px;color:#94a3b8;cursor:pointer">✏️</span><span style="font-size:14px;color:#94a3b8;cursor:pointer">🗑️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Showcase -->
+      <div style="margin-top:24px;display:flex;gap:24px;align-items:flex-start">
+        <div style="width:360px;background:#1e293b;padding:40px;border-radius:12px;display:flex;justify-content:center;position:relative;flex-shrink:0">
+          <div class="marker" style="top:-12px;left:-12px;position:absolute">2</div>
+          <div style="background:#fff;width:320px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.5);padding:24px;">
+            <h2 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:16px">객실 추가</h2>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">객실 번호</label>
+              <input type="text" placeholder="예: 101" style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px">
+            </div>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">층(Floor)</label>
+              <input type="number" placeholder="예: 1" style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px">
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px">객실 타입</label>
+              <select style="width:100%;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff;color:#0f172a">
+                <option>STANDARD</option>
+                <option>DELUXE</option>
+                <option>SUITE</option>
+              </select>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+              <button style="padding:8px 16px;background:#f1f5f9;color:#475569;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">취소</button>
+              <button style="padding:8px 16px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">저장</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;">
+          <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:12px">✨ UI 뷰: 객실 추가 팝업</h3>
+          <p style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:8px">
+            리스트 우측 상단의 <b>'+ 객실 추가'</b> 버튼을 클릭하면 화면 전체가 어두워지며 중앙에 나타나는 모달(Modal) 팝업입니다.
+          </p>
+          <p style="font-size:13px;color:#475569;line-height:1.6">
+            메인 화면 위에 독립된 레이어로 배치되며, 모달 바깥 영역을 클릭하거나 취소 버튼을 누르면 팝업이 닫힙니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>설정 메뉴</strong><br>· 사이드바 하단 '설정' 그룹에 위치</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>+ 객실 추가 (모달)</strong><br>· 시스템에 새로운 객실 마스터 데이터를 등록하는 팝업</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>객실 리스트</strong><br>· 객실의 호수, 층, 타입(STANDARD/DELUXE/SUITE)을 관리</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>객실 추가 저장</strong><br>· 모달에서 호수/층/타입 입력 후 저장 클릭<br>· API: POST `/admin/rooms`</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>수정 / 삭제</strong><br>· ✏️ 클릭 시 수정 모달 오픈, 🗑️ 클릭 시 삭제 확인 후 제거<br>· API: PUT/DELETE `/admin/rooms/{id}`</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">객실 번호(호수)는 중복 등록 불가, 숫자만 허용</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">투숙 중인 객실은 삭제/수정이 제한됨 (Hard Delete 정책 적용)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

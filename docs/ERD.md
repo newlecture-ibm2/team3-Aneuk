@@ -29,8 +29,8 @@ erDiagram
     staff {
         bigint id PK
         varchar name
-        varchar pin "4자리 PIN"
-        varchar role_id FK "STAFF, MANAGER"
+        varchar pin "6자리 PIN"
+        varchar role "STAFF, MANAGER"
         varchar department_id FK
     }
 
