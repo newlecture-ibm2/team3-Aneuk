@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './RequestCard.module.css';
 import Button from '@/components/ui/Button/Button';
 import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
+import ChatModal from '@/components/ui/Modal/ChatModal';
 
 export interface RequestCardProps {
   roomType?: string;
@@ -31,41 +32,59 @@ export default function RequestCard({
   variant = 'default'
 }: RequestCardProps) {
   const isWarning = variant === 'warning';
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handlePrimaryClick = () => {
+    if (primaryActionText === '상담 시작') {
+      setIsChatOpen(true);
+    }
+    if (onPrimaryAction) {
+      onPrimaryAction();
+    }
+  };
 
   return (
-    <div className={`${styles.requestCard} ${isWarning ? styles.requestCardWarning : ''}`}>
-      <div className={`${styles.roomBox} ${isWarning ? styles.roomBoxWarning : ''}`}>
-        <span className={`${styles.roomType} ${isWarning ? styles.textWhite : ''}`}>{roomType}</span>
-        <span className={`${styles.roomNumber} ${isWarning ? styles.textWhite : ''}`}>{roomNumber}</span>
-      </div>
-      
-      <div className={styles.contentSection}>
-        <div className={styles.contentHeader}>
-          <StatusBadge variant={statusVariant}>{statusText}</StatusBadge>
-          <span className={styles.timeText}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            {getRelativeTime(createdAt)}
-          </span>
+    <>
+      <div className={`${styles.requestCard} ${isWarning ? styles.requestCardWarning : ''}`}>
+        <div className={`${styles.roomBox} ${isWarning ? styles.roomBoxWarning : ''}`}>
+          <span className={`${styles.roomType} ${isWarning ? styles.textWhite : ''}`}>{roomType}</span>
+          <span className={`${styles.roomNumber} ${isWarning ? styles.textWhite : ''}`}>{roomNumber}</span>
         </div>
-        <h3 className={styles.title}>{title}</h3>
+        
+        <div className={styles.contentSection}>
+          <div className={styles.contentHeader}>
+            <StatusBadge variant={statusVariant}>{statusText}</StatusBadge>
+            <span className={styles.timeText}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {getRelativeTime(createdAt)}
+            </span>
+          </div>
+          <h3 className={styles.title}>{title}</h3>
+        </div>
+
+        <div className={`${styles.actionSection} ${isWarning ? styles.actionSectionWarning : ''}`}>
+          {primaryActionText && (
+            <Button variant="primary" style={{ width: '100%', padding: 'var(--space-8)' }} onClick={handlePrimaryClick}>
+              {primaryActionText}
+            </Button>
+          )}
+          {secondaryActionText && (
+            <Button variant="outlined" style={{ width: '100%', padding: 'var(--space-8)', color: 'var(--color-gray-500)', borderColor: 'var(--color-gray-300)' }} onClick={onSecondaryAction}>
+              {secondaryActionText}
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className={`${styles.actionSection} ${isWarning ? styles.actionSectionWarning : ''}`}>
-        {primaryActionText && (
-          <Button variant="primary" style={{ width: '100%', padding: 'var(--space-8)' }} onClick={onPrimaryAction}>
-            {primaryActionText}
-          </Button>
-        )}
-        {secondaryActionText && (
-          <Button variant="outlined" style={{ width: '100%', padding: 'var(--space-8)', color: 'var(--color-gray-500)', borderColor: 'var(--color-gray-300)' }} onClick={onSecondaryAction}>
-            {secondaryActionText}
-          </Button>
-        )}
-      </div>
-    </div>
+      <ChatModal 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)} 
+        roomNumber={roomNumber.toString()} 
+      />
+    </>
   );
 }
 

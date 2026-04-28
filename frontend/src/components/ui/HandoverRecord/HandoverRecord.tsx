@@ -9,26 +9,58 @@ export interface HandoverItem {
   requestDetails: string;
 }
 
+export interface HandoverBriefing {
+  id: string | number;
+  shiftStart: string;
+  shiftEnd: string;
+  totalRequestCount: number;
+  pendingCount: number;
+  escalatedCount: number;
+  summary: string;
+  createdAt: string;
+}
+
 export interface HandoverRecordProps {
-  managerName: string;
-  workingHours: string;
-  date: string;
+  managerName?: string;
+  briefing?: HandoverBriefing;
   items: HandoverItem[];
 }
 
-export default function HandoverRecord({ managerName, workingHours, date, items }: HandoverRecordProps) {
+export default function HandoverRecord({ managerName, briefing, items }: HandoverRecordProps) {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>인수인계 기록</h2>
-      
-      <div className={styles.metadataContainer}>
-        <div className={styles.metaRow}>
-          <span><strong>담당자:</strong> {managerName}</span>
-        </div>
-        <div className={styles.metaRow}>
-          <span><strong>날짜:</strong> {date} <span style={{ marginLeft: '12px' }}><strong>근무시간:</strong> {workingHours}</span></span>
-        </div>
-      </div>
+
+      {briefing && (
+        <table className={styles.infoTable}>
+          <tbody>
+            <tr>
+              <th className={styles.infoTh}>ID</th>
+              <td className={styles.infoTd}>{briefing.id}</td>
+              <th className={styles.infoTh}>담당자명</th>
+              <td className={styles.infoTd}>{managerName || '-'}</td>
+            </tr>
+            <tr>
+              <th className={styles.infoTh}>교대 시작</th>
+              <td className={styles.infoTd}>{briefing.shiftStart}</td>
+              <th className={styles.infoTh}>교대 종료</th>
+              <td className={styles.infoTd}>{briefing.shiftEnd}</td>
+            </tr>
+            <tr>
+              <th className={styles.infoTh}>총 요청 수</th>
+              <td className={styles.infoTd}>{briefing.totalRequestCount}</td>
+              <th className={styles.infoTh}>작성 일시</th>
+              <td className={styles.infoTd}>{briefing.createdAt}</td>
+            </tr>
+            <tr>
+              <th className={styles.infoTh}>미처리 수</th>
+              <td className={styles.infoTd}>{briefing.pendingCount}</td>
+              <th className={styles.infoTh}>에스컬레이션 수</th>
+              <td className={styles.infoTd}>{briefing.escalatedCount}</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
 
       <div className={styles.tableWrapper}>
         <HandoverTable items={items} />

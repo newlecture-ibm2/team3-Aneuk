@@ -1,9 +1,13 @@
 import React from 'react';
 import styles from './RagCandidateCard.module.css';
 import Button from '@/components/ui/Button/Button';
+import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
+
+export type RagReason = 'RAG_MISSING' | 'INTENT_UNCLEAR';
 
 export interface RagCandidateCardProps {
-  category?: string;
+  department: string;
+  aiReason: RagReason;
   roomNumber?: string;
   consultationContent: string;
   timestamp: string;
@@ -12,7 +16,8 @@ export interface RagCandidateCardProps {
 }
 
 export default function RagCandidateCard({
-  category = '수동 상담',
+  department,
+  aiReason,
   roomNumber,
   consultationContent,
   timestamp,
@@ -42,6 +47,9 @@ export default function RagCandidateCard({
   };
 
   const displayContent = getLongestStaffReply(consultationContent);
+  const reasonText = aiReason === 'RAG_MISSING' ? '지식 없음' : '의도 불명';
+  const displayCategory = `${reasonText} (${department})`;
+  const badgeVariant = aiReason === 'INTENT_UNCLEAR' ? 'red' : 'purple';
 
   return (
     <div className={styles.card}>
@@ -54,12 +62,8 @@ export default function RagCandidateCard({
 
       <div className={styles.contentSection}>
         <div className={styles.contentHeader}>
-          <span className={styles.category}>{category}</span>
+          <StatusBadge variant={badgeVariant}>{displayCategory}</StatusBadge>
           <span className={styles.timeText}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
             {timestamp}
           </span>
         </div>

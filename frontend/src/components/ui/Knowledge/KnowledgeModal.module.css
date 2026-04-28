@@ -65,12 +65,12 @@
 }
 
 .clockIcon {
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
 }
 
 .dateText {
   font: var(--text-caption-medium);
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
 }
 
 .editBtn {

@@ -44,7 +44,7 @@ export default function KnowledgeEditModal({
   return (
     <>
       <ModalOverlay isOpen={isOpen} onClose={() => setIsConfirmOpen(true)}>
-        <ModalCard size="md">
+        <ModalCard size="lg">
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>

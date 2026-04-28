@@ -10,11 +10,11 @@
   box-shadow: var(--shadow-card);
   width: 100%;
   box-sizing: border-box;
-  transition: background-color var(--transition);
+  transition: border-color var(--transition);
 }
 
 .taskTicket:hover {
-  background-color: var(--color-surface);
+  border-color: var(--color-gray-300);
 }
 
 .header {

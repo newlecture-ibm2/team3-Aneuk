@@ -11,19 +11,20 @@ import InputField from '@/components/ui/Inputfield/InputField';
 import Dropdown from '@/components/ui/Dropdown/Dropdown';
 import Tabs from '@/components/ui/Tab/Tabs';
 import Pagination from '@/components/ui/Pagenation/Pagination';
-import RequestCard from '@/components/ui/card/RequestCard';
-import RagCandidateCard from '@/components/ui/card/RagCandidateCard';
+import RequestCard from '@/components/ui/Card/RequestCard';
+import RagCandidateCard from '@/components/ui/Card/RagCandidateCard';
+import ChatScreen from '@/components/ui/ChatScreen/ChatScreen';
 import { HandoverRecord } from '@/components/ui/HandoverRecord';
 import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import TaskColumn from '@/components/ui/TaskBoard/TaskColumn';
-import SummaryCard from '@/components/ui/card/SummaryCard';
+import SummaryCard from '@/components/ui/Card/SummaryCard';
+import ChartCard from '@/components/ui/Card/ChartCard';
 import FilterButton from '@/components/ui/FilterButton/FilterButton';
 import { Table, TableHeader, TableRow, TableCell } from '@/components/ui/Table/Table';
 import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
-import ChatBubble from '@/components/ui/ChatBubble/ChatBubble';
-import ChatInput from '@/components/ui/ChatInput/ChatInput';
 import Toggle from '@/components/ui/Button/Toggle';
 import Toast from '@/components/ui/Modal/Toast';
+import ChatModal from '@/components/ui/Modal/ChatModal';
 import ChatHistory from '@/components/ui/ChatHistory/ChatHistory';
 import KnowledgeItem from '@/components/ui/Knowledge/KnowledgeItem';
 import KnowledgeModal from '@/components/ui/Knowledge/KnowledgeModal';
@@ -55,6 +56,7 @@ export default function ComponentShowcasePage() {
   const [activeRoomId, setActiveRoomId] = useState<string | number>('1001');
   const [selectedKnowledge, setSelectedKnowledge] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const sampleRooms = [
     { id: '1001', roomNumber: '1001', statusText: '보관됨' },
@@ -99,6 +101,17 @@ export default function ComponentShowcasePage() {
     { id: 7, roomNumber: '1001', guestName: '홍길동', requestDetails: '[객실 내 응급 환자] 심한 복통 호소, 의료진 지원 필요' },
   ];
 
+  const sampleHandoverBriefing = {
+    id: 1,
+    shiftStart: '2026-04-28 09:00',
+    shiftEnd: '2026-04-28 18:00',
+    totalRequestCount: 45,
+    pendingCount: 2,
+    escalatedCount: 1,
+    summary: '대부분의 요청이 원활하게 처리되었으나, 1204호 에어컨 수리 건이 부품 문제로 지연 중. 야간 근무 시 진행 상황 팔로업 요망.',
+    createdAt: '2026-04-28 17:55'
+  };
+
   const closeModal = () => setActiveModal(null);
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -112,9 +125,9 @@ export default function ComponentShowcasePage() {
     setSidebarActivePath(href);
   };
 
-  
+
   const [isToggled, setIsToggled] = useState(false);
-  
+
   const [inputValue, setInputValue] = useState('');
   const [dropdownValue, setDropdownValue] = useState('');
   const [tabValue, setTabValue] = useState('tab1');
@@ -140,7 +153,7 @@ export default function ComponentShowcasePage() {
           </h2>
           <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)' }}>
             <ComponentLabel path="components/layout/Header.tsx" />
-              <Header />
+            <Header />
           </div>
         </section>
 
@@ -164,8 +177,8 @@ export default function ComponentShowcasePage() {
             <div style={{ borderRadius: 'var(--radius-lg)' }}>
               <div style={{ width: '100%' }}>
                 <ComponentLabel path="components/layout/Sidebar.tsx" />
-                <Sidebar 
-                  role={sidebarRole} 
+                <Sidebar
+                  role={sidebarRole}
                   fakePathname={sidebarActivePath}
                   onMenuClick={handleSidebarClick}
                 />
@@ -195,11 +208,11 @@ export default function ComponentShowcasePage() {
                 </div>
 
                 <ComponentLabel path="components/ui/Modal/ConfirmModal.tsx" />
-                <ConfirmModal 
-                  isOpen={activeModal === 'ConfirmModal'} 
-                  onClose={closeModal} 
-                  onConfirm={closeModal} 
-                  title="Confirm 테스트" 
+                <ConfirmModal
+                  isOpen={activeModal === 'ConfirmModal'}
+                  onClose={closeModal}
+                  onConfirm={closeModal}
+                  title="Confirm 테스트"
                   subtitle="모달이 정상적으로 뜨는지 확인합니다."
                   requireCheckbox={true}
                   checkboxLabel="안내사항을 확인했습니다."
@@ -239,7 +252,7 @@ export default function ComponentShowcasePage() {
             4. UI Components
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-32)' }}>
-            
+
             {/* Group 1: Buttons & Controls */}
             <div style={{ background: 'var(--color-bg)', padding: 'var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>1. Buttons & Controls</h3>
@@ -264,7 +277,7 @@ export default function ComponentShowcasePage() {
                 <div>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Filter Button</h4>
                   <ComponentLabel path="components/ui/FilterButton/FilterButton.tsx" />
-                  <FilterButton 
+                  <FilterButton
                     filterOptions={[{ label: '최신순', value: 'latest' }, { label: '오래된순', value: 'oldest' }, { label: '우선순위', value: 'priority' }]}
                     selectedFilter="latest"
                     onFilterSelect={(val) => alert(`필터 선택: ${val}`)}
@@ -287,9 +300,9 @@ export default function ComponentShowcasePage() {
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-8)' }}>Dropdown</h4>
                   <ComponentLabel path="components/ui/Dropdown/Dropdown.tsx" />
-                  <Dropdown 
-                    label="옵션 선택" 
-                    options={[{label: '옵션 1', value: '1'}, {label: '옵션 2', value: '2'}, {label: '옵션 3', value: '3'}]} 
+                  <Dropdown
+                    label="옵션 선택"
+                    options={[{ label: '옵션 1', value: '1' }, { label: '옵션 2', value: '2' }, { label: '옵션 3', value: '3' }]}
                     value={dropdownValue}
                     onChange={setDropdownValue}
                   />
@@ -315,8 +328,8 @@ export default function ComponentShowcasePage() {
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Tabs</h4>
                   <ComponentLabel path="components/ui/Tab/Tabs.tsx" />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-                    <Tabs variant="line" options={[{label: '전체', value: 'tab1', count: 12}, {label: '진행중', value: 'tab2', count: 3}, {label: '완료', value: 'tab3', count: 9}]} activeValue={tabValue} onChange={setTabValue} />
-                    <Tabs variant="pill" options={[{label: '알림', value: 'tab1'}, {label: '설정', value: 'tab2'}]} activeValue={tabValue} onChange={setTabValue} />
+                    <Tabs variant="line" options={[{ label: '전체', value: 'tab1', count: 12 }, { label: '진행중', value: 'tab2', count: 3 }, { label: '완료', value: 'tab3', count: 9 }]} activeValue={tabValue} onChange={setTabValue} />
+                    <Tabs variant="pill" options={[{ label: '알림', value: 'tab1' }, { label: '설정', value: 'tab2' }]} activeValue={tabValue} onChange={setTabValue} />
                   </div>
                 </div>
                 <div style={{ flex: 1, minWidth: '200px' }}>
@@ -330,20 +343,12 @@ export default function ComponentShowcasePage() {
             {/* Group 4: Chat UI */}
             <div style={{ background: 'var(--color-bg)', padding: 'var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>4. Chat UI</h3>
-              <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Bubbles</h4>
-                  <ComponentLabel path="components/ui/ChatBubble/ChatBubble.tsx" />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', padding: 'var(--space-24)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-surface)', background: 'var(--color-bg)' }}>
-                    <ChatBubble variant="received">안녕하세요! 그랜드 호텔 AI 서비스입니다. 무엇을 도와드릴까요?</ChatBubble>
-                    <ChatBubble variant="sent">에어컨이 작동하지 않아요. 그리고 수건에서 하얀 실밥이 떨어져요. 수건 좀 교체해주세요.</ChatBubble>
-                  </div>
-                </div>
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Input</h4>
-                  <ComponentLabel path="components/ui/ChatInput/ChatInput.tsx" />
-                  <div style={{ padding: 'var(--space-16)', background: 'var(--color-bg)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
-                    <ChatInput onSend={(text) => alert(`전송: ${text}`)} />
+              <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Screen</h4>
+                  <ComponentLabel path="components/ui/ChatScreen/ChatScreen.tsx" />
+                  <div style={{ width: '100%', padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', display: 'flex', justifyContent: 'center' }}>
+                    <ChatScreen />
                   </div>
                 </div>
               </div>
@@ -352,7 +357,7 @@ export default function ComponentShowcasePage() {
             {/* Group 5: Data Display & Cards */}
             <div style={{ background: 'var(--color-bg)', padding: 'var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>5. Data Display & Cards</h3>
-              
+
               <div>
                 <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Table (세부 접속 로그)</h4>
                 <ComponentLabel path="components/ui/Table/Table.tsx" />
@@ -394,14 +399,25 @@ export default function ComponentShowcasePage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
                     <div style={{ flex: 1 }}>
                       <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Request Card</h5>
-                      <ComponentLabel path="components/ui/card/RequestCard.tsx" />
+                      <ComponentLabel path="components/ui/Card/RequestCard.tsx" />
                       <div style={{ width: '100%' }}>
-                        <RequestCard roomNumber={1502} createdAt={new Date(Date.now() - 34 * 60 * 1000).toISOString()} title="비건 메뉴 중에 견과류가 아예 안 들어간 메뉴가 있나요?" onPrimaryAction={() => alert('상담 시작')} onSecondaryAction={() => alert('무시하기')} />
+                        <RequestCard roomNumber={1502} createdAt={new Date(Date.now() - 34 * 60 * 1000).toISOString()} title="비건 메뉴 중에 견과류가 아예 안 들어간 메뉴가 있나요?" onSecondaryAction={() => alert('무시하기')} />
                       </div>
+                    </div>
+                    
+                    <div style={{ flex: 1 }}>
+                      <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Chat Modal (직원 상담용)</h5>
+                      <ComponentLabel path="components/ui/Modal/ChatModal.tsx" />
+                      <div style={{ width: '100%', display: 'flex', gap: 'var(--space-16)' }}>
+                        <Button variant="primary" onClick={() => setIsChatModalOpen(true)}>직접 Chat Modal 열기</Button>
+                      </div>
+                      <p style={{ font: 'var(--text-caption-medium)', color: 'var(--color-gray-500)', marginTop: 'var(--space-8)' }}>
+                        * 위 RequestCard의 '상담 시작' 버튼을 눌러도 모달이 열립니다.
+                      </p>
                     </div>
                     <div style={{ flex: 1 }}>
                       <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Summary Card</h5>
-                      <ComponentLabel path="components/ui/card/SummaryCard.tsx" />
+                      <ComponentLabel path="components/ui/Card/SummaryCard.tsx" />
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-12)' }}>
                         <SummaryCard title="오늘 총 요청" value="7" changeValue="+12%" changeType="positive" />
                         <SummaryCard title="평균 응답 시간" value="1.5m" changeValue="-0.2m" changeType="neutral" />
@@ -410,21 +426,58 @@ export default function ComponentShowcasePage() {
                       </div>
                     </div>
                   </div>
-                  
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+                    <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>Chart Card (대시보드 그래프용)</h5>
+                    <ComponentLabel path="components/ui/Card/ChartCard.tsx" />
+                    <div style={{ display: 'flex', gap: 'var(--space-24)', width: '100%' }}>
+                      <ChartCard title="부서별 평균 처리 시간" subtitle="AVERAGE RESOLUTION TIME (MINUTES)">
+                        <div style={{ height: '200px', width: '100%', backgroundColor: 'var(--color-gray-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius-md)' }}>
+                          Graph Placeholder
+                        </div>
+                      </ChartCard>
+                      <ChartCard title="최다 요청 항목" subtitle="MOST FREQUENT REQUESTS (%)">
+                        <div style={{ height: '200px', width: '100%', backgroundColor: 'var(--color-gray-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius-md)' }}>
+                          Chart Placeholder
+                        </div>
+                      </ChartCard>
+                    </div>
+                  </div>
+
                   {/* RAG Candidate Card 추가 */}
                   <div>
                     <h5 style={{ font: 'var(--text-caption-bold)', color: 'var(--color-gray-500)', marginBottom: 'var(--space-8)' }}>RAG Candidate Card (신규 지식 후보 검토)</h5>
-                    <ComponentLabel path="components/ui/card/RagCandidateCard.tsx" />
-                    <div style={{ width: '100%', maxWidth: '800px' }}>
-                      <RagCandidateCard 
+                    <ComponentLabel path="components/ui/Card/RagCandidateCard.tsx" />
+                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+                      <RagCandidateCard
                         roomNumber="1204"
-                        category="수동 상담 (하우스키핑)"
+                        department="하우스키핑"
+                        aiReason="RAG_MISSING"
                         consultationContent="고객: 혹시 아기용 침대 가드 설치가 가능한가요?&#10;직원: 네, 고객님. 12개월 미만 유아용 침대 가드는 재고 확인 후 무상으로 설치해 드리고 있습니다. 바로 준비해드리겠습니다."
                         timestamp="2026.10.26 15:30"
                         onAddRag={(content) => {
                           setSelectedKnowledge({
                             category: "수동 상담 (하우스키핑)",
                             title: "", // 지식 제목을 새로 입력할 수 있도록 비워둠
+                            description: content,
+                            updatedAt: "방금 전",
+                            isNew: true
+                          });
+                          setIsEditModalOpen(true);
+                        }}
+                        onReject={() => alert('이 상담 내용은 무시합니다.')}
+                      />
+                      
+                      <RagCandidateCard
+                        roomNumber="2401"
+                        department="프론트"
+                        aiReason="INTENT_UNCLEAR"
+                        consultationContent="고객: 저기요, 아까 예약했던 거 혹시 취소되나요?&#10;직원: 고객님, 혹시 예약하신 패키지가 어떤 상품이신지 말씀해 주실 수 있을까요? 취소 규정이 상품마다 달라서요."
+                        timestamp="2026.10.26 16:15"
+                        onAddRag={(content) => {
+                          setSelectedKnowledge({
+                            category: "의도 불명 (프론트)",
+                            title: "",
                             description: content,
                             updatedAt: "방금 전",
                             isNew: true
@@ -445,6 +498,8 @@ export default function ComponentShowcasePage() {
                       <TaskColumn title="완료" count={1}><TaskTicket status="DONE" ticketId="302" priority="LOW" title="샤워기 헤드 교체" description="수압 약함" createdAt={new Date(Date.now() - 150 * 60 * 1000).toISOString()} /></TaskColumn>
                     </div>
                   </div>
+
+
                 </div>
               </div>
             </div>
@@ -460,10 +515,10 @@ export default function ComponentShowcasePage() {
           <div style={{ display: 'flex', gap: 'var(--space-24)', height: '600px' }}>
             <div style={{ width: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
               <ComponentLabel path="components/ui/ChatHistory/ChatHistory.tsx" />
-              <ChatHistory 
-                rooms={sampleRooms} 
-                activeRoomId={activeRoomId} 
-                onRoomSelect={setActiveRoomId} 
+              <ChatHistory
+                rooms={sampleRooms}
+                activeRoomId={activeRoomId}
+                onRoomSelect={setActiveRoomId}
               />
             </div>
           </div>
@@ -478,7 +533,7 @@ export default function ComponentShowcasePage() {
             {sampleKnowledges.map((item, idx) => (
               <div key={idx}>
                 <ComponentLabel path="components/ui/Knowledge/KnowledgeItem.tsx" />
-                <KnowledgeItem 
+                <KnowledgeItem
                   category={item.category}
                   title={item.title}
                   description={item.description}
@@ -501,10 +556,9 @@ export default function ComponentShowcasePage() {
             Handover Record (인수인계 문서)
           </h2>
           <ComponentLabel path="components/ui/HandoverRecord/HandoverRecord.tsx" />
-          <HandoverRecord 
+          <HandoverRecord
             managerName="박단희"
-            workingHours="09:00 - 18:00"
-            date="2026. 4. 28"
+            briefing={sampleHandoverBriefing}
             items={sampleHandoverItems}
           />
         </section>

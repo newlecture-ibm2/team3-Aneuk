@@ -13,7 +13,8 @@
 }
 
 .th {
-  background-color: #F7F7F7; /* 약간의 회색빛 (워드 표 헤더 느낌) */
+  background-color: var(--color-gray-50);
   font: var(--text-body-bold);
   color: var(--color-gray-900);
+  text-align: center;
 }
