@@ -43,7 +43,7 @@ export function useWebSocket(): UseWebSocketReturn {
   useEffect(() => {
     const client = new Client({
       brokerURL: WS_URL,
-      
+
       // 연결 성공
       onConnect: () => {
         console.log('[WS] ✅ STOMP 연결 성공');
@@ -79,7 +79,7 @@ export function useWebSocket(): UseWebSocketReturn {
       onWebSocketError: () => {
         reconnectAttemptRef.current += 1;
         const attempt = Math.min(reconnectAttemptRef.current, RECONNECT_DELAYS.length - 1);
-        console.warn(`[WS] WebSocket 에러 발생, 재연결 시도 #${reconnectAttemptRef.current} (${RECONNECT_DELAYS[attempt]}ms 후)`);
+        console.warn(`[WS] WebSocket 에러 발생,재연결 시도 #${reconnectAttemptRef.current} (${RECONNECT_DELAYS[attempt]}ms 후)`);
       },
 
       // 재연결 딜레이 (ms)
