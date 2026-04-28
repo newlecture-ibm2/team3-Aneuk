@@ -5,6 +5,7 @@ import ModalOverlay from './ModalOverlay';
 import ModalCard from './ModalCard';
 import { CancelIcon, CodeIcon } from '@/components/icons';
 import Tag from '@/components/ui/StatusBadge/StatusBadge';
+import SummaryCard from '@/components/ui/Card/SummaryCard';
 import styles from './LogDataModal.module.css';
 
 interface LogDataModalProps {
@@ -44,22 +45,10 @@ export default function LogDataModal({ isOpen, onClose }: LogDataModalProps) {
 
           {/* Stats Grid */}
           <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>입력 토큰</span>
-              <span className={styles.statValue}>1,200</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>출력 토큰</span>
-              <span className={styles.statValue}>320</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>처리 시간</span>
-              <span className={`${styles.statValue} ${styles.textGreen}`}>850ms</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>사용 모델</span>
-              <span className={`${styles.statValue} ${styles.textBlue}`}>gemini-1.5-flash</span>
-            </div>
+            <SummaryCard title="입력 토큰" value="1,200" />
+            <SummaryCard title="출력 토큰" value="320" />
+            <SummaryCard title="처리 시간" value="850ms" />
+            <SummaryCard title="사용 모델" value="gemini-1.5-flash" />
           </div>
 
           {/* Prompt Section */}
