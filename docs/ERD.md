@@ -44,7 +44,7 @@ erDiagram
 
     request {
         bigint id PK
-        varchar status "PENDING, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED"
+        varchar status "PENDING, ASSIGNED, IN_PROGRESS, COMPLETED, SETTLED, CANCELLED"
         varchar priority "LOW, NORMAL, HIGH, URGENT"
         varchar department_id FK "HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY"
         jsonb entities "부서별 가변 데이터 (품목/수량/증상/목적지 등)"

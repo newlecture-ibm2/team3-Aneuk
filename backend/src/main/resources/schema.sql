@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS guest (
 -- ============================================================
 
 -- 고객 요청 (핵심 테이블)
+-- status: PENDING → ASSIGNED → IN_PROGRESS → COMPLETED → SETTLED(FB 결제완료) / CANCELLED
 CREATE TABLE IF NOT EXISTS request (
     id                  BIGSERIAL    PRIMARY KEY,
     status              VARCHAR(20)  NOT NULL DEFAULT 'PENDING',

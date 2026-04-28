@@ -2,6 +2,43 @@
 trigger: always_on
 ---
 
+## 헥사고날 아키텍처 (Ports & Adapters)
+
+### 표준 모듈 폴더 구조
+```
+{모듈}/
+├── domain/
+│   ├── model/             ← 순수 POJO 도메인 모델 (JPA, Spring 의존 금지)
+│   └── exception/         ← 도메인 전용 예외 클래스
+├── application/
+│   ├── port/
+│   │   ├── in/            ← UseCase 인터페이스 (Controller가 의존)
+│   │   └── out/           ← RepositoryPort 인터페이스 (도메인 모델만 반환)
+│   ├── service/           ← 비즈니스 로직 (Port만 의존, JPA Repository 직접 import 금지)
+│   └── dto/
+│       ├── request/       ← Command DTO (Controller → Service)
+│       └── response/      ← Result DTO (Service → Controller)
+└── adapter/
+    ├── in/
+    │   └── web/           ← Controller + ExceptionHandler
+    └── out/
+        ├── persistence/   ← JPA Entity, Repository, PersistenceAdapter
+        ├── ai/            ← AI 서비스 호출 Adapter (Python 경유)
+        └── websocket/     ← WebSocket 발송 Adapter
+```
+
+### 의존 방향 규칙
+- **안쪽 → 바깥쪽 의존 금지**: `domain` → `application` → `adapter` 방향으로만 의존
+- **Controller** → UseCase(Port In) → **Service** → RepositoryPort(Port Out) → **PersistenceAdapter**
+- Domain 모델은 어떤 프레임워크 어노테이션도 가지지 않는다 (순수 POJO)
+- JPA Entity는 `adapter/out/persistence/` 안에서만 존재하며, Port 밖으로 노출하지 않는다
+
+### 모듈 간 데이터 접근 규칙
+- 다른 모듈의 테이블을 조회해야 할 때: **자기 모듈 Port(Out)를 정의**하고, Adapter에서 구현
+- 읽기 전용 접근: JdbcTemplate 네이티브 쿼리 사용 (JPA Entity 중복 방지)
+- 쓰기 접근: 해당 테이블을 소유한 모듈의 Port(In)을 호출 (직접 DB 접근 금지)
+- 다른 모듈의 JPA Repository를 직접 import 금지
+
 ## 네이밍 규칙
 - **UseCase:** `{동작}{도메인}UseCase` (SubmitRequestUseCase)
 - **Service:** `{동작}{도메인}Service` (SubmitRequestService)
