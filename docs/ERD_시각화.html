@@ -299,7 +299,7 @@
     <div class="table-card theme-green" style="left:440px; top:20px; width:280px;">
         <div class="table-header"><span class="icon">🏠</span> room_type</div>
         <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">varchar</span><span class="badge badge-pk">PK</span><span class="col-desc">STANDARD, DELUXE, SUITE</span></div>
+            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span><span class="col-desc">BIGSERIAL</span></div>
             <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span class="col-desc">타입명</span></div>
         </div>
     </div>
@@ -307,7 +307,7 @@
     <div class="table-card theme-orange" style="left:820px; top:20px; width:280px;">
         <div class="table-header"><span class="icon">🎩</span> staff_role</div>
         <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">varchar</span><span class="badge badge-pk">PK</span><span class="col-desc">STAFF, MANAGER</span></div>
+            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span><span class="col-desc">BIGSERIAL</span></div>
             <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span class="col-desc">역할명</span></div>
         </div>
     </div>
@@ -318,8 +318,7 @@
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
             <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar</span><span class="badge badge-uk">UK</span><span class="col-desc">101, 302</span></div>
-            <div class="col-row"><span class="col-name">floor</span><span class="col-type">int</span></div>
-            <div class="col-row"><span class="col-name">type_id</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">STANDARD, DELUXE, SUITE</span></div>
+            <div class="col-row"><span class="col-name">type_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">room_type.id</span></div>
         </div>
     </div>
 
@@ -330,7 +329,7 @@
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
             <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span></div>
             <div class="col-row"><span class="col-name">pin</span><span class="col-type">varchar</span><span class="col-desc">4자리 PIN</span></div>
-            <div class="col-row"><span class="col-name">role_id</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">STAFF, MANAGER</span></div>
+            <div class="col-row"><span class="col-name">role_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">staff_role.id</span></div>
             <div class="col-row"><span class="col-name">department_id</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span></div>
         </div>
     </div>
@@ -341,9 +340,11 @@
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
             <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="badge badge-uk">UK</span><span class="col-desc">1방 1게스트</span></div>
+            <div class="col-row"><span class="col-name">guest_name</span><span class="col-type">varchar</span><span class="col-desc">투숙객 이름</span></div>
             <div class="col-row"><span class="col-name">language</span><span class="col-type">varchar</span><span class="col-desc">ko, en, ja, zh</span></div>
             <div class="col-row"><span class="col-name">notes</span><span class="col-type">jsonb</span><span class="col-desc">특이사항 (알러지 등)</span></div>
             <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span><span class="col-desc">체크인</span></div>
+            <div class="col-row"><span class="col-name">checkout_date</span><span class="col-type">date</span><span class="col-desc">예정 체크아웃</span></div>
         </div>
     </div>
 
@@ -464,12 +465,12 @@
         </div>
         <div class="info-card">
             <div class="label">🏠 room_type</div>
-            <div class="desc">객실 타입 (STANDARD, DELUXE, SUITE) — varchar PK, CRUD 관리</div>
+            <div class="desc">객실 타입 — bigint PK (BIGSERIAL), 호텔별 커스텀 가능</div>
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">
             <div class="label">🎩 staff_role</div>
-            <div class="desc">직원 역할 (STAFF, MANAGER) — varchar PK, CRUD 관리</div>
+            <div class="desc">직원 역할 — bigint PK (BIGSERIAL), 호텔별 커스텀 가능</div>
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">

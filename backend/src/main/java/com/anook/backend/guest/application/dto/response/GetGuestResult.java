@@ -2,6 +2,7 @@ package com.anook.backend.guest.application.dto.response;
 
 import com.anook.backend.guest.domain.model.Guest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -10,15 +11,19 @@ import java.time.LocalDateTime;
 public record GetGuestResult(
         Long id,
         String roomNumber,
+        String guestName,
         String language,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDate checkoutDate
 ) {
     public static GetGuestResult of(Guest guest, String roomNumber) {
         return new GetGuestResult(
                 guest.getId(),
                 roomNumber,
+                guest.getGuestName(),
                 guest.getLanguage(),
-                guest.getCreatedAt()
+                guest.getCreatedAt(),
+                guest.getCheckoutDate()
         );
     }
 }

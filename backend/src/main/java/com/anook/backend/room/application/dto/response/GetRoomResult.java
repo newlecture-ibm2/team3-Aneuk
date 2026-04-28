@@ -8,14 +8,12 @@ import com.anook.backend.room.domain.model.Room;
 public record GetRoomResult(
         Long id,
         String number,
-        Integer floor,
-        String typeId
+        Long typeId
 ) {
     public static GetRoomResult from(Room room) {
         return new GetRoomResult(
                 room.getId(),
                 room.getNumber(),
-                room.getFloor(),
                 room.getTypeId()
         );
     }
