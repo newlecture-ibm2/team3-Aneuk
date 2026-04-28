@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 
 /**
@@ -27,7 +27,7 @@ interface UseWebSocketReturn {
 // WebSocket 서버 URL (개발: 백엔드 직접, 프로덕션: Nginx 프록시)
 const WS_URL =
   process.env.NODE_ENV === 'production'
-    ? `ws://${typeof window !== 'undefined' ? window.location.host : ''}/ws`
+    ? `wss://${typeof window !== 'undefined' ? window.location.host : ''}/ws`
     : 'ws://localhost:8080/ws';
 
 // 재연결 지수 백오프 설정
@@ -35,19 +35,22 @@ const RECONNECT_DELAYS = [1000, 2000, 4000, 8000, 16000, 30000]; // ms
 
 export function useWebSocket(): UseWebSocketReturn {
   const clientRef = useRef<Client | null>(null);
-  const isConnectedRef = useRef(false);
+  const [isConnected, setIsConnected] = useState(false);
   const reconnectAttemptRef = useRef(0);
   const subscriptionsRef = useRef<Map<string, { callback: (data: unknown) => void }>>(new Map());
 
   // STOMP 클라이언트 초기화 및 연결
   useEffect(() => {
+    // StrictMode 중복 실행 방지
+    if (clientRef.current?.active) return;
+
     const client = new Client({
       brokerURL: WS_URL,
 
       // 연결 성공
       onConnect: () => {
         console.log('[WS] ✅ STOMP 연결 성공');
-        isConnectedRef.current = true;
+        setIsConnected(true);
         reconnectAttemptRef.current = 0;
 
         // 기존 구독 복원 (재연결 시)
@@ -67,7 +70,7 @@ export function useWebSocket(): UseWebSocketReturn {
       // 연결 해제
       onDisconnect: () => {
         console.log('[WS] ❌ STOMP 연결 해제');
-        isConnectedRef.current = false;
+        setIsConnected(false);
       },
 
       // STOMP 에러
@@ -79,7 +82,8 @@ export function useWebSocket(): UseWebSocketReturn {
       onWebSocketError: () => {
         reconnectAttemptRef.current += 1;
         const attempt = Math.min(reconnectAttemptRef.current, RECONNECT_DELAYS.length - 1);
-        console.warn(`[WS] WebSocket 에러 발생,재연결 시도 #${reconnectAttemptRef.current} (${RECONNECT_DELAYS[attempt]}ms 후)`);
+        console.warn(`[WS] WebSocket 에러 발생, 재연결 시도 #${reconnectAttemptRef.current} (${RECONNECT_DELAYS[attempt]}ms 후)`);
+        setIsConnected(false);
       },
 
       // 재연결 딜레이 (ms)
@@ -98,7 +102,7 @@ export function useWebSocket(): UseWebSocketReturn {
     };
   }, []);
 
-  // 채널 구독 함수
+  // 채널 구독 함수 — isConnected가 바뀌면 재생성되어 구독 재시도
   const subscribe = useCallback(
     (destination: string, callback: (data: unknown) => void): (() => void) => {
       // 구독 정보 저장 (재연결 시 복원용)
@@ -127,11 +131,11 @@ export function useWebSocket(): UseWebSocketReturn {
         console.log(`[WS] 📡 구독 해제: ${destination}`);
       };
     },
-    []
+    [isConnected]
   );
 
   return {
     subscribe,
-    isConnected: isConnectedRef.current,
+    isConnected,
   };
 }
