@@ -1,0 +1,55 @@
+/* src/components/ui/card/SummaryCard.module.css */
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-16);
+  background: var(--color-bg);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  flex: 1; /* 대시보드에서 가로로 늘어날 때 균등하게 채우기 위함 */
+  min-width: 140px;
+  min-height: 100px;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+
+.summaryCard:hover {
+  border-color: var(--color-gray-300);
+}
+
+.title {
+  font: var(--text-h3-bold);
+  color: var(--color-gray-500);
+}
+
+.bottomRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: var(--space-24);
+}
+
+.value {
+  font: var(--text-h1-bold);
+  color: var(--color-gray-900);
+  line-height: 1;
+}
+
+.change {
+  font: var(--text-body-bold);
+  margin-bottom: 2px;
+}
+
+.change.positive {
+  color: var(--color-tag-text-green); /* 녹색 */
+}
+
+.change.negative {
+  color: var(--color-tag-text-red); /* 빨간색 */
+}
+
+.change.neutral {
+  color: var(--color-gray-500); /* 회색 */
+}
