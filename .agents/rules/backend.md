@@ -2,7 +2,6 @@
 trigger: always_on
 ---
 
-
 ## 네이밍 규칙
 - **UseCase:** `{동작}{도메인}UseCase` (SubmitRequestUseCase)
 - **Service:** `{동작}{도메인}Service` (SubmitRequestService)
