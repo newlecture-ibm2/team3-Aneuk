@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -27,6 +28,9 @@ public class GuestJpaEntity {
     @Column(name = "room_id", nullable = false, unique = true)
     private Long roomId;
 
+    @Column(name = "guest_name", nullable = false)
+    private String guestName;
+
     @Column(nullable = false)
     private String language;
 
@@ -37,19 +41,24 @@ public class GuestJpaEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "checkout_date", nullable = false)
+    private LocalDate checkoutDate;
+
     // === Domain → Entity ===
     public static GuestJpaEntity from(Guest domain) {
         GuestJpaEntity entity = new GuestJpaEntity();
         entity.id = domain.getId();
         entity.roomId = domain.getRoomId();
+        entity.guestName = domain.getGuestName();
         entity.language = domain.getLanguage();
         entity.notes = domain.getNotes();
         entity.createdAt = domain.getCreatedAt();
+        entity.checkoutDate = domain.getCheckoutDate();
         return entity;
     }
 
     // === Entity → Domain ===
     public Guest toDomain() {
-        return new Guest(id, roomId, language, notes, createdAt);
+        return new Guest(id, roomId, guestName, language, notes, createdAt, checkoutDate);
     }
 }

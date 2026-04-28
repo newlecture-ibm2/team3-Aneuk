@@ -50,7 +50,7 @@ public class GuestService implements CheckInGuestUseCase, CheckOutGuestUseCase, 
         }
 
         // 3) 도메인 모델 생성 및 저장
-        Guest guest = Guest.create(command.roomId(), command.language());
+        Guest guest = Guest.create(command.roomId(), command.guestName(), command.language(), command.checkoutDate());
         Guest saved = guestRepository.save(guest);
 
         // 4) roomNumber 조회

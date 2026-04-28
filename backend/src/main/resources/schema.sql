@@ -16,15 +16,15 @@ CREATE TABLE IF NOT EXISTS department (
     name        VARCHAR(50)  NOT NULL
 );
 
--- 객실 타입 (CRUD 관리)
+-- 객실 타입 (CRUD 관리 — 호텔별 커스텀 가능)
 CREATE TABLE IF NOT EXISTS room_type (
-    id          VARCHAR(20)  PRIMARY KEY,
+    id          BIGSERIAL    PRIMARY KEY,
     name        VARCHAR(50)  NOT NULL
 );
 
--- 직원 역할 (CRUD 관리)
+-- 직원 역할 (CRUD 관리 — 호텔별 커스텀 가능)
 CREATE TABLE IF NOT EXISTS staff_role (
-    id          VARCHAR(20)  PRIMARY KEY,
+    id          BIGSERIAL    PRIMARY KEY,
     name        VARCHAR(50)  NOT NULL
 );
 
@@ -36,8 +36,7 @@ CREATE TABLE IF NOT EXISTS staff_role (
 CREATE TABLE IF NOT EXISTS room (
     id          BIGSERIAL    PRIMARY KEY,
     number      VARCHAR(10)  NOT NULL UNIQUE,
-    floor       INT          NOT NULL,
-    type_id     VARCHAR(20)  NOT NULL REFERENCES room_type(id)
+    type_id     BIGINT       NOT NULL REFERENCES room_type(id)
 );
 
 -- 직원
@@ -45,17 +44,19 @@ CREATE TABLE IF NOT EXISTS staff (
     id              BIGSERIAL    PRIMARY KEY,
     name            VARCHAR(50)  NOT NULL,
     pin             VARCHAR(10)  NOT NULL,
-    role_id         VARCHAR(20)  NOT NULL REFERENCES staff_role(id),
+    role_id         BIGINT       NOT NULL REFERENCES staff_role(id),
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );
 
--- 투숙객 (체크아웃 시 Hard Delete)
+-- 투숙객 (체크아웃 시 Hard Delete — PII 최소화)
 CREATE TABLE IF NOT EXISTS guest (
-    id          BIGSERIAL    PRIMARY KEY,
-    room_id     BIGINT       NOT NULL UNIQUE REFERENCES room(id),
-    language    VARCHAR(10)  NOT NULL DEFAULT 'ko',
-    notes       JSONB,
-    created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+    id              BIGSERIAL    PRIMARY KEY,
+    room_id         BIGINT       NOT NULL UNIQUE REFERENCES room(id),
+    guest_name      VARCHAR(50)  NOT NULL,
+    language        VARCHAR(10)  NOT NULL DEFAULT 'ko',
+    notes           JSONB,
+    created_at      TIMESTAMP    NOT NULL DEFAULT NOW(),
+    checkout_date   DATE         NOT NULL
 );
 
 -- ============================================================
