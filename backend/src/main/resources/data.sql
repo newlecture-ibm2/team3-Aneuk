@@ -90,4 +90,3 @@ INSERT INTO request (status, priority, department_id, raw_text, summary, confide
 SELECT 'PENDING', 'URGENT', 'FACILITY', '에어컨이 작동하지 않습니다. 너무 더워요.', '에어컨 고장', 0.90,
        (SELECT id FROM room WHERE number = '1502'), 0, NOW() - INTERVAL '10 minutes', NOW() - INTERVAL '10 minutes'
 WHERE NOT EXISTS (SELECT 1 FROM request WHERE summary = '에어컨 고장' AND status = 'PENDING');
-
