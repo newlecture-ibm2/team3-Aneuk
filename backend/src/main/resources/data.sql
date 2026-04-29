@@ -3,13 +3,13 @@
 -- ============================================================
 
 -- 부서 (6개 — 텍스트 PK 유지: AI 파이프코드 연동)
-INSERT INTO department (id, name) VALUES
-    ('HK',        '하우스키핑'),
-    ('FB',        '식음료'),
-    ('FACILITY',  '시설관리'),
-    ('CONCIERGE', '컨시어지'),
-    ('FRONT',     '프론트데스크'),
-    ('EMERGENCY', '긴급대응')
+INSERT INTO department (id, name, is_admin) VALUES
+    ('HK',        '하우스키핑',   FALSE),
+    ('FB',        '식음료',       FALSE),
+    ('FACILITY',  '시설관리',     FALSE),
+    ('CONCIERGE', '컨시어지',     FALSE),
+    ('FRONT',     '프론트데스크', TRUE),
+    ('EMERGENCY', '긴급대응',     FALSE)
 ON CONFLICT (id) DO NOTHING;
 
 -- 객실 타입 (3개 — 숫자 PK, 호텔별 커스텀 가능)
@@ -24,6 +24,11 @@ INSERT INTO staff_role (id, name) VALUES
     (1, '직원'),
     (2, '관리자')
 ON CONFLICT (id) DO NOTHING;
+
+-- 초기 관리자 계정 (PIN: 0000)
+INSERT INTO staff (name, pin, role_id, department_id) VALUES
+    ('관리자', '0000', 1, 'FRONT')
+ON CONFLICT (pin) DO NOTHING;
 
 -- ============================================================
 -- Mock PMS 시드 데이터 — 객실
