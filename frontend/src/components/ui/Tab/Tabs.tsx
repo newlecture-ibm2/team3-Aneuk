@@ -10,8 +10,6 @@ export interface TabOption {
 }
 
 export interface TabsProps {
-  /** 탭의 시각적 형태: 텍스트+밑줄(line) 또는 알약 모양 버튼(pill) */
-  variant?: 'line' | 'pill';
   /** 출력할 탭 데이터 목록 */
   options: TabOption[];
   /** 현재 선택된 탭의 value */
@@ -22,13 +20,12 @@ export interface TabsProps {
 }
 
 export default function Tabs({
-  variant = 'line',
   options,
   activeValue,
   onChange,
   className = ''
 }: TabsProps) {
-  const containerClass = variant === 'line' ? styles.variantLine : styles.variantPill;
+  const containerClass = styles.variantLine;
 
   return (
     <div className={`${styles.container} ${containerClass} ${className}`.trim()} role="tablist">
@@ -36,11 +33,7 @@ export default function Tabs({
         const isActive = option.value === activeValue;
         
         let tabClass = styles.tabButton;
-        if (variant === 'line') {
-          tabClass += ` ${styles.lineTab} ${isActive ? styles.lineTabActive : ''}`;
-        } else {
-          tabClass += ` ${styles.pillTab} ${isActive ? styles.pillTabActive : ''}`;
-        }
+        tabClass += ` ${styles.lineTab} ${isActive ? styles.lineTabActive : ''}`;
 
         return (
           <button
@@ -51,7 +44,7 @@ export default function Tabs({
             onClick={() => onChange(isActive ? '' : option.value)}
           >
             {option.label}
-            {variant === 'line' && option.count !== undefined && (
+            {option.count !== undefined && (
               <span className={styles.countBadge}>{option.count}</span>
             )}
           </button>

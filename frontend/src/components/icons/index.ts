@@ -23,3 +23,5 @@ export { default as ToastFailIcon } from './ToastFailIcon';
 export { default as ToastSuccessIcon } from './ToastSuccessIcon';
 export { default as SendIcon } from './SendIcon';
 export { default as FilterIcon } from './FilterIcon';
+export { default as CodeIcon } from './CodeIcon';
+export { default as TimerIcon } from './TimerIcon';

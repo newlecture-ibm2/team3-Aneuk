@@ -13,10 +13,6 @@
   gap: var(--space-24);
 }
 
-.variantPill {
-  gap: var(--space-8);
-  flex-wrap: wrap;
-}
 
 /* Base Tab Button */
 .tabButton {
@@ -67,25 +63,4 @@
   font-size: 0.65rem;
   margin-left: 6px;
   padding: 0 5px;
-}
-
-/* --------- Pill Variant --------- */
-.pillTab {
-  padding: var(--space-8) var(--space-16);
-  background: var(--color-surface);
-  /* var(--color-surface) (Gray/100) */
-  border-radius: var(--radius-full);
-  /* Body/Medium */
-  font: var(--text-body-medium);
-  /* 150% */
-  color: var(--color-gray-500);
-  /* var(--color-gray-500) */
-}
-
-.pillTabActive {
-  background: var(--color-secondary);
-  /* #4B5563 (Brand/secondary) */
-  /* Body/Bold */
-  color: var(--color-white);
-  /* var(--color-white) */
 }

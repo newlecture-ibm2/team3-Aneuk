@@ -10,37 +10,36 @@ erDiagram
     }
 
     room_type {
-        bigint id PK "BIGSERIAL — 호텔별 커스텀 가능"
-        varchar name "스탠다드, 디럭스, 스위트 등"
+        varchar id PK "STANDARD, DELUXE, SUITE"
+        varchar name "스탠다드, 디럭스, 스위트"
     }
 
     staff_role {
-        bigint id PK "BIGSERIAL — 호텔별 커스텀 가능"
-        varchar name "직원, 관리자 등"
+        varchar id PK "STAFF, MANAGER"
+        varchar name "직원, 관리자"
     }
 
     room {
         bigint id PK
         varchar number UK "101, 302, 501"
-        bigint type_id FK "room_type.id"
+        int floor
+        varchar type_id FK "STANDARD, DELUXE, SUITE"
     }
 
     staff {
         bigint id PK
         varchar name
         varchar pin "4자리 PIN"
-        bigint role_id FK "staff_role.id"
+        varchar role_id FK "STAFF, MANAGER"
         varchar department_id FK
     }
 
     guest {
         bigint id PK
         bigint room_id FK "UK — 1방 1게스트"
-        varchar guest_name "투숙객 이름 (체크아웃 시 Hard Delete)"
         varchar language "ko, en, ja, zh 등"
         jsonb notes "nullable — 특이사항 (알러지, 선호도 등)"
         timestamp created_at "체크인 시각"
-        date checkout_date "예정 체크아웃 날짜"
     }
 
     request {
@@ -143,8 +142,8 @@ erDiagram
 | 테이블 | 설명 | 레코드 수명 |
 |--------|------|-----------|
 | **department** | 부서 (HK, FB, FACILITY, CONCIERGE, FRONT, EMERGENCY) | 영구 |
-| **room_type** | 객실 타입 (bigint PK — 호텔별 커스텀 가능) | 영구 |
-| **staff_role** | 직원 역할 (bigint PK — 호텔별 커스텀 가능) | 영구 |
+| **room_type** | 객실 타입 (STANDARD, DELUXE, SUITE) | 영구 |
+| **staff_role** | 직원 역할 (STAFF, MANAGER) | 영구 |
 | **room** | 객실 정보 | 영구 |
 | **staff** | 직원 (PIN 로그인) | 영구 |
 | **guest** | 객실 ↔ 투숙객 매핑 (정적 QR, `notes` JSONB로 특이사항 통합) | 체크아웃 시 **Hard Delete** |
