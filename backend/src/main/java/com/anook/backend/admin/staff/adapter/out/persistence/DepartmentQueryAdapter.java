@@ -1,9 +1,12 @@
 package com.anook.backend.admin.staff.adapter.out.persistence;
 
+import com.anook.backend.admin.department.application.dto.response.DepartmentInfo;
 import com.anook.backend.admin.staff.application.port.out.DepartmentQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * DepartmentQueryPort 구현체 — JdbcTemplate 읽기 전용 조회
@@ -22,5 +25,12 @@ public class DepartmentQueryAdapter implements DepartmentQueryPort {
         String sql = "SELECT COUNT(*) FROM department WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, departmentId);
         return count != null && count > 0;
+    }
+
+    @Override
+    public List<DepartmentInfo> findAll() {
+        String sql = "SELECT id, name FROM department ORDER BY id";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new DepartmentInfo(rs.getString("id"), rs.getString("name")));
     }
 }
