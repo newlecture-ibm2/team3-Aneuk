@@ -25,6 +25,15 @@ public class RoomJpaEntity {
     @Column(name = "type_id", nullable = false)
     private Long typeId;
 
+    // === Domain → Entity ===
+    public static RoomJpaEntity from(Room domain) {
+        RoomJpaEntity entity = new RoomJpaEntity();
+        entity.id = domain.getId();
+        entity.number = domain.getNumber();
+        entity.typeId = domain.getTypeId();
+        return entity;
+    }
+
     // === Entity → Domain ===
     public Room toDomain() {
         return new Room(id, number, typeId);

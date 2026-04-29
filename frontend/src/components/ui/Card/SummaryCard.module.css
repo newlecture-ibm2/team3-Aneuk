@@ -3,14 +3,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: var(--space-16);
   background: var(--color-bg);
   border: 1px solid var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   flex: 1; /* 대시보드에서 가로로 늘어날 때 균등하게 채우기 위함 */
-  min-width: 140px;
-  min-height: 100px;
   box-sizing: border-box;
   transition: border-color var(--transition);
 }
@@ -19,20 +16,48 @@
   border-color: var(--color-gray-300);
 }
 
-.title {
+.md {
+  padding: var(--space-16);
+  min-width: 140px;
+  min-height: 100px;
+}
+
+.md .title {
   font: var(--text-h3-bold);
   color: var(--color-gray-500);
 }
 
-.bottomRow {
+.md .bottomRow {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   margin-top: var(--space-24);
 }
 
-.value {
+.md .value {
   font: var(--text-h1-bold);
+  color: var(--color-gray-900);
+  line-height: 1;
+}
+
+.sm {
+  padding: var(--space-12) var(--space-16);
+}
+
+.sm .title {
+  font: var(--text-caption-medium);
+  color: var(--color-gray-500);
+}
+
+.sm .bottomRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: var(--space-8);
+}
+
+.sm .value {
+  font: var(--text-h3-regular);
   color: var(--color-gray-900);
   line-height: 1;
 }

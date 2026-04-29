@@ -1,0 +1,144 @@
+package com.anook.backend.message.application.service;
+
+import com.anook.backend.global.port.out.DispatchPort;
+import com.anook.backend.infrastructure.event.RequestDetectedEvent;
+import com.anook.backend.message.application.dto.request.SendMessageCommand;
+import com.anook.backend.message.application.dto.response.SendMessageResult;
+import com.anook.backend.message.application.port.in.SendMessageUseCase;
+import com.anook.backend.message.application.port.out.MessageAiPort;
+import com.anook.backend.message.application.port.out.MessageAiResult;
+import com.anook.backend.message.application.port.out.MessageRepositoryPort;
+import com.anook.backend.message.domain.exception.MessageThrottleException;
+import com.anook.backend.message.domain.model.Message;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * 메시지 전송 서비스
+ *
+ * 흐름 (비동기):
+ *   [동기] 1. 디바운스 검증 (같은 객실 1초 내 연타 방지)
+ *   [동기] 2. 고객 메시지 저장 (GUEST) → 즉시 HTTP 응답 반환
+ *   [비동기] 3. AI 분석 호출 (MessageAiPort)
+ *   [비동기] 4. AI 응답 메시지 저장 (AI)
+ *   [비동기] 5. WebSocket Push → /topic/room/{roomNo} (AI_RESPONSE)
+ *   [비동기] 6. 태스크형 요청 감지 시 RequestDetectedEvent 발행
+ *
+ * ❌ JPA Repository 직접 import 금지 → Port(Out)만 의존
+ * ❌ Request 도메인 직접 접근 금지 → 이벤트로 통신
+ * ❌ SimpMessagingTemplate 직접 사용 금지 → DispatchPort로 추상화
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SendMessageService implements SendMessageUseCase {
+
+    private final MessageRepositoryPort messagePort;
+    private final MessageAiPort aiPort;
+    private final DispatchPort dispatchPort;
+    private final ApplicationEventPublisher eventPublisher;
+
+    /** 디바운스: 객실별 마지막 메시지 전송 시간 (roomNo → timestamp) */
+    private final ConcurrentHashMap<String, Long> lastSendTimeMap = new ConcurrentHashMap<>();
+
+    /** 디바운스 간격 (밀리초) — 같은 객실에서 1초 내 연타 방지 */
+    private static final long DEBOUNCE_MS = 1000;
+
+    @Override
+    @Transactional
+    public SendMessageResult send(SendMessageCommand cmd) {
+        // 1. 디바운스 검증
+        checkDebounce(cmd.roomNo());
+
+        // 2. roomNo → roomId 변환
+        Long roomId = messagePort.findRoomIdByRoomNo(cmd.roomNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다: " + cmd.roomNo()));
+
+        // 3. Guest 메시지 저장 → 즉시 반환
+        Message guestMsg = Message.createGuestMessage(roomId, cmd.content());
+        guestMsg = messagePort.save(guestMsg);
+        log.info("[Message] Guest 메시지 저장 완료 — id: {}, room: {}", guestMsg.getId(), cmd.roomNo());
+
+        // 4. AI 처리는 비동기로 위임
+        processAiAsync(cmd.roomNo(), roomId, cmd.content(), cmd.guestLanguage());
+
+        return new SendMessageResult(guestMsg.getId());
+    }
+
+    /**
+     * AI 호출 + 응답 저장 + WebSocket Push + 이벤트 발행 (비동기)
+     *
+     * @Async → aiTaskExecutor 스레드풀에서 실행
+     * ⚠️ @Async는 같은 클래스 내부 호출 시 프록시를 타지 않지만,
+     *    여기서는 self-invocation이므로 별도 빈 분리 대신
+     *    Spring의 프록시 우회 없이 직접 @Async를 적용합니다.
+     *    (프로젝트 규모에서 충분한 구조)
+     */
+    @Async("aiTaskExecutor")
+    @Transactional
+    public void processAiAsync(String roomNo, Long roomId, String content, String language) {
+        try {
+            // 3. AI 호출
+            MessageAiResult analysis = aiPort.analyze(content, roomNo, language);
+
+            // 4. AI 응답 메시지 저장
+            Message aiMsg = Message.createAiReply(roomId, analysis.guestReply());
+            aiMsg = messagePort.save(aiMsg);
+            log.info("[Message] AI 응답 저장 완료 — id: {}, reply: {}", aiMsg.getId(), analysis.guestReply());
+
+            // 5. WebSocket Push → 고객 채팅 화면에 AI 응답 실시간 전달
+            dispatchPort.sendToRoom(roomNo, Map.of(
+                    "type", "AI_RESPONSE",
+                    "messageId", aiMsg.getId(),
+                    "content", analysis.guestReply()
+            ));
+
+            // 6. 태스크형 요청 감지 시 이벤트 발행 (여기서 message 책임 끝!)
+            if (analysis.intent() != null) {
+                boolean escalated = analysis.confidence() < 0.7;
+
+                eventPublisher.publishEvent(new RequestDetectedEvent(
+                        this,
+                        roomNo,
+                        analysis.domainCode(),
+                        analysis.priority(),
+                        analysis.intent(),
+                        analysis.entities(),
+                        analysis.confidence(),
+                        content,
+                        analysis.summary(),
+                        escalated
+                ));
+                log.info("[Message] RequestDetectedEvent 발행 — intent: {}, domain: {}, escalated: {}",
+                        analysis.intent(), analysis.domainCode(), escalated);
+            }
+        } catch (Exception e) {
+            log.error("[Message] AI 비동기 처리 실패 — room: {}, error: {}", roomNo, e.getMessage(), e);
+
+            // AI 실패 시에도 고객에게 안내 메시지 전달
+            dispatchPort.sendToRoom(roomNo, Map.of(
+                    "type", "AI_ERROR",
+                    "content", "죄송합니다. 잠시 후 다시 시도해 주세요."
+            ));
+        }
+    }
+
+    /**
+     * 디바운스 검증 — 같은 객실에서 DEBOUNCE_MS 이내 재전송 시 예외 발생
+     */
+    private void checkDebounce(String roomNo) {
+        long now = System.currentTimeMillis();
+        Long lastTime = lastSendTimeMap.get(roomNo);
+
+
+
+        lastSendTimeMap.put(roomNo, now);
+    }
+}
