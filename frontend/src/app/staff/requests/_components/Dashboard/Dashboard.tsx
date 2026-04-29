@@ -6,6 +6,7 @@ import TaskColumn from '@/components/ui/TaskBoard/TaskColumn';
 import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import InputField from '@/components/ui/Inputfield/InputField';
 import FilterButton from '@/components/ui/FilterButton/FilterButton';
+import { useSearchParams } from 'next/navigation';
 import { useTasks } from '../../_hooks/useTasks';
 import styles from './Dashboard.module.css';
 
@@ -24,8 +25,13 @@ const PRIORITY_OPTIONS = [
 ];
 
 export default function Dashboard() {
-  const { tasks, loading, error } = useTasks();
+  const searchParams = useSearchParams();
+  const view = searchParams.get('view');
   
+  // '내 작업(view=my)'일 경우에만 부서 필터링 (임시로 'HK' 사용)
+  const departmentId = view === 'my' ? 'HK' : undefined;
+  const { tasks, loading, error } = useTasks(departmentId);
+
   // 필터 상태 관리
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
@@ -37,19 +43,19 @@ export default function Dashboard() {
       if (priorityFilter !== 'ALL' && task.priority !== priorityFilter) {
         return false;
       }
-      
+
       // 2. 검색어 필터링 (객실번호, 요약, 원문)
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matches = 
+        const matches =
           task.roomNumber.toString().includes(query) ||
           task.summary.toLowerCase().includes(query) ||
           task.rawText.toLowerCase().includes(query) ||
           task.id.toString().includes(query);
-        
+
         if (!matches) return false;
       }
-      
+
       return true;
     });
   }, [tasks, searchQuery, priorityFilter]);
@@ -66,7 +72,7 @@ export default function Dashboard() {
   return (
     <div className={styles.container}>
       <Sidebar role="housekeeping" />
-      
+
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>
           <header className={styles.header}>
@@ -76,14 +82,14 @@ export default function Dashboard() {
 
           <div className={styles.toolbar}>
             <div className={styles.searchBox}>
-              <InputField 
-                variant="search" 
-                placeholder="객실번호 또는 내용 검색..." 
+              <InputField
+                variant="search"
+                placeholder="객실번호 또는 내용 검색..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <FilterButton 
+            <FilterButton
               filterOptions={PRIORITY_OPTIONS}
               selectedFilter={priorityFilter}
               onFilterSelect={setPriorityFilter}
@@ -100,9 +106,9 @@ export default function Dashboard() {
             {COLUMN_CONFIG.map(col => {
               const columnTasks = boardData[col.status as keyof typeof boardData];
               return (
-                <TaskColumn 
-                  key={col.id} 
-                  title={col.title} 
+                <TaskColumn
+                  key={col.id}
+                  title={col.title}
                   count={columnTasks.length}
                 >
                   <div className={styles.columnContent}>

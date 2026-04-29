@@ -53,7 +53,8 @@
   align-items: flex-start;
   flex: 1;
   overflow-x: auto;
-  padding-bottom: var(--space-16); /* 스크롤바와 카드 사이 간격 */
+  padding-bottom: var(--space-16);
+  /* 스크롤바와 카드 사이 간격 */
 }
 
 .columnContent {
@@ -73,7 +74,8 @@
   border: 1px dashed var(--color-gray-300);
 }
 
-.loading, .error {
+.loading,
+.error {
   display: flex;
   align-items: center;
   justify-content: center;

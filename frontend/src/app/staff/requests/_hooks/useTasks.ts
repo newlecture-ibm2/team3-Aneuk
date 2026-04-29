@@ -23,7 +23,7 @@ interface UseTasksReturn {
   refetch: () => void;
 }
 
-export function useTasks(): UseTasksReturn {
+export function useTasks(departmentId?: string): UseTasksReturn {
   const [tasks, setTasks] = useState<StaffTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,11 @@ export function useTasks(): UseTasksReturn {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/staff/requests');
+      const url = departmentId 
+        ? `/api/staff/requests?departmentId=${departmentId}`
+        : '/api/staff/requests';
+        
+      const res = await fetch(url);
       if (!res.ok) throw new Error(`${res.status}`);
       const data: StaffTask[] = await res.json();
       setTasks(data);
@@ -43,27 +47,42 @@ export function useTasks(): UseTasksReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [departmentId]);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
   useEffect(() => {
-    const unsubscribe = subscribe('/topic/admin', (data: unknown) => {
+    const handleEvent = (data: unknown) => {
       const event = data as { type?: string; payload?: StaffTask };
       if (!event || !event.type) return;
 
       if (event.type === 'NEW_REQUEST' && event.payload) {
-        setTasks((prev) => [event.payload!, ...prev]);
+        setTasks((prev) => {
+          if (prev.some(t => t.id === event.payload!.id)) return prev;
+          // 부서 필터링이 걸려있을 경우, 다른 부서의 새 요청은 무시
+          if (departmentId && event.payload!.departmentId !== departmentId) return prev;
+          return [event.payload!, ...prev];
+        });
       } else if (event.type === 'STATUS_CHANGED' && event.payload) {
         setTasks((prev) =>
           prev.map((t) => (t.id === event.payload!.id ? event.payload! : t))
         );
       }
-    });
-    return () => unsubscribe();
-  }, [subscribe]);
+    };
+
+    const unsubscribeAdmin = subscribe('/topic/admin', handleEvent);
+    
+    // 부서 전용 채널 구독 (전달받은 departmentId 사용, 없으면 HK 기본)
+    const deptChannel = `/topic/dept/${departmentId || 'HK'}`;
+    const unsubscribeDept = subscribe(deptChannel, handleEvent);
+
+    return () => {
+      unsubscribeAdmin();
+      unsubscribeDept();
+    };
+  }, [subscribe, departmentId]);
 
   return { tasks, loading, error, refetch: fetchTasks };
 }

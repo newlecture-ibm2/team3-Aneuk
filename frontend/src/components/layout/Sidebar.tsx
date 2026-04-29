@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
 import {
@@ -65,15 +65,19 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 
 export default function Sidebar({ role = 'admin', className = '', fakePathname, onMenuClick }: SidebarProps) {
   const actualPathname = usePathname() || '';
-  const pathname = fakePathname || actualPathname;
+  const searchParams = useSearchParams();
+  const currentSearch = searchParams.toString();
+  const fullPathname = currentSearch ? `${actualPathname}?${currentSearch}` : actualPathname;
+  
+  const pathname = fakePathname || fullPathname;
 
   // 부서별 (하우스키핑, 식음료, 시설, 컨시어지) 메뉴 리스트
   const deptMenus = [
     {
-      category: '',
+      category: '작업 관리',
       items: [
-        { label: '내 작업', href: `/dept/${role}/my-tasks`, icon: User },
-        { label: '부서 전체 작업', href: `/dept/${role}/all-tasks`, icon: Users }
+        { label: '내 작업', href: '/staff/requests?view=my', icon: User },
+        { label: '부서 전체 작업', href: '/staff/requests?view=all', icon: Users }
       ]
     }
   ];
@@ -150,10 +154,15 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {group.items.map((menu) => {
-                const isActive = activeMenu?.href === menu.href;
+                // 메뉴 href에 쿼리스트링이 포함되어 있으면 전체 경로(pathname)와 비교, 
+                // 없으면 순수 경로(actualPathname)와 비교하여 범용성 확보
+                const isActive = menu.href.includes('?') 
+                  ? pathname === menu.href 
+                  : actualPathname === menu.href || actualPathname.startsWith(`${menu.href}/`);
+
                 return (
                   <SidebarItem
-                    key={menu.href}
+                    key={menu.label}
                     icon={menu.icon}
                     label={menu.label}
                     href={menu.href}
