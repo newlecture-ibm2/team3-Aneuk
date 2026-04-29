@@ -76,8 +76,8 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
     {
       category: '작업 관리',
       items: [
-        { label: '내 작업', href: '/staff/requests?view=my', icon: User },
-        { label: '부서 전체 작업', href: '/staff/requests?view=all', icon: Users }
+        { label: '내 작업', href: '/staff?view=my', icon: User },
+        { label: '부서 전체 작업', href: '/staff?view=all', icon: Users }
       ]
     }
   ];

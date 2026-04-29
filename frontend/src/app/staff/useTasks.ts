@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import { useWebSocket } from '@/app/useWebSocket';
+import { handleResponse } from '@/lib/api';
 
 export interface StaffTask {
   id: number;
@@ -39,8 +40,7 @@ export function useTasks(departmentId?: string): UseTasksReturn {
         : '/api/staff/requests';
         
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`${res.status}`);
-      const data: StaffTask[] = await res.json();
+      const data = await handleResponse<StaffTask[]>(res);
       setTasks(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '요청 목록을 불러오지 못했습니다.');

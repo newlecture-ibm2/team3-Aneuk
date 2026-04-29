@@ -7,8 +7,8 @@ import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import InputField from '@/components/ui/Inputfield/InputField';
 import FilterButton from '@/components/ui/FilterButton/FilterButton';
 import { useSearchParams } from 'next/navigation';
-import { useTasks } from '../../_hooks/useTasks';
-import styles from './Dashboard.module.css';
+import { useTasks } from './useTasks';
+import styles from './page.module.css';
 
 const COLUMN_CONFIG = [
   { id: 'PENDING', title: '대기 중', status: 'TODO' },
@@ -24,50 +24,38 @@ const PRIORITY_OPTIONS = [
   { label: '낮음 (LOW)', value: 'LOW' },
 ];
 
-export default function Dashboard() {
+/**
+ * [가이드라인 준수] 스태프 대시보드 메인 페이지
+ * - URL: /staff
+ * - 불필요한 서브 폴더(requests)를 제거하고 /staff 주소에서 바로 대시보드를 노출합니다.
+ */
+export default function StaffDashboardPage() {
   const searchParams = useSearchParams();
   const view = searchParams.get('view');
-  
-  // '내 작업(view=my)'일 경우에만 부서 필터링 (임시로 'HK' 사용)
-  const departmentId = view === 'my' ? 'HK' : undefined;
-  const { tasks, loading, error } = useTasks(departmentId);
+  const { tasks, loading, error } = useTasks(view === 'my' ? 'HK' : undefined);
 
   // 필터 상태 관리
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
 
-  // 필터링된 태스크 (실시간 업데이트 반영)
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
-      // 1. 우선순위 필터링
-      if (priorityFilter !== 'ALL' && task.priority !== priorityFilter) {
-        return false;
-      }
-
-      // 2. 검색어 필터링 (객실번호, 요약, 원문)
+      if (priorityFilter !== 'ALL' && task.priority !== priorityFilter) return false;
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matches =
-          task.roomNumber.toString().includes(query) ||
+        return task.roomNumber.toString().includes(query) ||
           task.summary.toLowerCase().includes(query) ||
-          task.rawText.toLowerCase().includes(query) ||
           task.id.toString().includes(query);
-
-        if (!matches) return false;
       }
-
       return true;
     });
   }, [tasks, searchQuery, priorityFilter]);
 
-  // 태스크를 컬럼별로 분류
-  const boardData = useMemo(() => {
-    return {
-      TODO: filteredTasks.filter(t => t.status === 'PENDING'),
-      IN_PROGRESS: filteredTasks.filter(t => t.status === 'ASSIGNED' || t.status === 'IN_PROGRESS'),
-      DONE: filteredTasks.filter(t => t.status === 'COMPLETED'),
-    };
-  }, [filteredTasks]);
+  const boardData = useMemo(() => ({
+    TODO: filteredTasks.filter(t => t.status === 'PENDING'),
+    IN_PROGRESS: filteredTasks.filter(t => t.status === 'IN_PROGRESS'),
+    DONE: filteredTasks.filter(t => t.status === 'COMPLETED'),
+  }), [filteredTasks]);
 
   return (
     <div className={styles.container}>
