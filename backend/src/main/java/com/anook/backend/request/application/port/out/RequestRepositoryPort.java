@@ -35,8 +35,8 @@ public interface RequestRepositoryPort {
             Long id,
             String status,
             String departmentId,
-            String summary
-    ) {}
+            String summary) {
+    }
 
     /**
      * 직원용 작업 목록 조회 DTO (room, staff 조인 결과)
@@ -51,6 +51,6 @@ public interface RequestRepositoryPort {
             String roomNumber,
             String assignedStaffName,
             Float confidence,
-            LocalDateTime createdAt
-    ) {}
+            LocalDateTime createdAt) {
+    }
 }
