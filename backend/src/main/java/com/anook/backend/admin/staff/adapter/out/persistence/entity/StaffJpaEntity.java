@@ -6,10 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 관리자용 직원 JPA 엔티티
- * — 같은 staff 테이블을 바라보되, 엔티티 이름으로 분리
- */
 @Entity(name = "AdminStaff")
 @Table(name = "staff")
 @Getter
@@ -26,13 +22,13 @@ public class StaffJpaEntity {
     @Column(nullable = false, length = 10)
     private String pin;
 
-    @Column(name = "role_id", nullable = false, length = 20)
-    private String roleId;
+    @Column(name = "role_id", nullable = false)
+    private Long roleId;
 
     @Column(name = "department_id", nullable = false, length = 20)
     private String departmentId;
 
-    private StaffJpaEntity(Long id, String name, String pin, String roleId, String departmentId) {
+    private StaffJpaEntity(Long id, String name, String pin, Long roleId, String departmentId) {
         this.id = id;
         this.name = name;
         this.pin = pin;
@@ -40,19 +36,12 @@ public class StaffJpaEntity {
         this.departmentId = departmentId;
     }
 
-    // === Entity → Domain ===
     public Staff toDomain() {
         return new Staff(id, name, pin, roleId, departmentId);
     }
 
-    // === Domain → Entity ===
     public static StaffJpaEntity fromDomain(Staff staff) {
-        return new StaffJpaEntity(
-                staff.getId(),
-                staff.getName(),
-                staff.getPin(),
-                staff.getRoleId(),
-                staff.getDepartmentId()
-        );
+        return new StaffJpaEntity(staff.getId(), staff.getName(), staff.getPin(),
+                staff.getRoleId(), staff.getDepartmentId());
     }
 }
