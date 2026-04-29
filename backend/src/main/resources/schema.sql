@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS request (
     raw_text            TEXT,
     summary             TEXT,
     confidence          REAL,
-    room_id             BIGINT       NOT NULL REFERENCES room(id),
+    room_no             VARCHAR(10)  NOT NULL,
     assigned_staff_id   BIGINT       REFERENCES staff(id),
     version             INT          NOT NULL DEFAULT 0,
     created_at          TIMESTAMP    NOT NULL DEFAULT NOW(),
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS dispatch_log (
 
 -- 요청 조회 성능
 CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
-CREATE INDEX IF NOT EXISTS idx_request_room_id ON request(room_id);
+CREATE INDEX IF NOT EXISTS idx_request_room_no ON request(room_no);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
 
