@@ -68,7 +68,11 @@ export default function StaffFormModal({
     }
   };
 
-  const roleOptions = roles.map(r => ({ label: r.name, value: String(r.id) }));
+  const filteredRoles = departmentId
+    ? roles.filter(r => r.departmentId === departmentId)
+    : roles;
+
+  const roleOptions = filteredRoles.map(r => ({ label: r.name, value: String(r.id) }));
   const deptOptions = departments.map(d => ({ label: d.name, value: d.id }));
 
   return (
@@ -90,7 +94,10 @@ export default function StaffFormModal({
             label="부서"
             options={deptOptions}
             value={departmentId}
-            onChange={setDepartmentId}
+            onChange={(val) => {
+              setDepartmentId(val);
+              setRoleId('');
+            }}
           />
 
           <Dropdown

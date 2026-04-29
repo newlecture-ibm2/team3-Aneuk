@@ -2,28 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { ModalOverlay, ModalCard } from '@/components/ui/Modal';
 import Button from '@/components/ui/Button/Button';
 import InputField from '@/components/ui/Inputfield/InputField';
+import Dropdown from '@/components/ui/Dropdown/Dropdown';
 import { Role } from '../RoleTab/useRoleManagement';
+import { Department } from '../Department/useDepartmentManagement';
 import { useUiStore } from '@/stores/useUiStore';
 
 interface RoleFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => Promise<void>;
+  onSave: (data: { departmentId: string; name: string }) => Promise<void>;
   initialData?: Role;
+  departments: Department[];
 }
 
-export default function RoleFormModal({ isOpen, onClose, onSave, initialData }: RoleFormModalProps) {
+export default function RoleFormModal({ isOpen, onClose, onSave, initialData, departments }: RoleFormModalProps) {
+  const [departmentId, setDepartmentId] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const { showToast } = useUiStore();
 
   useEffect(() => {
     if (isOpen) {
+      setDepartmentId(initialData?.departmentId || '');
       setName(initialData?.name || '');
     }
   }, [isOpen, initialData]);
 
   const handleSubmit = async () => {
+    if (!departmentId) {
+      showToast('부서를 선택해주세요.', 'error');
+      return;
+    }
     if (!name.trim()) {
       showToast('역할명을 입력해주세요.', 'error');
       return;
@@ -31,7 +40,7 @@ export default function RoleFormModal({ isOpen, onClose, onSave, initialData }: 
 
     setLoading(true);
     try {
-      await onSave(name);
+      await onSave({ departmentId, name });
       onClose();
     } catch (err: any) {
       // 에러 처리는 useRoleManagement에서 하거나 여기서 직접 showToast
@@ -49,6 +58,12 @@ export default function RoleFormModal({ isOpen, onClose, onSave, initialData }: 
         </h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-32)' }}>
+          <Dropdown
+            label="부서"
+            options={departments.map(d => ({ label: d.name, value: d.id }))}
+            value={departmentId}
+            onChange={setDepartmentId}
+          />
           <InputField
             label="역할명"
             placeholder="역할명을 입력하세요"

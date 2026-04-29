@@ -16,19 +16,23 @@ public class RoleJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 20)
+    private String departmentId;
+
     @Column(nullable = false, length = 50)
     private String name;
 
-    private RoleJpaEntity(Long id, String name) {
+    private RoleJpaEntity(Long id, String departmentId, String name) {
         this.id = id;
+        this.departmentId = departmentId;
         this.name = name;
     }
 
     public Role toDomain() {
-        return new Role(id, name);
+        return new Role(id, departmentId, name);
     }
 
     public static RoleJpaEntity fromDomain(Role role) {
-        return new RoleJpaEntity(role.getId(), role.getName());
+        return new RoleJpaEntity(role.getId(), role.getDepartmentId(), role.getName());
     }
 }

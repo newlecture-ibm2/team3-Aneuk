@@ -9,11 +9,12 @@ import { useDepartmentManagement } from '../Department/useDepartmentManagement';
 import StaffFormModal from '../StaffFormModal/StaffFormModal';
 import { ConfirmModal } from '@/components/ui/Modal';
 import { useUiStore } from '@/stores/useUiStore';
+import EditIcon from '@/components/icons/EditIcon';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 
 const deptVariantMap: Record<string, "gray" | "red" | "purple" | "green"> = {
   HK: 'green',
   FB: 'purple',
-  EMERGENCY: 'red',
   // 그 외는 모두 기본값 (gray)
 };
 
@@ -127,9 +128,7 @@ export default function StaffTab() {
                   <span style={{ font: 'var(--text-body-medium)' }}>{staff.name}</span>
                 </TableCell>
                 <TableCell>
-                  <StatusBadge variant={deptVariantMap[staff.departmentId] || 'gray'}>
-                    {getDeptName(staff.departmentId)}
-                  </StatusBadge>
+                  {getDeptName(staff.departmentId)}
                 </TableCell>
                 <TableCell>{getRoleName(staff.roleId)}</TableCell>
                 <TableCell>
@@ -139,12 +138,20 @@ export default function StaffTab() {
                 </TableCell>
                 <TableCell>
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                    <Button variant="secondary" size="small" onClick={() => handleEditClick(staff)}>
-                      수정
-                    </Button>
-                    <Button variant="danger" size="small" onClick={() => handleDeleteClick(staff)}>
-                      삭제
-                    </Button>
+                    <button 
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-gray-500)', padding: 'var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                      onClick={() => handleEditClick(staff)}
+                      title="수정"
+                    >
+                      <EditIcon width={20} height={20} />
+                    </button>
+                    <button 
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-gray-500)', padding: 'var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                      onClick={() => handleDeleteClick(staff)}
+                      title="삭제"
+                    >
+                      <DeleteIcon width={20} height={20} />
+                    </button>
                   </div>
                 </TableCell>
               </TableRow>

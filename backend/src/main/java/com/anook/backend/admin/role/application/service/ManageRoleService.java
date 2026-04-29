@@ -27,7 +27,7 @@ public class ManageRoleService implements ManageRoleUseCase {
         if (roleRepositoryPort.existsByName(command.name())) {
             throw new BusinessException(ErrorCode.ROLE_ALREADY_EXISTS);
         }
-        Role role = new Role(null, command.name());
+        Role role = new Role(null, command.departmentId(), command.name());
         return GetRoleResult.from(roleRepositoryPort.save(role));
     }
 
@@ -51,7 +51,7 @@ public class ManageRoleService implements ManageRoleUseCase {
         if (!roleRepositoryPort.existsById(id)) {
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
-        Role updated = new Role(id, command.name());
+        Role updated = new Role(id, command.departmentId(), command.name());
         return GetRoleResult.from(roleRepositoryPort.save(updated));
     }
 

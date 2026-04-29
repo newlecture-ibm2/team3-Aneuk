@@ -10,13 +10,16 @@ import java.util.Objects;
 public class Role {
 
     private final Long id;
+    private final String departmentId;
     private final String name;
 
-    public Role(Long id, String name) {
+    public Role(Long id, String departmentId, String name) {
         this.id = id;
+        this.departmentId = Objects.requireNonNull(departmentId, "부서 ID는 필수입니다.");
         this.name = Objects.requireNonNull(name, "역할 이름은 필수입니다.");
     }
 
     public Long getId() { return id; }
+    public String getDepartmentId() { return departmentId; }
     public String getName() { return name; }
 }

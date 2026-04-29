@@ -3,12 +3,16 @@ import { Table, TableHeader, TableRow, TableCell } from '@/components/ui/Table/T
 import Button from '@/components/ui/Button/Button';
 import InputField from '@/components/ui/Inputfield/InputField';
 import { useRoleManagement, Role } from './useRoleManagement';
+import { useDepartmentManagement } from '../Department/useDepartmentManagement';
 import RoleFormModal from '../RoleFormModal/RoleFormModal';
 import { ConfirmModal } from '@/components/ui/Modal';
 import { useUiStore } from '@/stores/useUiStore';
+import EditIcon from '@/components/icons/EditIcon';
+import DeleteIcon from '@/components/icons/DeleteIcon';
 
 export default function RoleTab() {
-  const { roles, loading, error, fetchRoles, createRole, updateRole, deleteRole } = useRoleManagement();
+  const { roles, loading: rolesLoading, error, fetchRoles, createRole, updateRole, deleteRole } = useRoleManagement();
+  const { departments, loading: deptsLoading, fetchDepartments } = useDepartmentManagement();
   const { showToast } = useUiStore();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +24,8 @@ export default function RoleTab() {
 
   useEffect(() => {
     fetchRoles();
-  }, [fetchRoles]);
+    fetchDepartments();
+  }, [fetchRoles, fetchDepartments]);
 
   useEffect(() => {
     if (error) {
@@ -47,12 +52,12 @@ export default function RoleTab() {
     setIsConfirmModalOpen(true);
   };
 
-  const handleSaveRole = async (name: string) => {
+  const handleSaveRole = async (data: { departmentId: string; name: string }) => {
     if (editingRole) {
-      await updateRole(editingRole.id, { name });
+      await updateRole(editingRole.id, data);
       showToast('역할이 수정되었습니다.', 'success');
     } else {
-      await createRole({ name });
+      await createRole(data);
       showToast('역할이 추가되었습니다.', 'success');
     }
   };
@@ -86,28 +91,38 @@ export default function RoleTab() {
         </Button>
       </div>
 
-      {loading && roles.length === 0 ? (
+      {rolesLoading && roles.length === 0 ? (
         <div style={{ padding: 'var(--space-24)', textAlign: 'center', color: 'var(--color-gray-500)' }}>
           로딩 중...
         </div>
       ) : (
-        <Table columns="1fr 100px">
+        <Table columns="1fr 1fr 100px">
           <TableHeader>
+            <TableCell>부서</TableCell>
             <TableCell>역할명</TableCell>
             <TableCell>액션</TableCell>
           </TableHeader>
           {filteredRoles.length > 0 ? (
             filteredRoles.map((role) => (
               <TableRow key={role.id}>
+                <TableCell>{departments.find(d => d.id === role.departmentId)?.name || role.departmentId}</TableCell>
                 <TableCell>{role.name}</TableCell>
                 <TableCell>
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                    <Button variant="secondary" size="small" onClick={() => handleEditClick(role)}>
-                      수정
-                    </Button>
-                    <Button variant="danger" size="small" onClick={() => handleDeleteClick(role)}>
-                      삭제
-                    </Button>
+                    <button 
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-gray-500)', padding: 'var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                      onClick={() => handleEditClick(role)}
+                      title="수정"
+                    >
+                      <EditIcon width={20} height={20} />
+                    </button>
+                    <button 
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-gray-500)', padding: 'var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                      onClick={() => handleDeleteClick(role)}
+                      title="삭제"
+                    >
+                      <DeleteIcon width={20} height={20} />
+                    </button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -120,6 +135,7 @@ export default function RoleTab() {
                 </div>
               </TableCell>
               <TableCell></TableCell>
+              <TableCell></TableCell>
             </TableRow>
           )}
         </Table>
@@ -130,6 +146,7 @@ export default function RoleTab() {
         onClose={() => setIsFormModalOpen(false)}
         onSave={handleSaveRole}
         initialData={editingRole}
+        departments={departments}
       />
 
       <ConfirmModal

@@ -15,7 +15,6 @@ export default function SettingsPage() {
     <div style={{ padding: 'var(--space-32) var(--space-48)', display: 'flex', flexDirection: 'column', gap: 'var(--space-32)' }}>
       <div style={{ borderBottom: '1px solid var(--color-surface)' }}>
         <Tabs
-          variant="line"
           options={tabsOptions}
           activeValue={activeTab}
           onChange={setActiveTab}

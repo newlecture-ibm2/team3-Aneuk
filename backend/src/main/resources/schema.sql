@@ -23,10 +23,11 @@ CREATE TABLE IF NOT EXISTS room_type (
     name        VARCHAR(50)  NOT NULL
 );
 
--- 직원 역할 (CRUD 관리 — 호텔별 커스텀 가능)
+-- 직원 역할 (CRUD 관리 — 부서 종속)
 CREATE TABLE IF NOT EXISTS staff_role (
-    id          BIGSERIAL    PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
+    id            BIGSERIAL    PRIMARY KEY,
+    department_id VARCHAR(20)  NOT NULL REFERENCES department(id),
+    name          VARCHAR(50)  NOT NULL
 );
 
 -- ============================================================

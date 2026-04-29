@@ -3,14 +3,17 @@ import { handleResponse } from '@/lib/api';
 
 export interface Role {
   id: number;
+  departmentId: string;
   name: string;
 }
 
 export interface CreateRoleCommand {
+  departmentId: string;
   name: string;
 }
 
 export interface UpdateRoleCommand {
+  departmentId: string;
   name: string;
 }
 

@@ -6,7 +6,7 @@ import SettingsPage from './_components/SettingsPage/SettingsPage';
 
 export default function StaffManagementPage() {
   return (
-    <DashboardLayout role="admin" title="직원 관리">
+    <DashboardLayout role="admin">
       <SettingsPage />
     </DashboardLayout>
   );
