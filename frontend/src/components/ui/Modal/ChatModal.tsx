@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styles from './ChatModal.module.css';
 import ModalOverlay from './ModalOverlay';
 import ModalCard from './ModalCard';
-import ChatBubble from '@/components/ui/ChatScreen/ChatBubble';
-import ChatInput from '@/components/ui/ChatScreen/ChatInput';
+import ChatBubble from '@/app/guest/chat/_components/ChatBubble';
+import ChatInput from '@/app/guest/chat/_components/ChatInput';
 import { CancelIcon } from '@/components/icons';
 
 export interface ChatMessage {

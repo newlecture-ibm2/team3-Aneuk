@@ -1,0 +1,38 @@
+/* src/components/ui/ChatBubble/ChatBubble.module.css */
+.wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.sentWrapper {
+  justify-content: flex-end;
+}
+
+.receivedWrapper {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 80%;
+  padding: var(--space-12) var(--space-24);
+  font: var(--text-body-regular);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.received {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  border-radius: var(--radius-md) var(--radius-xl) var(--radius-xl) var(--radius-xl);
+}
+
+.sent {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius-xl) var(--radius-md) var(--radius-xl) var(--radius-xl);
+}
+
+.fallback {
+  border: 1px solid #f59e0b; /* Yellow border */
+  background-color: #fffbeb; /* Light yellow background */
+}
