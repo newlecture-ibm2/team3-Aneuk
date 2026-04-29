@@ -175,7 +175,7 @@
 /* ── Stats cards ── */
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -228,6 +228,159 @@
   font-size: 24px;
   font-weight: 800;
   color: #f1f5f9;
+}
+
+/* ── Tabs ── */
+.tabRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.tabBtn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tabBtnActive {
+  background: rgba(102, 126, 234, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(102, 126, 234, 0.25);
+}
+
+/* ── Filter row ── */
+.filterRow {
+  display: flex;
+  gap: 8px;
+  padding: 16px 28px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.filterBtn {
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.filterBtn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.filterBtnActive {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+  color: #a5b4fc;
+}
+
+/* ── Floor section ── */
+.floorSection {
+  padding: 20px 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.floorSection:last-child {
+  border-bottom: none;
+}
+
+.floorLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a5b4fc;
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Room card grid ── */
+.roomGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.roomCard {
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.25s ease;
+  cursor: default;
+}
+
+.roomCard:hover {
+  transform: translateY(-2px);
+}
+
+.roomCardVacant {
+  background: rgba(52, 211, 153, 0.06);
+  border: 1px solid rgba(52, 211, 153, 0.15);
+}
+
+.roomCardVacant:hover {
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 4px 15px rgba(52, 211, 153, 0.1);
+}
+
+.roomCardOccupied {
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.15);
+}
+
+.roomCardOccupied:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.1);
+}
+
+.roomCardNumber {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.roomCardType {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.roomCardStatus {
+  font-size: 12px;
+}
+
+.vacantBadge {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.occupiedBadge {
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 11px;
 }
 
 /* ── Glass table card ── */
