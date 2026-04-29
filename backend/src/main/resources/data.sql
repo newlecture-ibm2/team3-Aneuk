@@ -33,3 +33,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO room (number, type_id) VALUES
     ('707', 3)
 ON CONFLICT (number) DO NOTHING;
+
+-- 테스트용 직원 1명 (직원 ID 1)
+INSERT INTO staff (id, name, pin, role_id, department_id) VALUES
+    (1, '김아늑', '1234', 1, 'HK')
+ON CONFLICT (id) DO NOTHING;
