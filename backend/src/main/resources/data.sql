@@ -1,8 +1,8 @@
 -- ============================================================
--- 아늑(Aneuk) 초기 데이터 — 코드/룩업 테이블
+-- 아늑(Aneuk) 초기 데이터
 -- ============================================================
 
--- 부서 (6개 — 텍스트 PK 유지: AI 파이프코드 연동)
+-- 부서 (6개 — 텍스트 PK: AI 파이프코드 연동)
 INSERT INTO department (id, name) VALUES
     ('HK',        '하우스키핑'),
     ('FB',        '식음료'),
@@ -12,24 +12,30 @@ INSERT INTO department (id, name) VALUES
     ('EMERGENCY', '긴급대응')
 ON CONFLICT (id) DO NOTHING;
 
--- 객실 타입 (3개 — 숫자 PK, 호텔별 커스텀 가능)
-INSERT INTO room_type (id, name) VALUES
-    (1, '스탠다드'),
-    (2, '디럭스'),
-    (3, '스위트')
-ON CONFLICT (id) DO NOTHING;
-
--- 직원 역할 (2개 — 숫자 PK, 호텔별 커스텀 가능)
+-- 직원 역할 (2개)
 INSERT INTO staff_role (id, name) VALUES
     (1, '직원'),
     (2, '관리자')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
--- Mock PMS 시드 데이터 — 객실
+-- ANOOK 객실 (호실 번호만 — PMS에서 수신한 목록)
+-- ============================================================
+INSERT INTO room (number) VALUES
+    ('101'), ('102'), ('103'),
+    ('201'), ('202'), ('203'),
+    ('301'), ('302'), ('303'),
+    ('707')
+ON CONFLICT (number) DO NOTHING;
+
+-- ============================================================
+-- PMS 더미 데이터 (발표용 가짜 무대 세트)
 -- ============================================================
 
--- 707호 객실 (스위트 = type_id 3)
-INSERT INTO room (number, type_id) VALUES
-    ('707', 3)
+-- PMS 객실
+INSERT INTO pms_room (number, type) VALUES
+    ('101', 'STANDARD'), ('102', 'STANDARD'), ('103', 'STANDARD'),
+    ('201', 'DELUXE'),   ('202', 'DELUXE'),   ('203', 'DELUXE'),
+    ('301', 'SUITE'),    ('302', 'SUITE'),     ('303', 'SUITE'),
+    ('707', 'SUITE')
 ON CONFLICT (number) DO NOTHING;

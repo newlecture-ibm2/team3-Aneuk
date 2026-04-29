@@ -226,7 +226,7 @@
 <body>
 
 <h1>🏨 아늑(Aneuk) ERD</h1>
-<p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v2.0 (13 Tables)</p>
+<p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v3.0 (ANOOK 10 Tables + PMS 2 Tables)</p>
 
 <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> PK</div>
@@ -238,53 +238,49 @@
 
 <div class="erd-container">
     <svg class="lines">
-        <!-- department → staff (소속) -->
-        <line x1="170" y1="110" x2="170" y2="400" stroke="#4a6fa5"/>
-        <text x="180" y="260">소속 1:N</text>
+        <!-- department(40,20,300) → staff(40,400,300) 소속 -->
+        <line x1="190" y1="110" x2="190" y2="400" stroke="#4a6fa5"/>
+        <text x="200" y="260">소속 1:N</text>
 
-        <!-- room_type → room (객실 타입) -->
-        <line x1="560" y1="110" x2="560" y2="200" stroke="#4a6fa5"/>
-        <text x="570" y="160">객실타입 1:N</text>
+        <!-- staff_role(440,20,280) → staff(40,400,300) 역할 -->
+        <line x1="580" y1="100" x2="300" y2="400" stroke="#4a6fa5" opacity="0.4"/>
+        <text x="450" y="240" fill="#888">역할 1:N</text>
 
-        <!-- staff_role → staff (역할) -->
-        <line x1="960" y1="110" x2="300" y2="400" stroke="#4a6fa5" opacity="0.4"/>
-        <text x="640" y="240" fill="#888">역할 1:N</text>
+        <!-- department(40,20) → request(400,530) 담당 부서 -->
+        <line x1="300" y1="80" x2="500" y2="530" stroke="#4a6fa5"/>
+        <text x="370" y="320">담당 부서 N:1</text>
 
-        <!-- department → request (담당 부서) -->
-        <line x1="300" y1="80" x2="500" y2="730" stroke="#4a6fa5"/>
-        <text x="370" y="420">담당 부서 N:1</text>
+        <!-- room(440,150) → request(400,530) 요청 발생 -->
+        <line x1="540" y1="220" x2="540" y2="530" stroke="#4a6fa5"/>
+        <text x="548" y="380">요청 발생 1:N</text>
 
-        <!-- room → guest (투숙 중) -->
-        <line x1="600" y1="360" x2="600" y2="400" stroke="#6ee7b7"/>
-        <text x="610" y="385">투숙 중 1:1</text>
+        <!-- room(440,150) → message(440,900) 대화 발생 -->
+        <line x1="620" y1="220" x2="620" y2="900" stroke="#4a6fa5"/>
+        <text x="630" y="570">대화 발생 1:N</text>
 
-        <!-- room → request (요청 발생) -->
-        <line x1="540" y1="360" x2="540" y2="730" stroke="#4a6fa5"/>
-        <text x="548" y="560">요청 발생 1:N</text>
+        <!-- staff(40,400) → request(400,530) 배정 -->
+        <line x1="340" y1="550" x2="400" y2="560" stroke="#4a6fa5"/>
+        <text x="340" y="540">배정 N:1</text>
 
-        <!-- room → message (대화 발생) -->
-        <line x1="720" y1="280" x2="960" y2="400" stroke="#4a6fa5"/>
-        <text x="820" y="330">대화 발생 1:N</text>
+        <!-- staff(40,400) → fewshot(40,730) 정정자 -->
+        <line x1="190" y1="610" x2="190" y2="730" stroke="#4a6fa5" opacity="0.4"/>
+        <text x="200" y="675" fill="#666">정정자 1:N</text>
 
-        <!-- staff → request (배정된 직원) -->
-        <line x1="300" y1="600" x2="470" y2="760" stroke="#4a6fa5"/>
-        <text x="350" y="680">배정 N:1</text>
+        <!-- request(400,530) → message(440,900) 관련 대화 -->
+        <line x1="590" y1="850" x2="590" y2="900" stroke="#4a6fa5"/>
+        <text x="600" y="880">관련 대화 1:N</text>
 
-        <!-- staff → fewshot_example (정정자) -->
-        <line x1="170" y1="610" x2="170" y2="730" stroke="#4a6fa5" opacity="0.4"/>
-        <text x="180" y="675" fill="#666">정정자 1:N</text>
-
-        <!-- request → message (관련 대화) -->
-        <line x1="780" y1="900" x2="1060" y2="600" stroke="#4a6fa5"/>
-        <text x="880" y="700">관련 대화 1:N</text>
-
-        <!-- knowledge → unanswered (승격) -->
+        <!-- knowledge(460,1310) → unanswered(460,1660) 승격 -->
         <line x1="640" y1="1610" x2="640" y2="1660" stroke="#a78bfa"/>
         <text x="650" y="1645">승격</text>
 
-        <!-- staff → knowledge_entry (승인자) -->
-        <line x1="300" y1="590" x2="500" y2="1310" stroke="#4a6fa5" opacity="0.4"/>
+        <!-- staff(40,400) → knowledge(460,1310) 승인자 -->
+        <line x1="300" y1="610" x2="500" y2="1310" stroke="#4a6fa5" opacity="0.4"/>
         <text x="380" y="960" fill="#666">승인자</text>
+
+        <!-- pms_room(840,200) → room(440,150) 목록 동기화 -->
+        <line x1="840" y1="230" x2="740" y2="190" stroke="#f87171" stroke-dasharray="4 4"/>
+        <text x="745" y="225" fill="#f87171" style="font-weight: 600;">객실 목록 동기화</text>
     </svg>
 
     <!-- Row 1: department, room_type, staff_role -->
@@ -296,15 +292,7 @@
         </div>
     </div>
 
-    <div class="table-card theme-green" style="left:440px; top:20px; width:280px;">
-        <div class="table-header"><span class="icon">🏠</span> room_type</div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span><span class="col-desc">BIGSERIAL</span></div>
-            <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span class="col-desc">타입명</span></div>
-        </div>
-    </div>
-
-    <div class="table-card theme-orange" style="left:820px; top:20px; width:280px;">
+    <div class="table-card theme-orange" style="left:440px; top:20px; width:280px;">
         <div class="table-header"><span class="icon">🎩</span> staff_role</div>
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span><span class="col-desc">BIGSERIAL</span></div>
@@ -312,13 +300,11 @@
         </div>
     </div>
 
-    <!-- Row 2: room -->
-    <div class="table-card theme-green" style="left:440px; top:200px; width:300px;">
-        <div class="table-header"><span class="icon">🚪</span> room</div>
+    <!-- Row 2: room (ANOOK — number만 PK) -->
+    <div class="table-card theme-green" style="left:440px; top:150px; width:300px;">
+        <div class="table-header"><span class="icon">🚪</span> room <span style="font-size:10px; color:#6ee7b7; font-weight:400;">ANOOK 메인</span></div>
         <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar</span><span class="badge badge-uk">UK</span><span class="col-desc">101, 302</span></div>
-            <div class="col-row"><span class="col-name">type_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">room_type.id</span></div>
+            <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar(10)</span><span class="badge badge-pk">PK</span><span class="col-desc">101, 707 등</span></div>
         </div>
     </div>
 
@@ -334,22 +320,10 @@
         </div>
     </div>
 
-    <!-- guest -->
-    <div class="table-card theme-red" style="left:440px; top:400px; width:300px;">
-        <div class="table-header"><span class="icon">🔑</span> guest <span style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
-        <div class="table-body">
-            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="badge badge-uk">UK</span><span class="col-desc">1방 1게스트</span></div>
-            <div class="col-row"><span class="col-name">guest_name</span><span class="col-type">varchar</span><span class="col-desc">투숙객 이름</span></div>
-            <div class="col-row"><span class="col-name">language</span><span class="col-type">varchar</span><span class="col-desc">ko, en, ja, zh</span></div>
-            <div class="col-row"><span class="col-name">notes</span><span class="col-type">jsonb</span><span class="col-desc">특이사항 (알러지 등)</span></div>
-            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span><span class="col-desc">체크인</span></div>
-            <div class="col-row"><span class="col-name">checkout_date</span><span class="col-type">date</span><span class="col-desc">예정 체크아웃</span></div>
-        </div>
-    </div>
+
 
     <!-- Row 4: fewshot_example, request -->
-    <div class="table-card theme-orange" style="left:400px; top:730px; width:380px;">
+    <div class="table-card theme-orange" style="left:400px; top:530px; width:380px;">
         <div class="table-header"><span class="icon">⭐</span> request <span style="font-size:10px; color:#fbbf24; font-weight:400;">핵심 테이블</span></div>
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
@@ -360,7 +334,7 @@
             <div class="col-row"><span class="col-name">raw_text</span><span class="col-type">text</span><span class="col-desc">고객 발화 원문</span></div>
             <div class="col-row"><span class="col-name">summary</span><span class="col-type">text</span><span class="col-desc">AI 요약 (카드 제목)</span></div>
             <div class="col-row"><span class="col-name">confidence</span><span class="col-type">float</span><span class="col-desc">0.0~1.0</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span></div>
+            <div class="col-row"><span class="col-name">room_number</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">room.number</span></div>
             <div class="col-row"><span class="col-name">assigned_staff_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">nullable</span></div>
             <div class="col-row"><span class="col-name">version</span><span class="col-type">int</span><span class="col-desc">낙관적 락</span></div>
             <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
@@ -369,16 +343,43 @@
     </div>
 
     <!-- message -->
-    <div class="table-card theme-cyan" style="left:960px; top:400px; width:300px;">
+    <div class="table-card theme-cyan" style="left:440px; top:900px; width:300px;">
         <div class="table-header"><span class="icon">💬</span> message</div>
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
             <div class="col-row"><span class="col-name">sender_type</span><span class="col-type">varchar</span><span class="col-desc">GUEST, AI, STAFF</span></div>
             <div class="col-row"><span class="col-name">content</span><span class="col-type">text</span><span class="col-desc">원문</span></div>
             <div class="col-row"><span class="col-name">translated_content</span><span class="col-type">text</span><span class="col-desc">번역문</span></div>
-            <div class="col-row"><span class="col-name">room_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span></div>
+            <div class="col-row"><span class="col-name">room_number</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="col-desc">room.number</span></div>
             <div class="col-row"><span class="col-name">request_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">nullable</span></div>
             <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
+        </div>
+    </div>
+
+    <!-- PMS 영역 구분선 -->
+    <div style="position:absolute; left:820px; top:150px; width:520px; padding:8px 16px; border:2px dashed #f87171; border-radius:16px; min-height:470px; z-index:0;">
+        <span style="font-size:12px; color:#f87171; font-weight:700;">🔒 PMS 영역 (ANOOK 접근 불가)</span>
+    </div>
+
+    <!-- pms_room -->
+    <div class="table-card theme-red" style="left:840px; top:200px; width:240px;">
+        <div class="table-header"><span class="icon">🏠</span> pms_room</div>
+        <div class="table-body">
+            <div class="col-row"><span class="col-name">number</span><span class="col-type">varchar(10)</span><span class="badge badge-pk">PK</span></div>
+            <div class="col-row"><span class="col-name">type</span><span class="col-type">varchar</span><span class="col-desc">STANDARD, SUITE</span></div>
+        </div>
+    </div>
+
+    <!-- pms_guest -->
+    <div class="table-card theme-red" style="left:840px; top:360px; width:280px;">
+        <div class="table-header"><span class="icon">🔑</span> pms_guest <span style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
+        <div class="table-body">
+            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
+            <div class="col-row"><span class="col-name">room_number</span><span class="col-type">varchar</span><span class="badge badge-fk">FK</span><span class="badge badge-uk">UK</span><span class="col-desc">pms_room.number</span></div>
+            <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar</span><span class="col-desc">투숙객 이름</span></div>
+            <div class="col-row"><span class="col-name">phone</span><span class="col-type">varchar</span><span class="col-desc">연락처</span></div>
+            <div class="col-row"><span class="col-name">checkin_date</span><span class="col-type">timestamp</span></div>
+            <div class="col-row"><span class="col-name">checkout_date</span><span class="col-type">date</span></div>
         </div>
     </div>
 
@@ -464,18 +465,13 @@
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">
-            <div class="label">🏠 room_type</div>
-            <div class="desc">객실 타입 — bigint PK (BIGSERIAL), 호텔별 커스텀 가능</div>
-            <div class="lifetime lifetime-permanent">영구 보존</div>
-        </div>
-        <div class="info-card">
             <div class="label">🎩 staff_role</div>
-            <div class="desc">직원 역할 — bigint PK (BIGSERIAL), 호텔별 커스텀 가능</div>
+            <div class="desc">직원 역할 — bigint PK (BIGSERIAL)</div>
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">
-            <div class="label">🚪 room</div>
-            <div class="desc">객실 번호, 층, 타입 (type_id FK)</div>
+            <div class="label">🚪 room (ANOOK)</div>
+            <div class="desc">호실 번호만 보유 — varchar PK (PMS에서 목록 수신)</div>
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">
@@ -484,8 +480,13 @@
             <div class="lifetime lifetime-permanent">영구 보존</div>
         </div>
         <div class="info-card">
-            <div class="label">🔑 guest</div>
-            <div class="desc">객실 ↔ 투숙객 매핑 (정적 QR, notes JSONB로 특이사항 통합)</div>
+            <div class="label">🏠 pms_room</div>
+            <div class="desc">PMS 객실 정보 — number PK, type 포함</div>
+            <div class="lifetime lifetime-permanent">영구 보존</div>
+        </div>
+        <div class="info-card">
+            <div class="label">🔑 pms_guest</div>
+            <div class="desc">PMS 투숙객 정보 — ANOOK 접근 불가 (개인정보보호)</div>
             <div class="lifetime lifetime-delete">체크아웃 시 Hard Delete</div>
         </div>
         <div class="info-card">

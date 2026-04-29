@@ -1,13 +1,12 @@
 -- ============================================================
 -- 아늑(Aneuk) 호텔 AI 컨시어지 — DDL (PostgreSQL 16 + pgvector)
--- ERD v2.0 기반 — 13 Tables
 -- ============================================================
 
 -- pgvector 확장 활성화
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ============================================================
--- 1. 코드/룩업 테이블 (varchar PK)
+-- 1. 코드/룩업 테이블
 -- ============================================================
 
 -- 부서
@@ -16,27 +15,19 @@ CREATE TABLE IF NOT EXISTS department (
     name        VARCHAR(50)  NOT NULL
 );
 
--- 객실 타입 (CRUD 관리 — 호텔별 커스텀 가능)
-CREATE TABLE IF NOT EXISTS room_type (
-    id          BIGSERIAL    PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
-);
-
--- 직원 역할 (CRUD 관리 — 호텔별 커스텀 가능)
+-- 직원 역할
 CREATE TABLE IF NOT EXISTS staff_role (
     id          BIGSERIAL    PRIMARY KEY,
     name        VARCHAR(50)  NOT NULL
 );
 
 -- ============================================================
--- 2. 핵심 엔티티 테이블
+-- 2. ANOOK 핵심 엔티티 테이블
 -- ============================================================
 
--- 객실
+-- 객실 (ANOOK) — 호실 번호만 보유. PMS에서 목록 수신.
 CREATE TABLE IF NOT EXISTS room (
-    id          BIGSERIAL    PRIMARY KEY,
-    number      VARCHAR(10)  NOT NULL UNIQUE,
-    type_id     BIGINT       NOT NULL REFERENCES room_type(id)
+    number      VARCHAR(10)  PRIMARY KEY
 );
 
 -- 직원
@@ -46,17 +37,6 @@ CREATE TABLE IF NOT EXISTS staff (
     pin             VARCHAR(10)  NOT NULL,
     role_id         BIGINT       NOT NULL REFERENCES staff_role(id),
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
-);
-
--- 투숙객 (체크아웃 시 Hard Delete — PII 최소화)
-CREATE TABLE IF NOT EXISTS guest (
-    id              BIGSERIAL    PRIMARY KEY,
-    room_id         BIGINT       NOT NULL UNIQUE REFERENCES room(id),
-    guest_name      VARCHAR(50)  NOT NULL,
-    language        VARCHAR(10)  NOT NULL DEFAULT 'ko',
-    notes           JSONB,
-    created_at      TIMESTAMP    NOT NULL DEFAULT NOW(),
-    checkout_date   DATE         NOT NULL
 );
 
 -- ============================================================
@@ -74,7 +54,7 @@ CREATE TABLE IF NOT EXISTS request (
     raw_text            TEXT,
     summary             TEXT,
     confidence          REAL,
-    room_id             BIGINT       NOT NULL REFERENCES room(id),
+    room_number         VARCHAR(10)  NOT NULL REFERENCES room(number),
     assigned_staff_id   BIGINT       REFERENCES staff(id),
     version             INT          NOT NULL DEFAULT 0,
     created_at          TIMESTAMP    NOT NULL DEFAULT NOW(),
@@ -87,7 +67,7 @@ CREATE TABLE IF NOT EXISTS message (
     sender_type         VARCHAR(10)  NOT NULL,
     content             TEXT         NOT NULL,
     translated_content  TEXT,
-    room_id             BIGINT       NOT NULL REFERENCES room(id),
+    room_number         VARCHAR(10)  NOT NULL REFERENCES room(number),
     request_id          BIGINT       REFERENCES request(id),
     created_at          TIMESTAMP    NOT NULL DEFAULT NOW()
 );
@@ -156,22 +136,40 @@ CREATE TABLE IF NOT EXISTS dispatch_log (
 );
 
 -- ============================================================
--- 6. 인덱스
+-- 6. PMS 테이블 (발표용 더미 데이터 — ANOOK과 분리)
+-- ============================================================
+
+-- PMS 객실
+CREATE TABLE IF NOT EXISTS pms_room (
+    number      VARCHAR(10)  PRIMARY KEY,
+    type        VARCHAR(20)  NOT NULL
+);
+
+-- PMS 투숙객 (개인정보 포함 — ANOOK 접근 불가)
+CREATE TABLE IF NOT EXISTS pms_guest (
+    id              BIGSERIAL       PRIMARY KEY,
+    room_number     VARCHAR(10)     NOT NULL UNIQUE
+                                    REFERENCES pms_room(number)
+                                    ON DELETE CASCADE,
+    name            VARCHAR(50)     NOT NULL,
+    phone           VARCHAR(20),
+    checkin_date    TIMESTAMP       NOT NULL DEFAULT NOW(),
+    checkout_date   DATE            NOT NULL
+);
+
+-- ============================================================
+-- 7. 인덱스
 -- ============================================================
 
 -- 요청 조회 성능
 CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
-CREATE INDEX IF NOT EXISTS idx_request_room_id ON request(room_id);
+CREATE INDEX IF NOT EXISTS idx_request_room_number ON request(room_number);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
 
 -- 메시지 조회 성능
-CREATE INDEX IF NOT EXISTS idx_message_room_id ON message(room_id);
+CREATE INDEX IF NOT EXISTS idx_message_room_number ON message(room_number);
 CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
-
--- 지식 벡터 검색 (IVFFlat — 데이터 1000건 이상 시 활성화 권장)
--- CREATE INDEX IF NOT EXISTS idx_knowledge_embedding ON knowledge_entry
---     USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 
 -- 지식 도메인별 필터링
 CREATE INDEX IF NOT EXISTS idx_knowledge_domain ON knowledge_entry(domain_code);
