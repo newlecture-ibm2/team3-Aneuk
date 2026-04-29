@@ -3,10 +3,13 @@ package com.anook.backend.guest.application.service;
 import com.anook.backend.guest.application.port.in.CheckOutGuestUseCase;
 import com.anook.backend.guest.application.port.out.GuestRepositoryPort;
 import com.anook.backend.guest.application.port.out.RequestQueryPort;
+import com.anook.backend.guest.domain.event.GuestCheckedOutEvent;
 import com.anook.backend.global.exception.BusinessException;
 import com.anook.backend.global.exception.ErrorCode;
 import com.anook.backend.guest.domain.model.Guest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +24,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CheckOutGuestService implements CheckOutGuestUseCase {
 
     private final GuestRepositoryPort guestRepository;
     private final RequestQueryPort requestQueryPort;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void checkOut(Long guestId) {
@@ -42,7 +47,14 @@ public class CheckOutGuestService implements CheckOutGuestUseCase {
             throw new BusinessException(ErrorCode.UNSETTLED_BILLING);
         }
 
+        String roomNumber = guest.getRoomNumber();
+
         // 3) Hard Delete
         guestRepository.deleteById(guestId);
+
+        // 4) 체크아웃 이벤트 발행 → ANOOK 세션 무효화
+        eventPublisher.publishEvent(new GuestCheckedOutEvent(roomNumber));
+        log.info("[CheckOut] {}호 체크아웃 완료 → 이벤트 발행", roomNumber);
     }
 }
+
