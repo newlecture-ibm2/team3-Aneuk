@@ -15,4 +15,10 @@ public interface RoomRepositoryPort {
     List<Room> findAll();
 
     boolean existsById(Long id);
+
+    Room save(Room room);
+
+    void deleteById(Long id);
+
+    boolean existsByNumber(String number);
 }

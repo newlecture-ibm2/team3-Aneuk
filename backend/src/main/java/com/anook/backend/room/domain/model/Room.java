@@ -17,6 +17,11 @@ public class Room {
         this.typeId = Objects.requireNonNull(typeId, "객실 타입은 필수입니다.");
     }
 
+    // === 팩토리 메서드 (객실 등록 시 사용) ===
+    public static Room create(String number, Long typeId) {
+        return new Room(null, number, typeId);
+    }
+
     public Long getId() { return id; }
     public String getNumber() { return number; }
     public Long getTypeId() { return typeId; }
