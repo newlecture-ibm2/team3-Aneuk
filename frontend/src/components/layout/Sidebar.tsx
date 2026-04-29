@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
 import {
@@ -65,19 +65,15 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 
 export default function Sidebar({ role = 'admin', className = '', fakePathname, onMenuClick }: SidebarProps) {
   const actualPathname = usePathname() || '';
-  const searchParams = useSearchParams();
-  const currentSearch = searchParams.toString();
-  const fullPathname = currentSearch ? `${actualPathname}?${currentSearch}` : actualPathname;
-  
-  const pathname = fakePathname || fullPathname;
+  const pathname = fakePathname || actualPathname;
 
   // 부서별 (하우스키핑, 식음료, 시설, 컨시어지) 메뉴 리스트
   const deptMenus = [
     {
-      category: '작업 관리',
+      category: '',
       items: [
-        { label: '내 작업', href: '/staff?view=my', icon: User },
-        { label: '부서 전체 작업', href: '/staff?view=all', icon: Users }
+        { label: '내 작업 (My Tasks)', href: `/dept/${role}/my-tasks`, icon: User },
+        { label: '부서 전체 작업 (Dept Tasks)', href: `/dept/${role}/all-tasks`, icon: Users }
       ]
     }
   ];
@@ -141,10 +137,10 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
         {menus.map((group, groupIdx) => (
           <div key={groupIdx} style={{ marginBottom: group.category ? 'var(--space-8)' : '0' }}>
             {group.category && (
-              <h4 style={{
-                padding: 'var(--space-8) var(--space-16)',
-                fontSize: '0.75rem',
-                fontWeight: 600,
+              <h4 style={{ 
+                padding: 'var(--space-8) var(--space-16)', 
+                fontSize: '0.75rem', 
+                fontWeight: 600, 
                 color: 'var(--color-gray-500)',
                 marginTop: 'var(--space-8)',
                 marginBottom: 'var(--space-4)'
@@ -154,15 +150,10 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {group.items.map((menu) => {
-                // 메뉴 href에 쿼리스트링이 포함되어 있으면 전체 경로(pathname)와 비교, 
-                // 없으면 순수 경로(actualPathname)와 비교하여 범용성 확보
-                const isActive = menu.href.includes('?') 
-                  ? pathname === menu.href 
-                  : actualPathname === menu.href || actualPathname.startsWith(`${menu.href}/`);
-
+                const isActive = activeMenu?.href === menu.href;
                 return (
                   <SidebarItem
-                    key={menu.label}
+                    key={menu.href}
                     icon={menu.icon}
                     label={menu.label}
                     href={menu.href}
