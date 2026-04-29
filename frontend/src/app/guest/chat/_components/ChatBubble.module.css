@@ -29,5 +29,10 @@
 .sent {
   background-color: var(--color-primary);
   color: var(--color-white);
-  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-md) var(--radius-xl);
+  border-radius: var(--radius-xl) var(--radius-md) var(--radius-xl) var(--radius-xl);
+}
+
+.fallback {
+  border: 1px solid #f59e0b; /* Yellow border */
+  background-color: #fffbeb; /* Light yellow background */
 }

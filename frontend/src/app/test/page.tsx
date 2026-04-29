@@ -13,7 +13,12 @@ import Tabs from '@/components/ui/Tab/Tabs';
 import Pagination from '@/components/ui/Pagenation/Pagination';
 import RequestCard from '@/components/ui/Card/RequestCard';
 import RagCandidateCard from '@/components/ui/Card/RagCandidateCard';
-import ChatScreen from '@/app/guest/chat/_components/ChatScreen';
+import ChatBubble from '@/app/guest/chat/_components/ChatBubble';
+import ChatInput from '@/app/guest/chat/_components/ChatInput';
+import TypingIndicator from '@/app/guest/chat/_components/TypingIndicator';
+import Pill from '@/components/ui/Pill/Pill';
+import StatusCard from '@/app/guest/chat/_components/StatusCard';
+import FeedbackCard from '@/app/guest/chat/_components/FeedbackCard';
 import { HandoverRecord } from '@/components/ui/HandoverRecord';
 import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import TaskColumn from '@/components/ui/TaskBoard/TaskColumn';
@@ -54,6 +59,8 @@ export default function ComponentShowcasePage() {
   const { messages, isTyping, sendMessage } = useChat();
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [sidebarRole, setSidebarRole] = useState<'admin' | 'housekeeping' | 'facility' | 'fb' | 'concierge'>('admin');
+  const [selectedQuickBtn, setSelectedQuickBtn] = useState<string>('');
+  const [testProgress, setTestProgress] = useState<number>(33);
   const [sidebarActivePath, setSidebarActivePath] = useState('/admin/dashboard');
   const [activeRoomId, setActiveRoomId] = useState<string | number>('1001');
   const [selectedKnowledge, setSelectedKnowledge] = useState<any>(null);
@@ -316,23 +323,21 @@ export default function ComponentShowcasePage() {
             {/* Group 3: Navigation & Status */}
             <div style={{ background: 'var(--color-bg)', padding: 'var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>3. Navigation & Status</h3>
-              <div>
-                <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Status Badges</h4>
-                <ComponentLabel path="components/ui/StatusBadge/StatusBadge.tsx" />
-                <div style={{ display: 'flex', gap: 'var(--space-16)', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <StatusBadge variant="gray">기본(Gray)</StatusBadge>
-                  <StatusBadge variant="red">위험(Red)</StatusBadge>
-                  <StatusBadge variant="purple">보라(Purple)</StatusBadge>
-                  <StatusBadge variant="green">성공(Green)</StatusBadge>
-                </div>
+              <Tabs options={[{ label: '전체', value: 'tab1', count: 12 }, { label: '객실', value: 'tab2', count: 5 }]} activeValue={activeModal || 'tab1'} onChange={(v) => setActiveModal(v)} />
+              <Pill options={['알림', '공지사항', '시스템']} selectedOption={activeModal || '알림'} onSelect={(v) => setActiveModal(v)} />
+              <div style={{ display: 'flex', gap: 'var(--space-16)', alignItems: 'center', flexWrap: 'wrap' }}>
+                <StatusBadge variant="gray">기본(Gray)</StatusBadge>
+                <StatusBadge variant="red">위험(Red)</StatusBadge>
+                <StatusBadge variant="purple">보라(Purple)</StatusBadge>
+                <StatusBadge variant="green">성공(Green)</StatusBadge>
               </div>
               <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', marginTop: 'var(--space-12)' }}>
                 <div style={{ flex: 1, minWidth: '300px' }}>
                   <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Tabs</h4>
                   <ComponentLabel path="components/ui/Tab/Tabs.tsx" />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-                    <Tabs variant="line" options={[{ label: '전체', value: 'tab1', count: 12 }, { label: '진행중', value: 'tab2', count: 3 }, { label: '완료', value: 'tab3', count: 9 }]} activeValue={tabValue} onChange={setTabValue} />
-                    <Tabs variant="pill" options={[{ label: '알림', value: 'tab1' }, { label: '설정', value: 'tab2' }]} activeValue={tabValue} onChange={setTabValue} />
+                    <Tabs options={[{ label: '전체', value: 'tab1', count: 12 }, { label: '진행중', value: 'tab2', count: 3 }, { label: '완료', value: 'tab3', count: 9 }]} activeValue={tabValue} onChange={setTabValue} />
+                    <Pill options={['알림', '설정']} selectedOption={tabValue} onSelect={setTabValue} />
                   </div>
                 </div>
                 <div style={{ flex: 1, minWidth: '200px' }}>
@@ -346,12 +351,93 @@ export default function ComponentShowcasePage() {
             {/* Group 4: Chat UI */}
             <div style={{ background: 'var(--color-bg)', padding: 'var(--space-32)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
               <h3 style={{ font: 'var(--text-h3-bold)', color: 'var(--color-gray-700)', borderBottom: '1px solid var(--color-surface)', paddingBottom: 'var(--space-8)' }}>4. Chat UI</h3>
-              <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Screen</h4>
-                  <ComponentLabel path="app/guest/chat/_components/ChatScreen.tsx" />
-                  <div style={{ width: '100%', padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', display: 'flex', justifyContent: 'center' }}>
-                    <ChatScreen messages={messages} isTyping={isTyping} onSendMessage={sendMessage} />
+              
+              <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+                  <div>
+                    <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Bubble (Sent)</h4>
+                    <ComponentLabel path="app/guest/chat/_components/ChatBubble.tsx" />
+                    <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+                      <ChatBubble variant="sent">수건 2장 더 가져다주세요. 그리고 가습기가 있으면 좋겠어요.</ChatBubble>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Bubble (Received)</h4>
+                    <ComponentLabel path="app/guest/chat/_components/ChatBubble.tsx" />
+                    <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+                      <ChatBubble variant="received">네, 고객님! 수건 2장과 가습기를 객실로 가져다 드리겠습니다. 잠시만 기다려주세요.</ChatBubble>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column' }}>
+                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Input</h4>
+                  <ComponentLabel path="app/guest/chat/_components/ChatInput.tsx" />
+                  <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', marginTop: 'auto', marginBottom: 'auto' }}>
+                    <ChatInput onSend={(text) => alert(`전송: ${text}`)} />
+                  </div>
+                  
+                  <div style={{ marginTop: 'var(--space-24)' }}>
+                    <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Chat Bubble (Fallback)</h4>
+                    <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+                      <ChatBubble variant="received" isFallback>보다 정확한 안내를 위해 <strong>프론트 데스크</strong>로 내용을 전달했습니다. 잠시만 기다려주세요! 😊</ChatBubble>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 'var(--space-24)' }}>
+                    <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Typing Indicator (AI Thinking)</h4>
+                    <ComponentLabel path="app/guest/chat/_components/TypingIndicator.tsx" />
+                    <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+                      <TypingIndicator />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 'var(--space-32)', flexWrap: 'wrap', marginTop: 'var(--space-8)' }}>
+                <div style={{ flex: 1, minWidth: '300px' }}>
+                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Pill Component</h4>
+                  <ComponentLabel path="components/ui/Pill/Pill.tsx" />
+                  <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+                    <Pill 
+                      options={['🛏️ 수건 요청', '🧴 어메니티 추가', '🧹 룸 클리닝', '🔑 체크아웃 문의']} 
+                      selectedOption={selectedQuickBtn}
+                      onSelect={(opt) => setSelectedQuickBtn(opt)} 
+                    />
+                  </div>
+                </div>
+                
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Status Card</h4>
+                  <ComponentLabel path="app/guest/chat/_components/StatusCard.tsx" />
+                  <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-16)' }}>
+                      <StatusCard progress={testProgress} />
+                      <button 
+                        onClick={() => setTestProgress(p => p === 33 ? 66 : p === 66 ? 100 : 33)}
+                        style={{ 
+                          padding: 'var(--space-8) var(--space-16)', 
+                          borderRadius: 'var(--radius-full)', 
+                          border: '1px solid var(--color-gray-300)', 
+                          background: 'var(--color-white)', 
+                          cursor: 'pointer', 
+                          font: 'var(--text-caption-medium)',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-50)'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-white)'}
+                      >
+                        상태 업데이트 (현재: {testProgress}%)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  <h4 style={{ font: 'var(--text-body-bold)', marginBottom: 'var(--space-12)' }}>Feedback Card</h4>
+                  <ComponentLabel path="app/guest/chat/_components/FeedbackCard.tsx" />
+                  <div style={{ padding: 'var(--space-24)', background: 'var(--color-gray-50)', border: '1px solid var(--color-surface)', borderRadius: 'var(--radius-lg)', display: 'flex', justifyContent: 'center' }}>
+                    <FeedbackCard onSubmit={(rating) => alert(`별점: ${rating}점 제출!`)} />
                   </div>
                 </div>
               </div>
