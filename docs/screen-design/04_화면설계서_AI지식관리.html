@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>화면 설계서 - AI 지식 관리</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Noto Sans KR',sans-serif;background:#fff;color:#222;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{width:1200px;margin:20px auto;border:1.5px solid #333;background:#fff;page-break-after:always}
+
+    /* 메타 헤더 */
+    .meta-header{display:grid;grid-template-columns:1fr 1fr;border-bottom:1.5px solid #333}
+    .meta-left,.meta-right{display:grid;grid-template-columns:auto 1fr auto 1fr}
+    .meta-left{border-right:1.5px solid #333}
+    .meta-label{background:#f5f5f5;font-weight:700;font-size:12px;padding:10px 14px;border-right:1px solid #ccc;display:flex;align-items:center;white-space:nowrap}
+    .meta-value{font-size:12px;padding:10px 14px;display:flex;align-items:center;border-right:1px solid #ccc}
+    .meta-value:last-child{border-right:none}
+    .meta-row2{display:grid;grid-template-columns:auto 1fr;border-bottom:1.5px solid #333}
+
+    /* 메인 */
+    .main-content{display:grid;grid-template-columns:75% 25%;min-height:750px}
+    .screen-area{border-right:1.5px solid #333;padding:20px;position:relative;background:#fafafa}
+    .wire{border:1px solid #ddd;border-radius:8px;background:#f8fafc;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:flex;height:650px}
+
+    /* 공통 대시보드 UI */
+    .sim-sidebar{width:220px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column}
+    .sim-logo{display:flex;align-items:center;padding:20px;font-weight:800;font-size:16px;color:#0f172a;letter-spacing:-0.5px}
+    .sim-logo .icon{background:#0f172a;color:#fff;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;margin-right:8px;font-size:12px}
+    .sim-menu-group{margin-top:10px}
+    .sim-menu-title{font-size:10px;color:#94a3b8;font-weight:700;padding:0 20px;margin-bottom:8px;margin-top:16px}
+    .sim-menu-item{display:flex;align-items:center;padding:10px 20px;color:#64748b;font-size:13px;cursor:pointer;font-weight:500}
+    .sim-menu-item.active{background:#0f172a;color:#fff;border-radius:0 20px 20px 0;margin-right:20px;font-weight:700}
+    .sim-menu-item svg{width:16px;height:16px;margin-right:10px;fill:currentColor}
+
+    .sim-main{flex:1;padding:24px;overflow-y:auto;position:relative;display:flex;flex-direction:column}
+    .sim-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .sim-title span{color:#64748b;font-size:11px;font-weight:600;display:block}
+    .sim-title h1{color:#0f172a;font-size:22px;font-weight:800;margin-top:2px}
+    .sim-actions{display:flex;gap:8px}
+    .sim-search{display:flex;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 12px;width:240px}
+    .sim-search input{border:none;outline:none;background:transparent;font-size:12px;margin-left:6px;width:100%}
+    .sim-filter{border:1px solid #e2e8f0;background:#fff;padding:6px 10px;border-radius:6px;display:flex;align-items:center;cursor:pointer}
+
+    /* AI 지식 관리 레이아웃 */
+    .knowledge-layout{display:flex;gap:24px;flex:1}
+    
+    /* Left: Knowledge Library */
+    .kl-area{flex:1}
+    .kl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .kl-hdr h2{font-size:16px;font-weight:700;color:#0f172a}
+    .kl-add-btn{background:#0f172a;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+    
+    .kl-list{display:flex;flex-direction:column;gap:12px}
+    .kl-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,0.02);position:relative}
+    .kl-tag{display:inline-block;background:#f1f5f9;color:#475569;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px;border:1px solid #cbd5e1}
+    .kl-card h3{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:6px}
+    .kl-card p{font-size:13px;color:#64748b;margin-bottom:12px;line-height:1.4}
+    .kl-card-ftr{font-size:11px;color:#94a3b8;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+    .kl-card-actions{display:flex;gap:8px}
+    .kl-action{color:#0f172a;font-weight:700;cursor:pointer}
+    
+    /* Right Panel: Engine Status & Categories */
+    .kr-panel{width:280px;display:flex;flex-direction:column;gap:20px}
+    .kp-section{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+    .kp-title{font-size:14px;font-weight:700;color:#0f172a;margin-bottom:16px}
+    
+    .kp-stat{margin-bottom:16px}
+    .kp-stat:last-child{margin-bottom:0}
+    .kp-stat-label{font-size:11px;color:#64748b;font-weight:600;margin-bottom:4px}
+    .kp-stat-val{font-size:20px;font-weight:800;color:#0f172a}
+    
+    .kp-cat{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:13px;color:#475569}
+    .kp-cat:last-child{border-bottom:none}
+    .kp-cat span{font-weight:600}
+    
+    /* 마커 */
+    .marker{position:absolute;width:24px;height:24px;border-radius:50%;background:#FF4D6A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,77,106,.4);z-index:10;border:2px solid #fff}
+
+    /* Description */
+    .description-area{display:flex;flex-direction:column;border-left:1.5px solid #333;margin-left:-1.5px}
+    .desc-title{background:#f5f5f5;font-weight:700;font-size:13px;padding:10px 14px;border-bottom:1.5px solid #333;text-align:center;letter-spacing:1px}
+    .desc-table{width:100%;border-collapse:collapse;flex:1}
+    .desc-table tr{border-bottom:1px solid #ddd}
+    .desc-table tr:last-child{border-bottom:none}
+    .desc-table td{padding:12px;vertical-align:top;font-size:12px;line-height:1.6}
+    .desc-table .num{width:36px;text-align:center;font-weight:700;color:#FF4D6A;font-size:13px;vertical-align:middle;border-right:1px solid #eee}
+    .desc-table .desc-text{color:#333}
+    .desc-text strong{color:#0f172a;display:block;margin-bottom:4px;font-size:13px}
+    /* Hover actions */
+    .kl-item .kl-actions{opacity:0;transition:opacity 0.15s}
+    .kl-item:hover .kl-actions{opacity:1}
+    .kl-item:hover{background:#fafbfc}
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 지식 관리 (RAG 템플릿)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-006</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 지식 관리</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc">
+        <!-- Sidebar -->
+        <div class="sim-sidebar">
+          <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
+          <div class="sim-menu-item">대시보드</div>
+          <div class="sim-menu-item">프론트 데스크</div>
+          <div class="sim-menu-item">하우스키핑</div>
+          <div class="sim-menu-item">식음료</div>
+          <div class="sim-menu-item">시설</div>
+          <div class="sim-menu-item">컨시어지</div>
+          <div class="sim-menu-item">긴급 대응</div>
+          <div class="sim-menu-title">요청 관리</div>
+          <div class="sim-menu-item">전체 요청</div>
+          <div class="sim-menu-item">채팅 히스토리</div>
+          <div class="sim-menu-title">AI 시스템</div>
+          <div class="sim-menu-item">AI 학습 관리</div>
+          <div class="sim-menu-item active" style="position:relative">
+            <div class="marker" style="top:-8px;right:-8px">1</div>
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="currentColor"/></svg>
+            AI 지식 관리
+          </div>
+          <div class="sim-menu-item">AI 라우팅 로그</div>
+          <div class="sim-menu-title">운영 관리</div>
+          <div class="sim-menu-item">인수인계</div>
+          <div class="sim-menu-item">직원 관리</div>
+          <div class="sim-menu-title">설정</div>
+          <div class="sim-menu-item">기본 설정</div>
+        </div>
+
+        <!-- Main -->
+        <div class="sim-main">
+          <div class="sim-top">
+            <div class="sim-title">
+              <span>호텔 운영 관리 시스템</span>
+              <h1>AI 지식 관리</h1>
+            </div>
+            <div class="sim-actions" style="position:relative">
+              <div class="marker" style="top:-12px;right:-12px">2</div>
+              <button style="background:#0f172a;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">+ 지식 정보 추가</button>
+            </div>
+          </div>
+
+          <!-- Knowledge Library (full width) -->
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;flex:1;position:relative">
+            <div class="marker" style="top:-12px;left:-12px">3</div>
+            <h2 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:20px;display:flex;align-items:center;gap:8px">📄 지식 라이브러리</h2>
+
+            <!-- Item 1 -->
+            <div class="kl-item" style="border-bottom:1px solid #f1f5f9;padding:16px 0;display:flex;justify-content:space-between;align-items:flex-start;border-radius:6px;transition:background 0.15s">
+              <div style="flex:1">
+              <span style="background:#f1f5f9;color:#475569;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">체크인/아웃</span>
+              <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:8px 0 6px">체크아웃 시간 연장(Late Checkout)</h3>
+              <p style="font-size:13px;color:#475569;line-height:1.6;margin:0">오후 2시까지 연장 가능하며, 시간당 2,500엔의 추가 비용이 발생합니다. 멤버십 등급에 따라 무료 연장이 가능할 수 있으니 프론트에 문의 바랍니다.</p>
+              <div style="font-size:11px;color:#94a3b8;margin-top:8px">🕒 최종 업데이트: 2024-04-15</div>
+              </div>
+              <div class="kl-actions" style="display:flex;gap:8px;padding-top:4px;flex-shrink:0;position:relative">
+                <div class="marker" style="top:-12px;right:-12px">4</div>
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="수정">✏️</span>
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="삭제">🗑️</span>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="kl-item" style="border-bottom:1px solid #f1f5f9;padding:16px 0;display:flex;justify-content:space-between;align-items:flex-start;border-radius:6px;transition:background 0.15s">
+              <div style="flex:1">
+              <span style="background:#f1f5f9;color:#475569;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">부대시설</span>
+              <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:8px 0 6px">천연 온천(대욕장) 이용 안내</h3>
+              <p style="font-size:13px;color:#475569;line-height:1.6;margin:0">호텔 12층에 위치한 천연 온천은 오후 3시부터 익일 오전 10시까지 이용 가능합니다. 문신이 있으신 고객님은 제공해 드리는 커버 씰을 부착해 주시기 바랍니다.</p>
+              <div style="font-size:11px;color:#94a3b8;margin-top:8px">🕒 최종 업데이트: 2024-04-10</div>
+              </div>
+              <div class="kl-actions" style="display:flex;gap:8px;padding-top:4px;flex-shrink:0">
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="수정">✏️</span>
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="삭제">🗑️</span>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="kl-item" style="padding:16px 0;display:flex;justify-content:space-between;align-items:flex-start;border-radius:6px;transition:background 0.15s">
+              <div style="flex:1">
+              <span style="background:#f1f5f9;color:#475569;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">주변 관광</span>
+              <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:8px 0 6px">도쿄 타워(Tokyo Tower) 방문 가이드</h3>
+              <p style="font-size:13px;color:#475569;line-height:1.6;margin:0">호텔 서쪽 출구에서 도보로 약 10분 거리에 위치해 있습니다. 메인 데크 예매권은 호텔 컨시어지 데스크에서 할인된 가격으로 구매 가능합니다.</p>
+              <div style="font-size:11px;color:#94a3b8;margin-top:8px">🕒 최종 업데이트: 2024-04-18</div>
+              </div>
+              <div class="kl-actions" style="display:flex;gap:8px;padding-top:4px;flex-shrink:0">
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="수정">✏️</span>
+                <span style="color:#94a3b8;cursor:pointer;font-size:14px" title="삭제">🗑️</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>AI 시스템 메뉴</strong>· AI 학습관리, 지식관리, 라우팅 로그가 시스템 관리 메뉴 그룹으로 묶여 노출</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>+ 지식 정보 추가</strong>· 새로운 호텔 규정, 이벤트, 매뉴얼 등을 AI가 학습하도록 텍스트나 파일 형태로 추가하는 진입점<br>· 클릭 시 지식 추가 모달(UI-A-006-M) 팝업 오픈</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>지식 라이브러리 (Knowledge Library)</strong>· 현재 AI가 학습하여 알고 있는 문서 리스트<br>· 카테고리 태그(체크인/아웃, 부대시설 등)와 제목, 상세 설명 노출<br>· 최종 업데이트 일자를 명시하여 데이터의 최신성 관리</td></tr>
+        <tr><td class="num">4</td><td class="desc-text"><strong>수정/삭제 액션 (Hover)</strong>· 지식 항목에 마우스를 올리면 우측에 ✏️ 수정 / 🗑️ 삭제 아이콘이 나타남<br>· <b>수정</b>: 기존 지식 내용을 편집 → 저장 시 Python 서버로 재임베딩 요청<br>· <b>삭제</b>: 지식 문서를 영구 삭제하며, pgvector DB에서도 해당 임베딩 제거</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>지식 정보 등록/수정</strong><br>· 새로운 지식을 추가하거나 편집한 경우, Python 서버로 임베딩(Vectorization) 요청을 즉시 보내어 pgvector DB에 반영(동기화)</td></tr>
+      </table>
+      
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">민감한 내부 규정(예: 직원용 매뉴얼)과 고객 응대용 매뉴얼의 권한(Scope) 분리 설계 고려</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">AI 엔진 통신 실패 시, 우측 상단 상태 패널에 즉시 에러 아이콘 노출 처리</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 1-2: AI 지식 관리 (지식 추가 모달) ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 지식 관리 (지식 추가)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-006-M</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 지식 관리 &gt; + 지식 추가</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc;position:relative">
+        <!-- Dim Background -->
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:50;display:flex;justify-content:center;align-items:center">
+          <!-- Modal -->
+          <div style="background:#fff;width:520px;border-radius:12px;box-shadow:0 20px 40px rgba(0,0,0,0.25);display:flex;flex-direction:column">
+            
+            <!-- Header -->
+            <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">1</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:36px;background:#0f172a;color:#fff;border-radius:8px;display:flex;justify-content:center;align-items:center;font-size:16px">📝</div>
+                <div>
+                  <div style="font-size:16px;font-weight:800;color:#0f172a">지식 정보 추가</div>
+                  <div style="font-size:11px;color:#94a3b8">AI가 학습할 새로운 지식을 등록합니다</div>
+                </div>
+              </div>
+              <span style="color:#94a3b8;font-size:20px;cursor:pointer">✕</span>
+            </div>
+
+            <!-- Form Body -->
+            <div style="padding:24px;display:flex;flex-direction:column;gap:20px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">2</div>
+              
+              <!-- 카테고리 선택 -->
+              <div>
+                <label style="font-size:12px;font-weight:700;color:#0f172a;display:block;margin-bottom:6px">카테고리</label>
+                <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;font-size:13px;color:#64748b;display:flex;justify-content:space-between;align-items:center;background:#fff">
+                  <span>카테고리를 선택하세요</span>
+                  <span style="font-size:10px">▼</span>
+                </div>
+              </div>
+
+              <!-- 제목 -->
+              <div>
+                <label style="font-size:12px;font-weight:700;color:#0f172a;display:block;margin-bottom:6px">제목</label>
+                <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;font-size:13px;color:#94a3b8;background:#fff">지식 제목을 입력하세요</div>
+              </div>
+
+              <!-- 내용 -->
+              <div>
+                <label style="font-size:12px;font-weight:700;color:#0f172a;display:block;margin-bottom:6px">내용</label>
+                <div style="border:1px solid #e2e8f0;border-radius:6px;padding:14px;font-size:13px;color:#94a3b8;background:#fff;min-height:120px;line-height:1.6">AI가 참고할 상세 내용을 입력하세요.<br>예: 운영 시간, 가격, 주의사항 등</div>
+              </div>
+
+              <!-- 파일 첨부 -->
+              <div>
+                <label style="font-size:12px;font-weight:700;color:#0f172a;display:block;margin-bottom:6px">파일 첨부 (선택)</label>
+                <div style="border:2px dashed #cbd5e1;border-radius:8px;padding:20px;text-align:center;color:#94a3b8;font-size:12px;background:#f8fafc">
+                  <div style="font-size:24px;margin-bottom:4px">📎</div>
+                  PDF, DOCX 파일을 드래그하거나 클릭하여 업로드
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;gap:12px;border-radius:0 0 12px 12px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">3</div>
+              <button style="flex:1;background:#0f172a;color:#fff;border:none;padding:14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">저장 및 AI 학습 반영</button>
+              <button style="flex:0 0 auto;background:#fff;color:#64748b;border:1px solid #cbd5e1;padding:14px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">취소</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>지식 추가 모달 헤더</strong>· '+ 지식 추가' 버튼을 클릭하면 나타나는 오버레이 팝업<br>· 새로운 호텔 규정, 이벤트, 매뉴얼 등을 AI가 학습하도록 등록하는 진입점</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>입력 폼</strong>· <b>카테고리</b>: 체크인/아웃, 부대시설, 관광 가이드, 교통 정보 등 드롭다운 선택<br>· <b>제목</b>: 지식 문서의 제목<br>· <b>내용</b>: AI가 참고할 상세 본문 (운영 시간, 가격, 주의사항 등)<br>· <b>파일 첨부</b>: PDF, DOCX 파일 업로드 지원 (선택)</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>액션 버튼</strong>· <b>저장 및 AI 학습 반영</b>: 저장 즉시 Python 서버로 임베딩 요청 → pgvector DB 반영<br>· <b>취소</b>: 모달 닫힘, 입력 내용 초기화</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>지식 정보 등록/수정</strong><br>· 트리거: '저장 및 AI 학습 반영' 버튼 클릭<br>· 동작: 백엔드에서 Python 서버로 임베딩(Vectorization) 요청을 즉시 보내어 pgvector DB에 반영<br>· API: POST <code>/api/admin/knowledge</code></td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">민감한 내부 규정(직원용 매뉴얼)과 고객 응대용 매뉴얼의 권한(Scope) 분리 설계 고려</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">파일 업로드 시 PDF/DOCX 파싱 → 텍스트 추출 → 임베딩 파이프라인 연동 필요</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 2: AI 학습 관리 ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 학습 관리</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-007</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 시스템 &gt; AI 학습 관리</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc">
+        <div class="sim-sidebar">
+          <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
+          <div class="sim-menu-item">대시보드</div>
+          <div class="sim-menu-item">프론트 데스크</div>
+          <div class="sim-menu-item">하우스키핑</div>
+          <div class="sim-menu-item">식음료</div>
+          <div class="sim-menu-item">시설</div>
+          <div class="sim-menu-item">컨시어지</div>
+          <div class="sim-menu-item">긴급 대응</div>
+          <div class="sim-menu-title">요청 관리</div>
+          <div class="sim-menu-item">전체 요청</div>
+          <div class="sim-menu-item">채팅 히스토리</div>
+          <div class="sim-menu-title">AI 시스템</div>
+          <div class="sim-menu-item active" data-marker="1">
+            <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" fill="currentColor"/></svg>
+            AI 학습 관리
+          </div>
+          <div class="sim-menu-item">AI 지식 관리</div>
+          <div class="sim-menu-item">AI 라우팅 로그</div>
+          <div class="sim-menu-title">운영 관리</div>
+          <div class="sim-menu-item">인수인계</div>
+          <div class="sim-menu-item">직원 관리</div>
+          <div class="sim-menu-title">설정</div>
+          <div class="sim-menu-item">기본 설정</div>
+        </div>
+
+        <div class="sim-main">
+          <div class="sim-top">
+            <div class="sim-title">
+              <span>호텔 운영 관리 시스템</span>
+              <h1>AI 학습 관리</h1>
+            </div>
+            <div class="sim-actions">
+              <div class="sim-search"><svg viewBox="0 0 24 24" width="14" fill="#94a3b8"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="검색어를 입력하세요..."></div>
+              <div class="sim-filter"><svg viewBox="0 0 24 24" width="14" fill="#64748b"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></div>
+            </div>
+          </div>
+
+          <!-- Log Cards -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.02);position:relative" data-marker="2">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                <span style="font-size:12px;color:#94a3b8;font-weight:500">🕒 2026.10.27 10:15:33</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:10px;padding:4px 8px;border-radius:4px;font-weight:700">상담 로그</span>
+              </div>
+              <div style="background:#f8fafc;padding:16px;border-radius:8px">
+                <div style="align-self:flex-end;background:#0f172a;color:#fff;padding:12px 16px;border-radius:16px 16px 0 16px;font-size:13px;font-weight:500;max-width:80%;line-height:1.5;margin-left:auto">가습기가 하나 더 필요한데 갖다주실 수 있나요?</div>
+              </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.02)">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                <span style="font-size:12px;color:#94a3b8;font-weight:500">🕒 2026.10.27 11:42:10</span>
+                <span style="background:#f1f5f9;color:#64748b;font-size:10px;padding:4px 8px;border-radius:4px;font-weight:700">상담 로그</span>
+              </div>
+              <div style="background:#f8fafc;padding:16px;border-radius:8px">
+                <div style="background:#0f172a;color:#fff;padding:12px 16px;border-radius:16px 16px 0 16px;font-size:13px;font-weight:500;max-width:80%;margin-left:auto;line-height:1.5">체크아웃 시간을 2시간만 연장할 수 있을까요?</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>AI 시스템 사이드바</strong>· AI 학습관리, 지식관리, 라우팅 로그가 시스템 관리 메뉴 그룹으로 묶여 노출</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>상담 로그 리스트 (Clickable)</strong>· 고객이 남긴 원문(블랙 버블)을 프리뷰로 제공<br>· 카드 클릭 시 AI 답변을 확인할 수 있는 상세 모달 팝업 오픈</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>카드 클릭 시 모달 팝업</strong><br>· 트리거: 로그 리스트 항목 클릭<br>· 동작: 딤 처리 후 대화 상세 모달 오픈</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>지식으로 저장 처리</strong><br>· 트리거: '지식으로 저장' 버튼 클릭<br>· 동작: Q&A 페어를 임베딩 변환 후 AI 지식 라이브러리에 반영</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">학습 데이터 추가 시, 시스템 프롬프트 가이드라인에 부합하는지 관리자 2차 확인 프로세스 필요</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">처리 완료된 로그와 미처리 로그를 구분하는 필터링 기능 연동</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 2-2: AI 학습 관리 (로그 상세 모달) ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 학습 관리 (로그 상세 모달)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-007-M</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 학습 관리 &gt; 로그 카드 클릭</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc;position:relative">
+        <!-- Dim Background -->
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:50;display:flex;justify-content:center;align-items:center">
+          <div style="background:#f8fafc;width:460px;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.2)">
+            <div style="padding:18px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:16px 16px 0 0">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:36px;background:#0f172a;color:#fff;border-radius:8px;display:flex;justify-content:center;align-items:center;font-size:16px">💬</div>
+                <div><div style="font-size:16px;font-weight:800;color:#0f172a">로그 데이터 상세</div><div style="font-size:11px;color:#94a3b8">2026.10.27 10:15:33</div></div>
+              </div>
+              <span style="color:#94a3b8;font-size:20px;cursor:pointer">✕</span>
+            </div>
+            <div style="padding:24px;background:#fff;display:flex;flex-direction:column;gap:14px;min-height:200px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">1</div>
+              <div style="background:#0f172a;color:#fff;padding:14px 18px;border-radius:16px 16px 0 16px;font-size:14px;max-width:90%;margin-left:auto;line-height:1.5">가습기가 하나 더 필요한데 갖다주실 수 있나요?</div>
+              <div style="background:#fff;color:#0f172a;padding:14px 18px;border-radius:16px 16px 16px 0;font-size:14px;border:1px solid #e2e8f0;max-width:90%;line-height:1.5">네, 알겠습니다. 하우스키핑 부서에 전달하여 가습기를 객실로 보내드리겠습니다.</div>
+            </div>
+            <div style="padding:16px 24px;background:#fff;border-top:1px solid #e2e8f0;display:flex;gap:12px;border-radius:0 0 16px 16px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">2</div>
+              <button style="flex:1;background:#0f172a;color:#fff;border:none;padding:14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">✓ 지식으로 저장</button>
+              <button style="flex:1;background:#fff;color:#64748b;border:1px solid #cbd5e1;padding:14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">✕ 제외</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>로그 데이터 상세 (Modal)</strong>· 고객 발화(블랙)와 AI 답변(화이트)을 대화형 UI로 출력<br>· AI 환각(Hallucination) 없이 부서를 잘 안내했는지 관리자가 검수 가능</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>학습 데이터 처리 액션</strong>· <b>지식으로 저장</b>: 우수 Q&A를 Vector DB에 저장 (RAG 참고 자료)<br>· <b>제외</b>: 무의미하거나 부적절한 로그를 학습에서 제외 처리</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>지식으로 저장</strong><br>· Q&A 페어를 임베딩 변환 후 AI 지식 라이브러리에 반영<br>· 저장 완료 시 토스트 알림 + 카드 뱃지가 '지식 저장 완료'로 변경</td></tr>
+        <tr><td class="num" style="color:#3730a3;">E2</td><td class="desc-text"><strong>제외 처리</strong><br>· 단순 변심, 욕설, 무의미 로그 또는 부적절한 AI 답변을 학습에서 영구 제외</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">학습 데이터 추가 시, 시스템 프롬프트 가이드라인에 부합하는지 관리자 2차 확인 프로세스 필요</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 3: AI 라우팅 로그 ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 라우팅 로그</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-008</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 시스템 &gt; AI 라우팅 로그</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc">
+        <div class="sim-sidebar">
+          <div class="sim-logo"><div class="icon">⚏</div>GRAND HOTEL</div>
+          <div class="sim-menu-item">대시보드</div>
+          <div class="sim-menu-item">프론트 데스크</div>
+          <div class="sim-menu-item">하우스키핑</div>
+          <div class="sim-menu-item">식음료</div>
+          <div class="sim-menu-item">시설</div>
+          <div class="sim-menu-item">컨시어지</div>
+          <div class="sim-menu-item">긴급 대응</div>
+          <div class="sim-menu-title">요청 관리</div>
+          <div class="sim-menu-item">전체 요청</div>
+          <div class="sim-menu-item">채팅 히스토리</div>
+          <div class="sim-menu-title">AI 시스템</div>
+          <div class="sim-menu-item">AI 학습 관리</div>
+          <div class="sim-menu-item">AI 지식 관리</div>
+          <div class="sim-menu-item active" data-marker="1">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/></svg>
+            AI 라우팅 로그
+          </div>
+          <div class="sim-menu-title">운영 관리</div>
+          <div class="sim-menu-item">인수인계</div>
+          <div class="sim-menu-item">직원 관리</div>
+          <div class="sim-menu-title">설정</div>
+          <div class="sim-menu-item">기본 설정</div>
+        </div>
+
+        <div class="sim-main">
+          <div class="sim-top">
+            <div class="sim-title">
+              <span>호텔 운영 관리 시스템</span>
+              <h1>AI 라우팅 로그</h1>
+            </div>
+            <div class="sim-actions">
+              <div class="sim-search"><svg viewBox="0 0 24 24" width="14" fill="#94a3b8"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" placeholder="검색어를 입력하세요..."></div>
+              <div class="sim-filter"><svg viewBox="0 0 24 24" width="14" fill="#64748b"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px" data-marker="2">
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:14px;background:#fff">
+              <div style="width:40px;height:40px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:900">~</div>
+              <div><div style="font-size:10px;color:#64748b;font-weight:600;margin-bottom:4px">평균 응답 속도</div><div style="font-size:18px;font-weight:800;color:#0f172a">Avg. 1623ms</div></div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:14px;background:#fff">
+              <div style="width:40px;height:40px;border-radius:50%;background:#f1f5f9;color:#64748b;display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:900">[]</div>
+              <div><div style="font-size:10px;color:#64748b;font-weight:600;margin-bottom:4px">누적 소모 토큰</div><div style="font-size:18px;font-weight:800;color:#0f172a">4,600 Tokens</div></div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:14px;background:#fff">
+              <div style="width:40px;height:40px;border-radius:50%;background:#ffedd5;color:#ea580c;display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:900">@</div>
+              <div><div style="font-size:10px;color:#64748b;font-weight:600;margin-bottom:4px">AI 라우팅 성공률</div><div style="font-size:18px;font-weight:800;color:#0f172a">92.0%</div><div style="font-size:9px;color:#94a3b8">Fallback: 8.0%</div></div>
+            </div>
+          </div>
+
+          <!-- Log Table -->
+          <div style="border:1px solid #e2e8f0;border-radius:10px;background:#fff;flex:1" data-marker="3">
+            <div style="padding:14px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;font-weight:700;color:#0f172a">세부 접속 로그</span>
+              <span style="font-size:11px;color:#64748b;cursor:pointer">최신순 정렬</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;text-align:left">
+              <thead><tr style="background:#f8fafc">
+                <th style="padding:10px 20px;font-size:10px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">시간</th>
+                <th style="padding:10px 20px;font-size:10px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">요청 미리보기</th>
+                <th style="padding:10px 20px;font-size:10px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">토큰</th>
+                <th style="padding:10px 20px;font-size:10px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">지연시간</th>
+                <th style="padding:10px 20px;font-size:10px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;text-align:right"></th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">2026.10.26 14:05</td><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">수건 2장 더 가져다주세요.</td><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">1,520</td><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">850ms</td><td style="padding:14px 20px;text-align:right;border-bottom:1px solid #e2e8f0"><button style="background:#0f172a;color:#fff;padding:5px 10px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer">상세 보기</button></td></tr>
+                <tr><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">2026.10.26 14:12</td><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">화장실 전구가 나갔어요.</td><td style="padding:14px 20px;font-size:11px;color:#334155;border-bottom:1px solid #e2e8f0">1,430</td><td style="padding:14px 20px;font-size:11px;color:#ef4444;font-weight:700;border-bottom:1px solid #e2e8f0">3100ms <span style="background:#fee2e2;color:#ef4444;font-size:8px;padding:2px 5px;border-radius:3px;font-weight:800;margin-left:4px">SLOW</span></td><td style="padding:14px 20px;text-align:right;border-bottom:1px solid #e2e8f0"><button style="background:#0f172a;color:#fff;padding:5px 10px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer">상세 보기</button></td></tr>
+                <tr><td style="padding:14px 20px;font-size:11px;color:#334155">2026.10.26 14:15</td><td style="padding:14px 20px;font-size:11px;color:#334155">이탈리안 레스토랑 예약 가능?</td><td style="padding:14px 20px;font-size:11px;color:#334155">1,650</td><td style="padding:14px 20px;font-size:11px;color:#334155">920ms</td><td style="padding:14px 20px;text-align:right"><button style="background:#0f172a;color:#fff;padding:5px 10px;border-radius:4px;font-size:10px;font-weight:600;border:none;cursor:pointer">상세 보기</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>AI 라우팅 로그 메뉴</strong>· 고객 요청이 올바른 부서로 라우팅되었는지 추적하는 AI 엔진 로깅 화면</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>핵심 지표 (Top KPIs)</strong>· <b>평균 응답 속도</b>: AI 분석~응답 전체 평균 시간<br>· <b>누적 소모 토큰</b>: 비용 관리용 토큰 사용량 집계<br>· <b>AI 라우팅 성공률</b>: Fallback 없이 부서 할당한 비율</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>세부 접속 로그 리스트</strong>· 발생 시간별로 개별 요청 리스트업<br>· 지연시간이 비정상인 경우 <span style="background:#fee2e2;color:#ef4444;font-size:9px;padding:2px 5px;border-radius:3px;font-weight:700">SLOW</span> 태그로 경고<br>· '상세 보기' 클릭 시 RAW 프롬프트/응답 JSON 확인 모달 오픈</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>로그 상세 모달 진입</strong><br>· 트리거: '상세 보기' 버튼 클릭<br>· 동작: 딤 처리 후 RAW PROMPT / RAW RESPONSE JSON 모달 팝업<br>· API: GET <code>/api/admin/logs/{requestId}</code></td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">민감한 고객 PII가 프롬프트에 포함될 수 있으므로, 최고 관리자 권한만 접근 가능하도록 설정</td></tr>
+        <tr><td class="num" style="color:#ea580c;">C2</td><td class="desc-text">SLO(응답시간 2000ms 초과) 위반 시 슬랙 알림 연동 고려</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ====== PAGE 3-2: AI 라우팅 로그 (상세 보기 모달) ====== -->
+<div class="page">
+  <div class="meta-header">
+    <div class="meta-left">
+      <div class="meta-label">Page Title.</div>
+      <div class="meta-value">AI 라우팅 로그 (상세 보기)</div>
+      <div class="meta-label">Screen ID</div>
+      <div class="meta-value">UI-A-008-M</div>
+    </div>
+    <div class="meta-right">
+      <div class="meta-label">Author</div><div class="meta-value">팀3 아늑</div>
+      <div class="meta-label">Date</div><div class="meta-value">2026.04.27</div>
+    </div>
+  </div>
+  <div class="meta-row2">
+    <div class="meta-label">Screen Path</div>
+    <div class="meta-value">관리자 대시보드 &gt; AI 라우팅 로그 &gt; 상세 보기</div>
+  </div>
+
+  <div class="main-content">
+    <div class="screen-area">
+      <div class="wire" style="background:#f8fafc;position:relative">
+        <!-- Dim Background -->
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:50;display:flex;justify-content:center;align-items:center">
+          <!-- Modal -->
+          <div style="background:#fff;width:560px;border-radius:12px;box-shadow:0 20px 40px rgba(0,0,0,0.25);display:flex;flex-direction:column;max-height:620px;overflow-y:auto">
+            
+            <!-- Header -->
+            <div style="padding:18px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-start;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">1</div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:36px;height:36px;background:#0f172a;color:#fff;border-radius:8px;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:14px;font-weight:bold">&lt;&gt;</div>
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:16px;font-weight:800;color:#0f172a">로그 데이터 분석</span>
+                    <span style="border:1px solid #cbd5e1;color:#64748b;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700">RAW DATA</span>
+                  </div>
+                  <div style="font-size:11px;color:#64748b;margin-top:2px">연결된 티켓 번호: <span style="color:#6366f1;font-weight:600">request_id: #1029</span></div>
+                </div>
+              </div>
+              <span style="color:#94a3b8;font-size:20px;cursor:pointer">✕</span>
+            </div>
+
+            <!-- Stats Grid -->
+            <div style="padding:20px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">2</div>
+              <div style="border:1px solid #f1f5f9;border-radius:8px;padding:14px">
+                <div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px">입력 토큰</div>
+                <div style="font-size:18px;font-weight:800;color:#0f172a">1,200</div>
+              </div>
+              <div style="border:1px solid #f1f5f9;border-radius:8px;padding:14px">
+                <div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px">출력 토큰</div>
+                <div style="font-size:18px;font-weight:800;color:#0f172a">320</div>
+              </div>
+              <div style="border:1px solid #f1f5f9;border-radius:8px;padding:14px">
+                <div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px">처리 시간</div>
+                <div style="font-size:18px;font-weight:800;color:#16a34a">850ms</div>
+              </div>
+              <div style="border:1px solid #f1f5f9;border-radius:8px;padding:14px">
+                <div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px">사용 모델</div>
+                <div style="font-size:13px;font-weight:800;color:#6366f1">gemini-1.5-flash</div>
+              </div>
+            </div>
+
+            <!-- RAW PROMPT -->
+            <div style="padding:0 24px 16px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">3</div>
+              <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                <span style="width:4px;height:4px;border-radius:50%;background:#cbd5e1;display:inline-block"></span>
+                입력 프롬프트 원문 (RAW PROMPT)
+              </div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px;font-family:'Consolas',monospace;font-size:12px;color:#334155;line-height:1.6;white-space:pre-wrap">당신은 일류 호텔의 컨시어지 AI입니다. 고객의 요청을 분석하여 부서를 할당하세요.
+
+고객 요청: "수건 2장 더 가져다주세요. 그리고 가습기가 있으면 좋겠어요."</div>
+            </div>
+
+            <!-- RAW RESPONSE -->
+            <div style="padding:0 24px 20px;position:relative">
+              <div class="marker" style="top:-12px;left:-12px;z-index:60">4</div>
+              <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                <span style="width:4px;height:4px;border-radius:50%;background:#cbd5e1;display:inline-block"></span>
+                AI 출력 JSON 원문 (RAW RESPONSE)
+              </div>
+              <div style="background:#1e1e1e;border-radius:6px;padding:16px;font-family:'Consolas',monospace;font-size:12px;color:#d4d4d4;line-height:1.6">
+<span style="color:#858585">1</span>  {
+<span style="color:#858585">2</span>    <span style="color:#9cdcfe">"domain"</span>: <span style="color:#ce9178">"HK"</span>,
+<span style="color:#858585">3</span>    <span style="color:#9cdcfe">"intent"</span>: <span style="color:#ce9178">"request_items"</span>,
+<span style="color:#858585">4</span>    <span style="color:#9cdcfe">"items"</span>: [<span style="color:#ce9178">"towel"</span>, <span style="color:#ce9178">"humidifier"</span>],
+<span style="color:#858585">5</span>    <span style="color:#9cdcfe">"quantity"</span>: [<span style="color:#b5cea8">2</span>, <span style="color:#b5cea8">1</span>],
+<span style="color:#858585">6</span>    <span style="color:#9cdcfe">"priority"</span>: <span style="color:#ce9178">"medium"</span>
+<span style="color:#858585">7</span>  }</div>
+            </div>
+
+            <!-- Footer -->
+            <div style="padding:16px 24px;border-top:1px solid #f1f5f9;border-radius:0 0 12px 12px">
+              <div style="width:100%;background:#0f172a;color:#fff;text-align:center;padding:12px;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">분석 완료 및 닫기</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="description-area">
+      <div class="desc-title">Description</div>
+      <table class="desc-table">
+        <tr><td class="num">1</td><td class="desc-text"><strong>모달 헤더</strong>· 로그 데이터 분석 타이틀과 RAW DATA 뱃지<br>· 연결된 티켓 번호(request_id)를 통해 원본 요청과 트레이싱 가능</td></tr>
+        <tr><td class="num">2</td><td class="desc-text"><strong>요청별 상세 메트릭</strong>· 입력/출력 토큰, 처리 시간(초록색 강조), 사용 모델(gemini-1.5-flash) 4종 지표<br>· 비용 추적 및 성능 모니터링에 활용</td></tr>
+        <tr><td class="num">3</td><td class="desc-text"><strong>RAW PROMPT</strong>· AI에게 전달된 시스템 프롬프트 및 사용자 발화 원문<br>· 프롬프트 최적화 및 디버깅에 필수</td></tr>
+        <tr><td class="num">4</td><td class="desc-text"><strong>RAW RESPONSE (JSON)</strong>· AI가 반환한 최종 JSON 데이터 (domain, intent, items, quantity, priority)<br>· 의도 분류와 부서 할당이 올바르게 이루어졌는지 원문 확인 가능</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#eef2ff;color:#3730a3;border-top:1.5px solid #333;">🎯 Event</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#3730a3;">E1</td><td class="desc-text"><strong>분석 완료 및 닫기</strong><br>· 모달 닫힘 → 라우팅 로그 리스트 화면으로 복귀</td></tr>
+      </table>
+
+      <div class="desc-title" style="background:#fff7ed;color:#9a3412;border-top:1.5px solid #333;">💡 Check Point</div>
+      <table class="desc-table">
+        <tr><td class="num" style="color:#ea580c;">C1</td><td class="desc-text">민감한 고객 PII가 프롬프트에 포함될 수 있으므로, 최고 관리자 권한만 접근 가능하도록 설정</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function positionMarkers(){
+  document.querySelectorAll('.screen-area').forEach(function(sa){
+    const wire = sa.querySelector('.wire');
+    if(!wire) return;
+    const wireRect = wire.getBoundingClientRect();
+    
+    sa.querySelectorAll('[data-marker]').forEach(function(el){
+      const mNum = el.getAttribute('data-marker');
+      const elRect = el.getBoundingClientRect();
+      const mType = el.getAttribute('data-marker-type') || 'center-left';
+      
+      const topOffset = elRect.top - wireRect.top;
+      const leftOffset = elRect.left - wireRect.left;
+      
+      let finalTop = topOffset + elRect.height/2 - 12;
+      let finalLeft = leftOffset - 14; 
+      
+      if(mType === 'top-right'){
+        finalTop = topOffset - 12;
+        finalLeft = leftOffset + elRect.width - 12;
+      }
+      
+      let markerEl = sa.querySelector('.marker-id-'+mNum);
+      if(!markerEl){
+        markerEl = document.createElement('div');
+        markerEl.className = 'marker marker-id-'+mNum;
+        markerEl.innerText = mNum;
+        wire.appendChild(markerEl);
+      }
+      markerEl.style.top = finalTop + 'px';
+      markerEl.style.left = finalLeft + 'px';
+    });
+  });
+}
+window.addEventListener('load', positionMarkers);
+window.addEventListener('resize', positionMarkers);
+</script>
+</body>
+</html>

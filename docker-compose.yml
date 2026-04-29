@@ -21,8 +21,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "${DB_PORT}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data # 데이터 영구 저장
     networks:
@@ -31,7 +29,7 @@ services:
   # 3. Spring Boot 백엔드
   backend:
     build:
-      context: ./backend # 향후 백엔드 폴더(Dockerfile 위치)를 지정하세요
+      context: ./backend
       dockerfile: Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
@@ -40,18 +38,42 @@ services:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE:-prod}
       - JWT_SECRET=${JWT_SECRET}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - AI_SERVER_URL=http://ai:8000
     depends_on:
       - db
     networks:
       - Anook-network
 
-  # 4. 프론트엔드 (Next.js / React PWA)
+  # 4. AI 서버 (FastAPI)
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: anook-ai
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=db
+    volumes:
+      - ./ai:/app # 소스 코드 실시간 동기화 (Hot Reload)
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+    networks:
+      - Anook-network
+
+  # 5. 프론트엔드 (Next.js / React PWA)
   frontend:
     build:
       context: ./frontend # 향후 프론트엔드 폴더(Dockerfile 위치)를 지정하세요
       dockerfile: Dockerfile
     ports:
       - "${FRONTEND_PORT}:3000"
+    environment:
+      - API_BASE_URL=http://backend:8080
+      - AI_SERVER_URL=http://ai:8000
     networks:
       - Anook-network
 
