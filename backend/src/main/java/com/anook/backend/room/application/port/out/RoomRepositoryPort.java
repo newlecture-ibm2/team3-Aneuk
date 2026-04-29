@@ -10,15 +10,13 @@ import java.util.Optional;
  */
 public interface RoomRepositoryPort {
 
-    Optional<Room> findById(Long id);
+    Optional<Room> findByNumber(String number);
 
     List<Room> findAll();
 
-    boolean existsById(Long id);
+    boolean existsByNumber(String number);
 
     Room save(Room room);
 
-    void deleteById(Long id);
-
-    boolean existsByNumber(String number);
+    void deleteByNumber(String number);
 }

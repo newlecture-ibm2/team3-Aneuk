@@ -2,12 +2,14 @@ package com.anook.backend.guest.adapter.out.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
- * Guest JPA Repository — Adapter 계층에서만 사용 (Service에서 직접 import 금지)
+ * Guest JPA Repository — pms_guest 테이블
  */
 public interface GuestJpaRepository extends JpaRepository<GuestJpaEntity, Long> {
 
-    boolean existsByRoomId(Long roomId);
+    boolean existsByRoomNumber(String roomNumber);
 
-    java.util.Optional<GuestJpaEntity> findByRoomId(Long roomId);
+    Optional<GuestJpaEntity> findByRoomNumber(String roomNumber);
 }

@@ -18,8 +18,8 @@ public class RoomPersistenceAdapter implements RoomRepositoryPort {
     private final RoomJpaRepository jpaRepository;
 
     @Override
-    public Optional<Room> findById(Long id) {
-        return jpaRepository.findById(id).map(RoomJpaEntity::toDomain);
+    public Optional<Room> findByNumber(String number) {
+        return jpaRepository.findById(number).map(RoomJpaEntity::toDomain);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class RoomPersistenceAdapter implements RoomRepositoryPort {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
+    public boolean existsByNumber(String number) {
+        return jpaRepository.existsById(number);
     }
 
     @Override
@@ -42,12 +42,7 @@ public class RoomPersistenceAdapter implements RoomRepositoryPort {
     }
 
     @Override
-    public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsByNumber(String number) {
-        return jpaRepository.existsByNumber(number);
+    public void deleteByNumber(String number) {
+        jpaRepository.deleteById(number);
     }
 }

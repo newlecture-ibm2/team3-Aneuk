@@ -6,17 +6,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Guest JPA Entity — DB 테이블 매핑 전용 (외부 노출 금지)
+ * Guest JPA Entity — pms_guest 테이블 매핑 (PMS 전용)
  */
 @Entity
-@Table(name = "guest")
+@Table(name = "pms_guest")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GuestJpaEntity {
@@ -25,21 +22,17 @@ public class GuestJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "room_id", nullable = false, unique = true)
-    private Long roomId;
+    @Column(name = "room_number", nullable = false, unique = true, length = 10)
+    private String roomNumber;
 
-    @Column(name = "guest_name", nullable = false)
-    private String guestName;
+    @Column(nullable = false, length = 50)
+    private String name;
 
-    @Column(nullable = false)
-    private String language;
+    @Column(length = 20)
+    private String phone;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private String notes;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "checkin_date", nullable = false)
+    private LocalDateTime checkinDate;
 
     @Column(name = "checkout_date", nullable = false)
     private LocalDate checkoutDate;
@@ -48,17 +41,16 @@ public class GuestJpaEntity {
     public static GuestJpaEntity from(Guest domain) {
         GuestJpaEntity entity = new GuestJpaEntity();
         entity.id = domain.getId();
-        entity.roomId = domain.getRoomId();
-        entity.guestName = domain.getGuestName();
-        entity.language = domain.getLanguage();
-        entity.notes = domain.getNotes();
-        entity.createdAt = domain.getCreatedAt();
+        entity.roomNumber = domain.getRoomNumber();
+        entity.name = domain.getName();
+        entity.phone = domain.getPhone();
+        entity.checkinDate = domain.getCheckinDate();
         entity.checkoutDate = domain.getCheckoutDate();
         return entity;
     }
 
     // === Entity → Domain ===
     public Guest toDomain() {
-        return new Guest(id, roomId, guestName, language, notes, createdAt, checkoutDate);
+        return new Guest(id, roomNumber, name, phone, checkinDate, checkoutDate);
     }
 }
