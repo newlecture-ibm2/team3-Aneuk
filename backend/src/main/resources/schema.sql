@@ -13,7 +13,8 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- 부서
 CREATE TABLE IF NOT EXISTS department (
     id          VARCHAR(20)  PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
+    name        VARCHAR(50)  NOT NULL,
+    is_admin    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 -- 객실 타입 (CRUD 관리 — 호텔별 커스텀 가능)
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS room (
 CREATE TABLE IF NOT EXISTS staff (
     id              BIGSERIAL    PRIMARY KEY,
     name            VARCHAR(50)  NOT NULL,
-    pin             VARCHAR(10)  NOT NULL,
+    pin             VARCHAR(10)  NOT NULL UNIQUE,
     role_id         BIGINT       NOT NULL REFERENCES staff_role(id),
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );
