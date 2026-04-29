@@ -164,12 +164,12 @@ sequenceDiagram
     Note over MS,MDB: ── message 도메인 책임 시작 ──
     MS->>MDB: 1. Guest 메시지 저장 (GUEST)
     MS->>AI: 2. analyze(text, roomNo, lang)
-    AI-->>MS: MessageAiResult (guestReply, domainCode, intent, entities, confidence)
+    AI-->>MS: MessageAiResult (guestReply, domainCode, entities, confidence)
     MS->>MDB: 3. AI 응답 메시지 저장 (AI)
     MS->>WS: 4. /topic/room/{roomNo} → AI_RESPONSE
     Note over MS: ── message 도메인 책임 끝 ──
 
-    alt intent != null (태스크형 요청 감지)
+    alt domainCode != null (태스크형 요청 감지)
         MS->>EP: 5. publish(RequestDetectedEvent)
 
         Note over RS,RDB: ── request 도메인 책임 시작 ──
@@ -182,7 +182,7 @@ sequenceDiagram
             RS->>WS: 9. /topic/admin → ESCALATION_NEEDED
         end
         Note over RS: ── request 도메인 책임 끝 ──
-    else intent == null (단순 대화)
+    else domainCode == null (단순 대화)
         Note over MS: 이벤트 발행 안 함 (대화로 종료)
     end
 ```
@@ -201,7 +201,6 @@ public class RequestDetectedEvent extends ApplicationEvent {
     private final String roomNo;           // "302"
     private final String domainCode;       // "HK"
     private final String priority;         // "NORMAL"
-    private final String intent;           // "SUPPLY_REQUEST"
     private final Map<String, Object> entities;  // {"item": "towel", "qty": 2}
     private final double confidence;       // 0.95
     private final String rawText;          // "수건 2장 주세요" (고객 원문)
@@ -209,14 +208,13 @@ public class RequestDetectedEvent extends ApplicationEvent {
     private final boolean escalated;       // false (confidence < 0.7이면 true)
 
     public RequestDetectedEvent(Object source, String roomNo, String domainCode,
-                                 String priority, String intent,
+                                 String priority,
                                  Map<String, Object> entities, double confidence,
                                  String rawText, String summary, boolean escalated) {
         super(source);
         this.roomNo = roomNo;
         this.domainCode = domainCode;
         this.priority = priority;
-        this.intent = intent;
         this.entities = entities;
         this.confidence = confidence;
         this.rawText = rawText;
@@ -263,13 +261,12 @@ public class SendMessageService implements SendMessageUseCase {
         dispatchPort.send("/topic/room/" + cmd.roomNo(), "AI_RESPONSE", aiMsg);
 
         // 5. 태스크형 요청 감지 시 이벤트 발행 (여기서 message 책임 끝!)
-        if (analysis.intent() != null) {
+        if (analysis.domainCode() != null) {
             eventPublisher.publishEvent(new RequestDetectedEvent(
                 this,
                 cmd.roomNo(),
                 analysis.domainCode(),
                 analysis.priority(),
-                analysis.intent(),
                 analysis.entities(),
                 analysis.confidence(),
                 cmd.content(),
@@ -305,7 +302,6 @@ public class CreateRequestOnEventService {
         Request request = Request.create(
             event.getRoomNo(),
             DomainCode.from(event.getDomainCode()),
-            event.getIntent(),
             event.getEntities(),
             event.getConfidence(),
             event.getRawText(),
@@ -415,7 +411,7 @@ public class TestEventController {
         eventPublisher.publishEvent(new RequestDetectedEvent(
             this,
             (String) body.get("roomNo"),
-            "HK", "NORMAL", "SUPPLY_REQUEST",
+            "HK", "NORMAL",
             Map.of("item", "towel", "qty", 2),
             0.95, "수건 2장 주세요", "수건 2장 요청", false
         ));
