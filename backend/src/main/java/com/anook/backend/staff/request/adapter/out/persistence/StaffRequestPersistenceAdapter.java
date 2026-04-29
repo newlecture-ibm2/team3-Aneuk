@@ -39,10 +39,9 @@ public class StaffRequestPersistenceAdapter implements StaffRequestRepositoryPor
     public List<GetStaffRequestsResult> findAllByFilters(String status, String priority, String departmentId) {
         StringBuilder sql = new StringBuilder("""
                 SELECT r.id, r.status, r.priority, r.department_id,
-                       r.summary, r.raw_text, rm.number AS room_number,
+                       r.summary, r.raw_text, r.room_no AS room_number,
                        s.name AS staff_name, r.confidence, r.created_at
                 FROM request r
-                JOIN room rm ON r.room_id = rm.id
                 LEFT JOIN staff s ON r.assigned_staff_id = s.id
                 WHERE 1=1
                 """);
@@ -60,10 +59,9 @@ public class StaffRequestPersistenceAdapter implements StaffRequestRepositoryPor
     public Optional<GetStaffRequestsResult> findById(Long id) {
         String sql = """
                 SELECT r.id, r.status, r.priority, r.department_id,
-                       r.summary, r.raw_text, rm.number AS room_number,
+                       r.summary, r.raw_text, r.room_no AS room_number,
                        s.name AS staff_name, r.confidence, r.created_at
                 FROM request r
-                JOIN room rm ON r.room_id = rm.id
                 LEFT JOIN staff s ON r.assigned_staff_id = s.id
                 WHERE r.id = ?
                 """;

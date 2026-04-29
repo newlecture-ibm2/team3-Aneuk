@@ -27,9 +27,17 @@ const PRIORITY_OPTIONS = [
 /**
  * [가이드라인 준수] 스태프 대시보드 메인 페이지
  * - URL: /staff
- * - 불필요한 서브 폴더(requests)를 제거하고 /staff 주소에서 바로 대시보드를 노출합니다.
+ * - useSearchParams() 사용을 위해 Suspense 경계를 설정합니다.
  */
 export default function StaffDashboardPage() {
+  return (
+    <React.Suspense fallback={<div className={styles.loading}>화면을 준비 중입니다...</div>}>
+      <DashboardContent />
+    </React.Suspense>
+  );
+}
+
+function DashboardContent() {
   const searchParams = useSearchParams();
   const view = searchParams.get('view');
   const { tasks, loading, error } = useTasks(view === 'my' ? 'HK' : undefined);
