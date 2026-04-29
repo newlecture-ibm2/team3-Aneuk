@@ -33,4 +33,21 @@ public class RoomPersistenceAdapter implements RoomRepositoryPort {
     public boolean existsById(Long id) {
         return jpaRepository.existsById(id);
     }
+
+    @Override
+    public Room save(Room room) {
+        RoomJpaEntity entity = RoomJpaEntity.from(room);
+        RoomJpaEntity saved = jpaRepository.save(entity);
+        return saved.toDomain();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsByNumber(String number) {
+        return jpaRepository.existsByNumber(number);
+    }
 }

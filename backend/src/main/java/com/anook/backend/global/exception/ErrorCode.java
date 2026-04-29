@@ -23,6 +23,10 @@ public enum ErrorCode {
             "해당 ID의 요청이 존재하지 않습니다. 올바른 taskId를 확인하세요."),
 
     // ── 409 CONFLICT ──
+    DUPLICATE_ROOM_NUMBER(HttpStatus.CONFLICT,
+            "이미 존재하는 객실 번호입니다.",
+            "동일한 객실 번호가 이미 등록되어 있습니다. 다른 번호를 사용하세요."),
+
     ALREADY_CHECKED_IN(HttpStatus.CONFLICT,
             "해당 객실에 이미 투숙객이 있습니다.",
             "해당 객실에 이미 투숙 중인 게스트가 있습니다. 기존 투숙객을 체크아웃(DELETE /admin/guests/{id})한 후 다시 시도하세요."),
