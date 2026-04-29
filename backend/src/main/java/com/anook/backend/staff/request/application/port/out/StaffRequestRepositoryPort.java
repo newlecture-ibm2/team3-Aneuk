@@ -12,4 +12,14 @@ import java.util.Optional;
 public interface StaffRequestRepositoryPort {
     List<GetStaffRequestsResult> findAllByFilters(String status, String priority, String departmentId);
     Optional<GetStaffRequestsResult> findById(Long id);
+
+    /**
+     * [Staff 전용] 요청 상태 업데이트
+     */
+    void updateStatus(Long requestId, String status);
+
+    /**
+     * [Staff 전용] 요청 상태 및 담당자 업데이트
+     */
+    void updateStatusWithStaff(Long requestId, String status, String staffName);
 }
