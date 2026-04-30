@@ -159,6 +159,27 @@ CREATE TABLE IF NOT EXISTS pms_guest (
     checkout_date   DATE            NOT NULL
 );
 
+-- PMS 메뉴 (룸서비스 메뉴 마스터)
+CREATE TABLE IF NOT EXISTS pms_menu (
+    id          BIGSERIAL    PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    price       INTEGER      NOT NULL,
+    category    VARCHAR(30)  NOT NULL,
+    allergens   VARCHAR(200),
+    available   BOOLEAN      NOT NULL DEFAULT TRUE
+);
+
+-- PMS 영수증 (룸서비스 주문 내역 — 결제 관리)
+CREATE TABLE IF NOT EXISTS pms_receipt (
+    id          BIGSERIAL    PRIMARY KEY,
+    room_no     VARCHAR(10)  NOT NULL REFERENCES pms_room(number),
+    menu_id     BIGINT       NOT NULL REFERENCES pms_menu(id),
+    quantity    INTEGER      NOT NULL DEFAULT 1,
+    total_price INTEGER      NOT NULL,
+    status      VARCHAR(20)  NOT NULL DEFAULT 'UNPAID',
+    created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
 -- ============================================================
 -- 7. 인덱스
 -- ============================================================
@@ -182,3 +203,7 @@ CREATE INDEX IF NOT EXISTS idx_unanswered_status ON unanswered_question(status);
 
 -- 디스패치 로그 시간순 조회
 CREATE INDEX IF NOT EXISTS idx_dispatch_sent_at ON dispatch_log(sent_at DESC);
+
+-- PMS 영수증 조회 성능
+CREATE INDEX IF NOT EXISTS idx_receipt_room_no ON pms_receipt(room_no);
+CREATE INDEX IF NOT EXISTS idx_receipt_status ON pms_receipt(status);

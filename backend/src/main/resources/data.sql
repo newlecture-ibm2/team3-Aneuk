@@ -11,13 +11,6 @@ INSERT INTO department (id, name, is_admin) VALUES
     ('FRONT',     '프론트데스크', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
--- 객실 타입 (3개 — 숫자 PK, 호텔별 커스텀 가능)
-INSERT INTO room_type (id, name) VALUES
-    (1, '스탠다드'),
-    (2, '디럭스'),
-    (3, '스위트')
-ON CONFLICT (id) DO NOTHING;
-
 -- 직원 역할 (부서별 직급 추가)
 INSERT INTO staff_role (id, department_id, name) VALUES
     (1, 'FRONT', '직원'),
@@ -38,7 +31,6 @@ INSERT INTO staff (name, pin, role_id, department_id) VALUES
 ON CONFLICT (pin) DO NOTHING;
 
 -- 시퀀스 동기화 (수동 INSERT로 인해 시퀀스가 1로 남아있는 문제 해결)
-SELECT setval('room_type_id_seq', (SELECT COALESCE(MAX(id), 1) FROM room_type));
 SELECT setval('staff_role_id_seq', (SELECT COALESCE(MAX(id), 1) FROM staff_role));
 
 -- ============================================================
@@ -80,3 +72,29 @@ ON CONFLICT (number) DO NOTHING;
 INSERT INTO staff (id, name, pin, role_id, department_id) VALUES
     (1, '김아늑', '1234', 1, 'HK')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- PMS 룸서비스 메뉴 (더미 데이터)
+-- ============================================================
+INSERT INTO pms_menu (name, price, category, allergens, available) VALUES
+    -- MAIN (메인 요리)
+    ('클래식 치즈버거',      15000, 'MAIN',    '밀,유제품',        TRUE),
+    ('트러플 머쉬룸 리조또', 28000, 'MAIN',    '유제품',           TRUE),
+    ('한우 불고기 덮밥',     22000, 'MAIN',    '대두,밀',          TRUE),
+    ('시저 샐러드',          14000, 'MAIN',    '유제품,계란',      TRUE),
+    ('해산물 파스타',        25000, 'MAIN',    '밀,갑각류,연체류', TRUE),
+    ('스테이크 샌드위치',    20000, 'MAIN',    '밀,유제품',        TRUE),
+    -- SIDE (사이드)
+    ('감자튀김',             8000,  'SIDE',    NULL,               TRUE),
+    ('시즌 과일 플레이트',   12000, 'SIDE',    NULL,               TRUE),
+    ('모짜렐라 스틱',        10000, 'SIDE',    '밀,유제품',        TRUE),
+    -- DRINK (음료)
+    ('콜라',                 4000,  'DRINK',   NULL,               TRUE),
+    ('오렌지 주스',          6000,  'DRINK',   NULL,               TRUE),
+    ('아메리카노',           5000,  'DRINK',   NULL,               TRUE),
+    ('캐모마일 티',          5000,  'DRINK',   NULL,               TRUE),
+    -- DESSERT (디저트)
+    ('뉴욕 치즈케이크',      12000, 'DESSERT', '밀,유제품,계란',        TRUE),
+    ('초콜릿 브라우니',      10000, 'DESSERT', '밀,유제품,계란,견과류', TRUE),
+    ('바닐라 아이스크림',    8000,  'DESSERT', '유제품',               TRUE)
+ON CONFLICT DO NOTHING;

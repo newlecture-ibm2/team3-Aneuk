@@ -56,7 +56,21 @@ public enum ErrorCode {
 
     ROLE_ALREADY_EXISTS(HttpStatus.CONFLICT,
             "이미 존재하는 역할 코드입니다.",
-            "동일한 역할 코드(id)가 이미 등록되어 있습니다. 다른 코드를 사용하세요.");
+            "동일한 역할 코드(id)가 이미 등록되어 있습니다. 다른 코드를 사용하세요."),
+
+    // ── PMS ──
+
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "메뉴를 찾을 수 없습니다.",
+            "해당 ID의 메뉴가 존재하지 않습니다. GET /pms/menus로 유효한 메뉴 목록을 확인하세요."),
+
+    RECEIPT_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "영수증을 찾을 수 없습니다.",
+            "해당 ID의 영수증이 존재하지 않습니다."),
+
+    UNPAID_RECEIPTS_EXIST(HttpStatus.CONFLICT,
+            "미결제 룸서비스 내역이 있습니다. 결제를 먼저 완료해주세요.",
+            "해당 객실에 미결제(UNPAID) 룸서비스 영수증이 있습니다. PATCH /pms/receipts/pay-all?roomNo=xxx로 결제 후 체크아웃하세요.");
 
     private final HttpStatus status;
     private final String message;
