@@ -10,8 +10,9 @@ interface WsMessage {
 }
 
 export default function WebSocketTestPage() {
-  const { subscribe, isConnected } = useWebSocket();
+  const { subscribe, isConnected, reconnect } = useWebSocket();
   const [messages, setMessages] = useState<WsMessage[]>([]);
+  const [dbRequests, setDbRequests] = useState<any[]>([]);
   const [channels, setChannels] = useState({
     room: true,
     dept: true,
@@ -58,25 +59,71 @@ export default function WebSocketTestPage() {
     return () => unsubscribes.forEach((unsub) => unsub());
   }, [subscribe, channels]);
 
-  // curl 명령어 복사
-  const curlCommands = [
-    {
-      label: '🚪 Room 302',
-      cmd: `curl -X POST http://localhost:8080/test/ws/room/302 -H "Content-Type: application/json" -d '{"type":"AI_RESPONSE","message":"수건 2장 보내드리겠습니다"}'`,
-    },
-    {
-      label: '🏢 Dept HK',
-      cmd: `curl -X POST http://localhost:8080/test/ws/dept/HK -H "Content-Type: application/json" -d '{"type":"NEW_REQUEST","summary":"302호 수건 요청"}'`,
-    },
-    {
-      label: '👑 Admin',
-      cmd: `curl -X POST http://localhost:8080/test/ws/admin -H "Content-Type: application/json" -d '{"type":"ESCALATED","reason":"긴급 에스컬레이션"}'`,
-    },
-  ];
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  // API 호출 테스트
+  const simulateRequest = async (payload: any) => {
+    try {
+      const res = await fetch('/api/test/simulate-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.text();
+      alert(`✅ 성공: ${data}`);
+    } catch (err) {
+      alert(`❌ 실패: ${err}`);
+    }
   };
+
+  // 707호 DB 요청 목록 조회 (RQ-3)
+  const fetchRequests = async () => {
+    try {
+      const res = await fetch('/api/chat/707/requests');
+      const data = await res.json();
+      setDbRequests(data);
+    } catch (err) {
+      alert(`조회 실패: ${err}`);
+    }
+  };
+
+  // 직원용 요청 상태 변경 (RQ-4)
+  const changeStatus = async (id: number, action: 'accept' | 'complete') => {
+    try {
+      const res = await fetch(`/api/staff/requests/${id}/${action}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staffId: 1 }), // 임의의 직원 ID
+      });
+      
+      const data = await res.text();
+      
+      if (!res.ok) {
+        throw new Error(data);
+      }
+      
+      alert(`✅ 상태 변경 성공: ${data}`);
+      fetchRequests(); // 상태 변경 후 목록 새로고침
+    } catch (err) {
+      alert(`❌ 상태 변경 실패: ${err}`);
+    }
+  };
+
+  const simulationButtons = [
+    {
+      label: '하우스키핑 요청 (수건)',
+      desc: 'HK 부서로 수건 2장 정상 요청',
+      payload: { roomNo: "707", domainCode: "HK", rawText: "수건 2장 주세요", summary: "수건 2장 요청", entities: { item: "towel", qty: 2 } }
+    },
+    {
+      label: '식음료 룸서비스',
+      desc: 'FB 부서로 스테이크 요청',
+      payload: { roomNo: "707", domainCode: "FB", rawText: "스테이크 1개 주문할게요", summary: "스테이크 1개 룸서비스", entities: { item: "steak", qty: 1 } }
+    },
+    {
+      label: '긴급 에스컬레이션',
+      desc: '낮은 확신도(0.5)로 시설 부서 요청',
+      payload: { roomNo: "707", domainCode: "FACILITY", rawText: "에어컨이 이상해요", summary: "에어컨 고장 의심", confidence: 0.5, entities: { target: "air_conditioner" } }
+    }
+  ];
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", background: '#0f0f1a', color: '#e0e0e0', minHeight: '100vh', padding: '32px' }}>
@@ -95,6 +142,15 @@ export default function WebSocketTestPage() {
         }}>
           {isConnected ? '✅ STOMP 연결됨' : '❌ 연결 안 됨 (백엔드 실행 확인)'}
         </div>
+        <button
+          onClick={reconnect}
+          style={{
+            padding: '12px 20px', borderRadius: '8px', background: '#3b82f6',
+            border: 'none', color: '#fff', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+          }}
+        >
+          🔄 재연결 (새로고침)
+        </button>
         <button
           onClick={() => setMessages([])}
           style={{
@@ -128,28 +184,103 @@ export default function WebSocketTestPage() {
         </div>
       </div>
 
-      {/* curl 명령어 */}
+      {/* API 시뮬레이션 */}
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '16px', color: '#fbbf24', marginBottom: '12px' }}>⚡ 테스트 명령어 (터미널에서 실행)</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {curlCommands.map((c, i) => (
+        <h2 style={{ fontSize: '16px', color: '#fbbf24', marginBottom: '12px' }}>⚡ 가짜 요청(Request) 생성 테스트</h2>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {simulationButtons.map((btn, i) => (
             <div key={i} style={{
               background: '#1a1a2e', border: '1px solid #2a2a4a', borderRadius: '8px',
-              padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px',
+              padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: '1 1 250px'
             }}>
-              <code style={{ fontSize: '12px', color: '#a0a0a0', wordBreak: 'break-all', flex: 1 }}>{c.cmd}</code>
+              <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{btn.label}</div>
+              <div style={{ fontSize: '12px', color: '#888' }}>{btn.desc}</div>
               <button
-                onClick={() => copyToClipboard(c.cmd)}
+                onClick={() => simulateRequest(btn.payload)}
                 style={{
-                  padding: '6px 12px', borderRadius: '4px', background: '#3b82f6',
-                  border: 'none', color: '#fff', cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap',
+                  padding: '8px', borderRadius: '4px', background: '#3b82f6', marginTop: 'auto',
+                  border: 'none', color: '#fff', cursor: 'pointer', fontSize: '13px'
                 }}
               >
-                {c.label} 복사
+                🚀 요청 생성
               </button>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* DB 조회 및 상태 변경 (RQ-3, RQ-4 테스트) */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <h2 style={{ fontSize: '16px', color: '#f472b6', margin: 0 }}>🗄️ 707호 DB 요청 관리 (RQ-3, RQ-4 테스트)</h2>
+          <button
+            onClick={fetchRequests}
+            style={{
+              padding: '8px 16px', borderRadius: '6px', background: '#ec4899',
+              border: 'none', color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: 600
+            }}
+          >
+            🔄 707호 요청 목록 가져오기
+          </button>
+        </div>
+        
+        {dbRequests.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {dbRequests.map((req) => (
+              <div key={req.id} style={{
+                background: '#1a1a2e', border: '1px solid #2a2a4a', borderRadius: '8px',
+                padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              }}>
+                <div>
+                  <span style={{ fontWeight: 'bold', marginRight: '12px' }}>ID: {req.id}</span>
+                  <span style={{ 
+                    padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', marginRight: '12px',
+                    background: req.status === 'PENDING' ? '#fbbf24' : req.status === 'IN_PROGRESS' ? '#3b82f6' : '#10b981',
+                    color: '#fff'
+                  }}>
+                    {req.status}
+                  </span>
+                  <span style={{ color: '#a78bfa', marginRight: '12px' }}>[{req.domainCode}]</span>
+                  <span style={{ color: '#e0e0e0' }}>{req.summary}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={() => changeStatus(req.id, 'accept')}
+                    disabled={req.status !== 'PENDING'}
+                    style={{
+                      padding: '6px 12px', borderRadius: '4px', background: req.status !== 'PENDING' ? '#4b5563' : '#3b82f6',
+                      border: 'none', color: '#fff', cursor: req.status !== 'PENDING' ? 'not-allowed' : 'pointer', fontSize: '12px'
+                    }}
+                  >
+                    직원 배정/수락 (Accept)
+                  </button>
+                  <button
+                    onClick={() => changeStatus(req.id, 'complete')}
+                    disabled={req.status === 'COMPLETED' || req.status === 'PENDING'}
+                    style={{
+                      padding: '6px 12px', borderRadius: '4px', 
+                      background: (req.status === 'COMPLETED' || req.status === 'PENDING') ? '#4b5563' : '#10b981',
+                      border: 'none', color: '#fff', 
+                      cursor: (req.status === 'COMPLETED' || req.status === 'PENDING') ? 'not-allowed' : 'pointer', 
+                      fontSize: '12px'
+                    }}
+                    title={req.status === 'PENDING' ? "직원 배정(수락) 후 완료 가능합니다." : ""}
+                  >
+                    완료 처리 (Complete)
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            background: '#1a1a2e', border: '1px solid #2a2a4a', borderRadius: '8px',
+            padding: '20px', textAlign: 'center', color: '#666', fontSize: '14px',
+          }}>
+            [가져오기] 버튼을 눌러 DB에 저장된 707호의 요청을 확인하세요.<br/>
+            요청이 없다면 위의 [가짜 요청 생성]을 먼저 해주세요.
+          </div>
+        )}
       </div>
 
       {/* 수신 메시지 로그 */}

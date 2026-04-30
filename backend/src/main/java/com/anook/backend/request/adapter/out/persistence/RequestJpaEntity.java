@@ -1,5 +1,7 @@
 package com.anook.backend.request.adapter.out.persistence;
 
+import com.anook.backend.request.domain.model.*;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * Request JPA Entity — request 모듈 전용
@@ -34,7 +37,7 @@ public class RequestJpaEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String entities;
+    private Map<String, Object> entities;
 
     @Column(name = "raw_text")
     private String rawText;
@@ -43,8 +46,8 @@ public class RequestJpaEntity {
 
     private Float confidence;
 
-    @Column(name = "room_id", nullable = false)
-    private Long roomId;
+    @Column(name = "room_no", nullable = false)
+    private String roomNo;
 
     @Column(name = "assigned_staff_id")
     private Long assignedStaffId;
@@ -58,7 +61,48 @@ public class RequestJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // === 팩토리 메서드: Domain → Entity ===
+
+    public static RequestJpaEntity fromDomain(Request request) {
+        RequestJpaEntity entity = new RequestJpaEntity();
+        entity.id = request.getId();
+        entity.status = request.getStatus().name();
+        entity.priority = request.getPriority().name();
+        entity.departmentId = request.getDepartmentId();
+        entity.entities = request.getEntities();
+        entity.rawText = request.getRawText();
+        entity.summary = request.getSummary();
+        entity.confidence = (float) request.getConfidence();
+        entity.roomNo = request.getRoomNo();
+        entity.assignedStaffId = request.getAssignedStaffId();
+        entity.version = request.getVersion();
+        entity.createdAt = request.getCreatedAt();
+        entity.updatedAt = request.getUpdatedAt();
+        return entity;
+    }
+
+    // === Entity → Domain 변환 ===
+
+    public Request toDomain() {
+        return Request.reconstitute(
+                this.id,
+                RequestStatus.from(this.status),
+                Priority.from(this.priority),
+                DomainCode.from(this.departmentId),
+                this.entities,
+                this.confidence != null ? this.confidence : 0.0,
+                this.rawText,
+                this.summary,
+                this.roomNo,
+                this.assignedStaffId,
+                this.version,
+                this.createdAt,
+                this.updatedAt
+        );
+    }
+
     // === 상태 변경 ===
+
     public void updateStatus(String newStatus) {
         this.status = newStatus;
         this.updatedAt = LocalDateTime.now();

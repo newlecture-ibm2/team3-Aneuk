@@ -12,13 +12,15 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- 부서
 CREATE TABLE IF NOT EXISTS department (
     id          VARCHAR(20)  PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
+    name        VARCHAR(50)  NOT NULL,
+    is_admin    BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 -- 직원 역할
 CREATE TABLE IF NOT EXISTS staff_role (
-    id          BIGSERIAL    PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
+    id            BIGSERIAL    PRIMARY KEY,
+    department_id VARCHAR(20)  NOT NULL REFERENCES department(id),
+    name          VARCHAR(50)  NOT NULL
 );
 
 -- ============================================================
@@ -34,7 +36,7 @@ CREATE TABLE IF NOT EXISTS room (
 CREATE TABLE IF NOT EXISTS staff (
     id              BIGSERIAL    PRIMARY KEY,
     name            VARCHAR(50)  NOT NULL,
-    pin             VARCHAR(10)  NOT NULL,
+    pin             VARCHAR(10)  NOT NULL UNIQUE,
     role_id         BIGINT       NOT NULL REFERENCES staff_role(id),
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );

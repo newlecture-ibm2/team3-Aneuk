@@ -1,19 +1,13 @@
 "use client";
 
 import { useUiStore } from "@/stores/useUiStore";
-import { useEffect, useState } from "react";
+
 import styles from "./Toast.module.css";
 import { ToastSuccessIcon, ToastFailIcon } from "@/components/icons";
 
 export default function Toast() {
   const { isToastOpen, toastMessage, toastSubtitle, toastType, hideToast } = useUiStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || !isToastOpen) return null;
+  if (!isToastOpen) return null;
 
   return (
     <div className={`${styles.toast} ${toastType === 'success' ? styles.success : styles.error}`} onClick={hideToast}>

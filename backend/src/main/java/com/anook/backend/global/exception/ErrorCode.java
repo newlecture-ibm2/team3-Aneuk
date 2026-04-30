@@ -38,7 +38,25 @@ public enum ErrorCode {
     // ── 400 BAD_REQUEST ──
     INVALID_SETTLEMENT(HttpStatus.BAD_REQUEST,
             "정산할 수 없는 요청입니다.",
-            "정산은 department_id가 'FB'이고 status가 'COMPLETED'인 요청에만 가능합니다. 현재 요청의 상태와 부서를 확인하세요.");
+            "정산은 department_id가 'FB'이고 status가 'COMPLETED'인 요청에만 가능합니다. 현재 요청의 상태와 부서를 확인하세요."),
+
+    // ── Admin Settings ──
+
+    DEPARTMENT_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "부서를 찾을 수 없습니다.",
+            "해당 부서 코드가 존재하지 않습니다. 유효한 부서를 선택해주세요."),
+
+    STAFF_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "직원을 찾을 수 없습니다.",
+            "해당 ID의 직원이 존재하지 않습니다. GET /admin/staff로 유효한 직원 목록을 확인하세요."),
+
+    ROLE_NOT_FOUND(HttpStatus.NOT_FOUND,
+            "역할을 찾을 수 없습니다.",
+            "해당 ID의 역할이 존재하지 않습니다. GET /admin/roles로 유효한 역할 목록을 확인하세요."),
+
+    ROLE_ALREADY_EXISTS(HttpStatus.CONFLICT,
+            "이미 존재하는 역할 코드입니다.",
+            "동일한 역할 코드(id)가 이미 등록되어 있습니다. 다른 코드를 사용하세요.");
 
     private final HttpStatus status;
     private final String message;

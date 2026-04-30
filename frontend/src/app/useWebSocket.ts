@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 
 /**
@@ -33,9 +33,9 @@ const WS_URL =
 // 재연결 지수 백오프 설정
 const RECONNECT_DELAYS = [1000, 2000, 4000, 8000, 16000, 30000]; // ms
 
-export function useWebSocket(): UseWebSocketReturn {
+export function useWebSocket(): UseWebSocketReturn & { reconnect: () => void } {
   const clientRef = useRef<Client | null>(null);
-  const isConnectedRef = useRef(false);
+  const [isConnected, setIsConnected] = useState(false);
   const reconnectAttemptRef = useRef(0);
   const subscriptionsRef = useRef<Map<string, { callback: (data: unknown) => void }>>(new Map());
 
@@ -47,7 +47,7 @@ export function useWebSocket(): UseWebSocketReturn {
       // 연결 성공
       onConnect: () => {
         console.log('[WS] ✅ STOMP 연결 성공');
-        isConnectedRef.current = true;
+        setIsConnected(true);
         reconnectAttemptRef.current = 0;
 
         // 기존 구독 복원 (재연결 시)
@@ -67,7 +67,7 @@ export function useWebSocket(): UseWebSocketReturn {
       // 연결 해제
       onDisconnect: () => {
         console.log('[WS] ❌ STOMP 연결 해제');
-        isConnectedRef.current = false;
+        setIsConnected(false);
       },
 
       // STOMP 에러
@@ -130,8 +130,20 @@ export function useWebSocket(): UseWebSocketReturn {
     []
   );
 
+  // 수동 재연결 함수
+  const reconnect = useCallback(() => {
+    if (clientRef.current) {
+      console.log('[WS] 🔄 수동 재연결 시도...');
+      clientRef.current.deactivate();
+      setTimeout(() => {
+        clientRef.current?.activate();
+      }, 500);
+    }
+  }, []);
+
   return {
     subscribe,
-    isConnected: isConnectedRef.current,
+    isConnected,
+    reconnect,
   };
 }

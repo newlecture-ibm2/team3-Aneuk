@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
-async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+async function handleProxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const targetPath = '/' + path.join('/');
   const url = new URL(req.url);
@@ -53,8 +53,8 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pa
   }
 }
 
-export const GET = proxyRequest;
-export const POST = proxyRequest;
-export const PUT = proxyRequest;
-export const PATCH = proxyRequest;
-export const DELETE = proxyRequest;
+export const GET = handleProxy;
+export const POST = handleProxy;
+export const PUT = handleProxy;
+export const PATCH = handleProxy;
+export const DELETE = handleProxy;
