@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
 import {
@@ -65,15 +65,17 @@ function SidebarItem({ icon: Icon, label, href, isActive = false, isDanger = fal
 
 export default function Sidebar({ role = 'admin', className = '', fakePathname, onMenuClick }: SidebarProps) {
   const actualPathname = usePathname() || '';
-  const pathname = fakePathname || actualPathname;
+  const searchParams = useSearchParams();
+  const searchString = searchParams?.toString() ? `?${searchParams.toString()}` : '';
+  const pathname = fakePathname || `${actualPathname}${searchString}`;
 
   // 부서별 (하우스키핑, 식음료, 시설, 컨시어지) 메뉴 리스트
   const deptMenus = [
     {
       category: '',
       items: [
-        { label: '내 작업 (My Tasks)', href: `/dept/${role}/my-tasks`, icon: User },
-        { label: '부서 전체 작업 (Dept Tasks)', href: `/dept/${role}/all-tasks`, icon: Users }
+        { label: '내 작업 (My Tasks)', href: '/staff?view=my', icon: User },
+        { label: '부서 전체 작업 (Dept Tasks)', href: '/staff', icon: Users }
       ]
     }
   ];
@@ -137,10 +139,10 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
         {menus.map((group, groupIdx) => (
           <div key={groupIdx} style={{ marginBottom: group.category ? 'var(--space-8)' : '0' }}>
             {group.category && (
-              <h4 style={{ 
-                padding: 'var(--space-8) var(--space-16)', 
-                fontSize: '0.75rem', 
-                fontWeight: 600, 
+              <h4 style={{
+                padding: 'var(--space-8) var(--space-16)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
                 color: 'var(--color-gray-500)',
                 marginTop: 'var(--space-8)',
                 marginBottom: 'var(--space-4)'
