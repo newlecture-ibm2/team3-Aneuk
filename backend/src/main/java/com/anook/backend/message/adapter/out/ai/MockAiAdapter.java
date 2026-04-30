@@ -14,10 +14,10 @@ import java.util.Map;
  * ai.service.enabled=true 설정 시 PythonAiHttpAdapter(@Primary)가 활성화되어 자동 대체됨.
  *
  * 키워드 기반으로 간단한 분기 처리:
- *   - "수건", "물", "베개" 등 → HK 부서 SUPPLY_REQUEST
- *   - "에어컨", "고장", "수리" 등 → FACILITY 부서 REPAIR_REQUEST
- *   - "룸서비스", "음식" 등 → FB 부서 ROOM_SERVICE
- *   - 그 외 → 단순 대화 (intent = null, 이벤트 발행 안 함)
+ *   - "수건", "물", "베개" 등 → HK 부서 요청
+ *   - "에어컨", "고장", "수리" 등 → FACILITY 부서 요청
+ *   - "룸서비스", "음식" 등 → FB 부서 요청
+ *   - 그 외 → 단순 대화 (domainCode = null, 이벤트 발행 안 함)
  */
 @Slf4j
 @Component
@@ -40,7 +40,7 @@ public class MockAiAdapter implements MessageAiPort {
             return new MessageAiResult(
                     "요청하신 물품을 객실로 곧 가져다 드리겠습니다!",
                     "물품 요청 (" + item + ")",
-                    "HK", "NORMAL", "SUPPLY_REQUEST",
+                    "HK", "NORMAL",
                     Map.of("item", item, "qty", 1),
                     0.92
             );
@@ -51,7 +51,7 @@ public class MockAiAdapter implements MessageAiPort {
             return new MessageAiResult(
                     "시설 점검 요청을 접수했습니다. 엔지니어가 곧 방문드릴 예정입니다.",
                     "에어컨 점검 요청",
-                    "FACILITY", "HIGH", "REPAIR_REQUEST",
+                    "FACILITY", "HIGH",
                     Map.of("target", "air_conditioner"),
                     0.88
             );
@@ -62,17 +62,17 @@ public class MockAiAdapter implements MessageAiPort {
             return new MessageAiResult(
                     "룸서비스 주문을 접수하겠습니다. 메뉴를 확인 중입니다.",
                     "룸서비스 주문",
-                    "FB", "NORMAL", "ROOM_SERVICE",
+                    "FB", "NORMAL",
                     Map.of(),
                     0.85
             );
         }
 
-        // 단순 대화 (intent = null → 이벤트 발행 안 함)
+        // 단순 대화 (domainCode = null → 이벤트 발행 안 함)
         return new MessageAiResult(
                 "안녕하세요! 아눅 호텔 컨시어지입니다. 무엇이든 편하게 말씀해 주세요.",
                 null,
-                null, null, null, Map.of(), 0.0
+                null, null, Map.of(), 0.0
         );
     }
 

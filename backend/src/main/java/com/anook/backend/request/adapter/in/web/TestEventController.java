@@ -45,7 +45,6 @@ public class TestEventController {
                 dto.roomNo(),
                 domainCode,
                 priority,
-                null, // intent (더 이상 사용하지 않음)
                 entities,
                 confidence,
                 rawText,

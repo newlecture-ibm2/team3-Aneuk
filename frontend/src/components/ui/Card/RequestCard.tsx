@@ -11,6 +11,7 @@ export interface RequestCardProps {
   statusVariant?: 'red' | 'purple' | 'green' | 'gray';
   createdAt: string | Date;
   title: string;
+  description?: string;
   primaryActionText?: string;
   secondaryActionText?: string;
   onPrimaryAction?: () => void;
@@ -25,6 +26,7 @@ export default function RequestCard({
   statusVariant = 'red',
   createdAt,
   title,
+  description,
   primaryActionText = '상담 시작',
   secondaryActionText = '무시하기',
   onPrimaryAction,
@@ -63,6 +65,7 @@ export default function RequestCard({
             </span>
           </div>
           <h3 className={styles.title}>{title}</h3>
+          {description && <p className={styles.description}>{description}</p>}
         </div>
 
         <div className={`${styles.actionSection} ${isWarning ? styles.actionSectionWarning : ''}`}>
@@ -72,7 +75,7 @@ export default function RequestCard({
             </Button>
           )}
           {secondaryActionText && (
-            <Button variant="outlined" style={{ width: '100%', padding: 'var(--space-8)', color: 'var(--color-gray-500)', borderColor: 'var(--color-gray-300)' }} onClick={onSecondaryAction}>
+            <Button variant="secondary" style={{ width: '100%', padding: 'var(--space-8)' }} onClick={onSecondaryAction}>
               {secondaryActionText}
             </Button>
           )}

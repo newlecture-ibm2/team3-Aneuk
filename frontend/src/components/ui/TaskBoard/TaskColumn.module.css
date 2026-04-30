@@ -1,12 +1,13 @@
 .column {
   display: flex;
   flex-direction: column;
-  background-color: var(--color-gray-50);
+  background-color: var(--color-gray-100);
   border: 1px solid var(--color-surface);
   border-radius: var(--radius-lg);
   padding: var(--space-16);
   gap: var(--space-16);
-  min-height: 400px;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   box-sizing: border-box;
 }

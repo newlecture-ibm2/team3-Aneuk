@@ -69,7 +69,6 @@ public class PythonAiHttpAdapter implements MessageAiPort {
             String summary = (String) response.get("summary");
             String domainCode = (String) response.get("domain_code");
             String priority = (String) response.getOrDefault("priority", "NORMAL");
-            String intent = (String) response.get("intent");
 
             @SuppressWarnings("unchecked")
             Map<String, Object> entities = response.containsKey("entities")
@@ -80,10 +79,10 @@ public class PythonAiHttpAdapter implements MessageAiPort {
                     ? ((Number) response.get("confidence")).doubleValue()
                     : 0.0;
 
-            log.info("[PythonAI] 분석 완료 — intent: {}, domain: {}, confidence: {}",
-                    intent, domainCode, confidence);
+            log.info("[PythonAI] 분석 완료 — domain: {}, confidence: {}",
+                    domainCode, confidence);
 
-            return new MessageAiResult(guestReply, summary, domainCode, priority, intent, entities, confidence);
+            return new MessageAiResult(guestReply, summary, domainCode, priority, entities, confidence);
 
         } catch (WebClientResponseException e) {
             log.error("[PythonAI] HTTP 에러 — status: {}, body: {}", e.getStatusCode(), e.getResponseBodyAsString());
@@ -96,12 +95,12 @@ public class PythonAiHttpAdapter implements MessageAiPort {
 
     /**
      * AI 서버 장애 시 폴백 응답
-     * 고객에게는 안내 메시지를 반환하고, intent=null로 이벤트를 발행하지 않는다.
+     * 고객에게는 안내 메시지를 반환하고, domainCode=null로 이벤트를 발행하지 않는다.
      */
     private MessageAiResult fallbackResult() {
         return new MessageAiResult(
                 "죄송합니다. AI 서비스에 일시적인 문제가 발생했습니다. 프론트 데스크(내선 0번)로 연락 부탁드립니다.",
-                null, null, null, null, Collections.emptyMap(), 0.0
+                null, null, null, Collections.emptyMap(), 0.0
         );
     }
 }

@@ -33,8 +33,8 @@ public class MessageJpaEntity {
     @Column(name = "translated_content", columnDefinition = "TEXT")
     private String translatedContent;
 
-    @Column(name = "room_id", nullable = false)
-    private Long roomId;
+    @Column(name = "room_no", nullable = false, length = 10)
+    private String roomNo;
 
     @Column(name = "request_id")
     private Long requestId;
@@ -50,7 +50,7 @@ public class MessageJpaEntity {
         entity.senderType = domain.getSenderType().name();
         entity.content = domain.getContent();
         entity.translatedContent = domain.getTranslatedContent();
-        entity.roomId = domain.getRoomId();
+        entity.roomNo = domain.getRoomNo();
         entity.requestId = domain.getRequestId();
         entity.createdAt = domain.getCreatedAt();
         return entity;
@@ -65,7 +65,7 @@ public class MessageJpaEntity {
                         com.anook.backend.message.domain.model.SenderType.valueOf(this.senderType),
                         this.content,
                         this.translatedContent,
-                        this.roomId,
+                        this.roomNo,
                         this.requestId,
                         this.createdAt
                 );
