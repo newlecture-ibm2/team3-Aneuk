@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useWebSocket } from '@/app/useWebSocket';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { Client, IMessage } from '@stomp/stompjs';
 
 interface WsMessage {
   channel: string;
@@ -9,8 +9,18 @@ interface WsMessage {
   receivedAt: string;
 }
 
+// WebSocket 서버 URL (개발: 백엔드 직접, 프로덕션: Nginx 프록시)
+const getWsUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const host = typeof window !== 'undefined' ? window.location.host : '';
+    return `${protocol}://${host}/ws`;
+  }
+  return 'ws://localhost:8080/ws';
+};
+
 export default function WebSocketTestPage() {
-  const { subscribe, isConnected, reconnect } = useWebSocket();
+  const [isManualConnected, setIsManualConnected] = useState(false);
   const [messages, setMessages] = useState<WsMessage[]>([]);
   const [dbRequests, setDbRequests] = useState<any[]>([]);
   const [channels, setChannels] = useState({
@@ -18,46 +28,80 @@ export default function WebSocketTestPage() {
     dept: true,
     admin: true,
   });
+  const clientRef = useRef<Client | null>(null);
 
-  // 채널 구독
+  // 수동 연결
+  const connect = useCallback(() => {
+    if (clientRef.current?.active) return;
+
+    const url = getWsUrl();
+    const client = new Client({
+      brokerURL: url,
+      reconnectDelay: 2000,
+      onConnect: () => {
+        console.log('[WS Test] ✅ STOMP 연결 성공');
+        setIsManualConnected(true);
+      },
+      onDisconnect: () => {
+        console.log('[WS Test] ❌ STOMP 연결 해제');
+        setIsManualConnected(false);
+      },
+      onWebSocketError: () => {
+        console.warn('[WS Test] WebSocket 에러 발생');
+      },
+    });
+
+    client.activate();
+    clientRef.current = client;
+  }, []);
+
+  // 수동 연결 해제
+  const disconnect = useCallback(() => {
+    if (clientRef.current?.active) {
+      clientRef.current.deactivate();
+      clientRef.current = null;
+      setIsManualConnected(false);
+    }
+  }, []);
+
+  // 클린업
   useEffect(() => {
-    const unsubscribes: (() => void)[] = [];
+    return () => {
+      clientRef.current?.deactivate();
+    };
+  }, []);
 
-    if (channels.room) {
-      unsubscribes.push(
-        subscribe('/topic/room/707', (data) => {
+  // 채널 구독 (연결 후에만)
+  useEffect(() => {
+    const client = clientRef.current;
+    if (!isManualConnected || !client?.connected) return;
+
+    const subscriptions: { unsubscribe: () => void }[] = [];
+
+    const addSub = (destination: string, label: string) => {
+      const sub = client.subscribe(destination, (message: IMessage) => {
+        try {
+          const data = JSON.parse(message.body);
           setMessages((prev) => [
-            { channel: '🚪 room/707', data, receivedAt: new Date().toLocaleTimeString() },
+            { channel: label, data, receivedAt: new Date().toLocaleTimeString() },
             ...prev,
           ]);
-        })
-      );
-    }
-
-    if (channels.dept) {
-      unsubscribes.push(
-        subscribe('/topic/dept/HK', (data) => {
+        } catch {
           setMessages((prev) => [
-            { channel: '🏢 dept/HK', data, receivedAt: new Date().toLocaleTimeString() },
+            { channel: label, data: message.body, receivedAt: new Date().toLocaleTimeString() },
             ...prev,
           ]);
-        })
-      );
-    }
+        }
+      });
+      subscriptions.push(sub);
+    };
 
-    if (channels.admin) {
-      unsubscribes.push(
-        subscribe('/topic/admin', (data) => {
-          setMessages((prev) => [
-            { channel: '👑 admin', data, receivedAt: new Date().toLocaleTimeString() },
-            ...prev,
-          ]);
-        })
-      );
-    }
+    if (channels.room) addSub('/topic/room/707', '🚪 room/707');
+    if (channels.dept) addSub('/topic/dept/HK', '🏢 dept/HK');
+    if (channels.admin) addSub('/topic/admin', '👑 admin');
 
-    return () => unsubscribes.forEach((unsub) => unsub());
-  }, [subscribe, channels]);
+    return () => subscriptions.forEach((sub) => sub.unsubscribe());
+  }, [isManualConnected, channels]);
 
   // API 호출 테스트
   const simulateRequest = async (payload: any) => {
@@ -174,21 +218,33 @@ export default function WebSocketTestPage() {
       <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
         <div style={{
           padding: '12px 20px', borderRadius: '8px',
-          background: isConnected ? 'rgba(110, 231, 183, 0.1)' : 'rgba(248, 113, 113, 0.1)',
-          border: `1px solid ${isConnected ? '#6ee7b7' : '#f87171'}`,
+          background: isManualConnected ? 'rgba(110, 231, 183, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+          border: `1px solid ${isManualConnected ? '#6ee7b7' : '#f87171'}`,
           fontSize: '14px', fontWeight: 600,
         }}>
-          {isConnected ? '✅ STOMP 연결됨' : '❌ 연결 안 됨 (백엔드 실행 확인)'}
+          {isManualConnected ? '✅ STOMP 연결됨' : '⏸️ 연결 대기 (수동 연결 필요)'}
         </div>
-        <button
-          onClick={reconnect}
-          style={{
-            padding: '12px 20px', borderRadius: '8px', background: '#3b82f6',
-            border: 'none', color: '#fff', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
-          }}
-        >
-          🔄 재연결 (새로고침)
-        </button>
+        {!isManualConnected ? (
+          <button
+            onClick={connect}
+            style={{
+              padding: '12px 20px', borderRadius: '8px', background: '#10b981',
+              border: 'none', color: '#fff', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+            }}
+          >
+            🔌 WebSocket 연결
+          </button>
+        ) : (
+          <button
+            onClick={disconnect}
+            style={{
+              padding: '12px 20px', borderRadius: '8px', background: '#ef4444',
+              border: 'none', color: '#fff', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+            }}
+          >
+            🔌 연결 해제
+          </button>
+        )}
         <button
           onClick={() => setMessages([])}
           style={{
