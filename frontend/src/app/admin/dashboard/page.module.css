@@ -1,0 +1,76 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32); /* 섹션 간격 (카드형 그리드) */
+  padding: var(--space-48) var(--space-32); /* 상하 전체 48px, 좌우 전체 32px */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.subtitle {
+  font: var(--text-body-medium);
+  color: var(--color-gray-500);
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font: var(--text-h1-bold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-32); /* 카드들 사이의 표준 간격 */
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-32); /* 카드들 사이의 표준 간격 */
+}
+
+.chartPlaceholder {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  color: var(--color-gray-500);
+  font: var(--text-body-regular);
+}
+
+/* 태블릿 반응형 */
+@media (max-width: 1024px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-16);
+  }
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}
