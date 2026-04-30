@@ -1,6 +1,6 @@
 package com.anook.backend.config;
 
-import com.anook.backend.global.port.out.DispatchPort;
+import com.anook.backend.message.application.port.out.MessageDispatchPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebSocketTestController {
 
-    private final DispatchPort dispatchPort;
+    private final MessageDispatchPort dispatchPort;
 
     @PostMapping("/room/{roomNo}")
     public ResponseEntity<String> testRoom(

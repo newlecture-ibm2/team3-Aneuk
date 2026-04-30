@@ -87,19 +87,32 @@ export function useChat() {
               };
               
               setMessages(prev => [...prev, newAiMsg]);
-            } else if (payload.type === 'STATUS_UPDATE') {
-              // 진행 상태 업데이트 처리
+            } else if (payload.type === 'NEW_REQUEST' || payload.type === 'STATUS_CHANGED') {
+              // Request 도메인 이벤트 → StatusCard로 렌더링
+              const progressMap: Record<string, number> = {
+                'PENDING': 33, 'ASSIGNED': 50, 'IN_PROGRESS': 66, 'COMPLETED': 100
+              };
               const statusMsg: ChatMessage = {
-                id: payload.messageId ? payload.messageId.toString() : Date.now().toString(),
+                id: `request-${payload.requestId}`,
                 variant: 'received',
                 type: 'STATUS_CARD',
-                content: payload.content, // "수건 요청이 접수되었습니다!" 등
-                meta: { progress: payload.progress || 33 } // 33, 66, 100 등
+                content: payload.summary,
+                meta: { progress: progressMap[payload.status] || 0 }
               };
-              setMessages(prev => [...prev, statusMsg]);
-              
-              // 만약 진행률이 100%면 피드백 카드도 띄워주기
-              if (payload.progress === 100) {
+
+              setMessages(prev => {
+                // 같은 requestId의 카드가 이미 있으면 교체, 없으면 추가
+                const existingIdx = prev.findIndex(m => m.id === `request-${payload.requestId}`);
+                if (existingIdx >= 0) {
+                  const updated = [...prev];
+                  updated[existingIdx] = statusMsg;
+                  return updated;
+                }
+                return [...prev, statusMsg];
+              });
+
+              // 완료 시 피드백 카드 표시
+              if (payload.status === 'COMPLETED') {
                 setTimeout(() => {
                   setMessages(prev => [...prev, {
                     id: `feedback-${Date.now()}`,

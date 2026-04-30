@@ -15,5 +15,5 @@ public interface MessageJpaRepository extends JpaRepository<MessageJpaEntity, Lo
     /**
      * 특정 객실의 메시지를 시간순으로 조회
      */
-    List<MessageJpaEntity> findByRoomIdOrderByCreatedAtAsc(Long roomId);
+    List<MessageJpaEntity> findByRoomNoOrderByCreatedAtAsc(String roomNo);
 }

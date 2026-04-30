@@ -25,9 +25,9 @@ export default function WebSocketTestPage() {
 
     if (channels.room) {
       unsubscribes.push(
-        subscribe('/topic/room/302', (data) => {
+        subscribe('/topic/room/707', (data) => {
           setMessages((prev) => [
-            { channel: '🚪 room/302', data, receivedAt: new Date().toLocaleTimeString() },
+            { channel: '🚪 room/707', data, receivedAt: new Date().toLocaleTimeString() },
             ...prev,
           ]);
         })
@@ -74,6 +74,21 @@ export default function WebSocketTestPage() {
     }
   };
 
+  // 채팅 메시지 전송 (실제 AI 플로우 트리거)
+  const sendChatMessage = async (message: string) => {
+    try {
+      const res = await fetch('/api/chat/707/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: message, guestLanguage: 'ko' }),
+      });
+      const data = await res.json();
+      alert(`✅ 메시지 전송 완료 (id: ${data.messageId})\nAI 응답이 WebSocket으로 도착합니다.`);
+    } catch (err) {
+      alert(`❌ 메시지 전송 실패: ${err}`);
+    }
+  };
+
   // 707호 DB 요청 목록 조회 (RQ-3)
   const fetchRequests = async () => {
     try {
@@ -106,6 +121,29 @@ export default function WebSocketTestPage() {
       alert(`❌ 상태 변경 실패: ${err}`);
     }
   };
+
+  const chatSimulationButtons = [
+    {
+      label: '💬 "수건 2장 주세요"',
+      desc: 'AI → HK 도메인 감지 → Request 자동 생성',
+      message: '수건 2장 주세요'
+    },
+    {
+      label: '💬 "에어컨이 안 돼요"',
+      desc: 'AI → FACILITY 도메인 감지 → 긴급 요청',
+      message: '에어컨이 안 돼요'
+    },
+    {
+      label: '💬 "룸서비스 음식 주문"',
+      desc: 'AI → FB 도메인 감지 → 일반 요청',
+      message: '룸서비스 음식 주문할게요'
+    },
+    {
+      label: '💬 "안녕하세요"',
+      desc: 'AI → 단순 대화 (Request 생성 안 됨)',
+      message: '안녕하세요'
+    }
+  ];
 
   const simulationButtons = [
     {
@@ -178,13 +216,41 @@ export default function WebSocketTestPage() {
                 checked={channels[ch]}
                 onChange={() => setChannels((prev) => ({ ...prev, [ch]: !prev[ch] }))}
               />
-              {ch === 'room' ? '🚪 /topic/room/302' : ch === 'dept' ? '🏢 /topic/dept/HK' : '👑 /topic/admin'}
+              {ch === 'room' ? '🚪 /topic/room/707' : ch === 'dept' ? '🏢 /topic/dept/HK' : '👑 /topic/admin'}
             </label>
           ))}
         </div>
       </div>
 
-      {/* API 시뮬레이션 */}
+      {/* E2E 채팅 시뮬레이션 (실제 AI 플로우) */}
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '16px', color: '#34d399', marginBottom: '12px' }}>🧪 E2E 채팅 시뮬레이션 (채팅 → AI → Request → WebSocket)</h2>
+        <p style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>
+          실제 채팅 API를 호출하여 AI 분석 → RequestDetectedEvent → Request 생성 → WebSocket Push 전체 흐름을 테스트합니다.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {chatSimulationButtons.map((btn, i) => (
+            <div key={i} style={{
+              background: '#0f1f1a', border: '1px solid #1a3a2a', borderRadius: '8px',
+              padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: '1 1 220px'
+            }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{btn.label}</div>
+              <div style={{ fontSize: '12px', color: '#888' }}>{btn.desc}</div>
+              <button
+                onClick={() => sendChatMessage(btn.message)}
+                style={{
+                  padding: '8px', borderRadius: '4px', background: '#10b981', marginTop: 'auto',
+                  border: 'none', color: '#fff', cursor: 'pointer', fontSize: '13px'
+                }}
+              >
+                📤 메시지 전송
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* API 시뮬레이션 (이벤트 직접 발행) */}
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontSize: '16px', color: '#fbbf24', marginBottom: '12px' }}>⚡ 가짜 요청(Request) 생성 테스트</h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
