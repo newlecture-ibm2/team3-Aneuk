@@ -11,12 +11,7 @@ INSERT INTO department (id, name, is_admin) VALUES
     ('FRONT',     '프론트데스크', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
--- 객실 타입
-INSERT INTO room_type (id, name) VALUES
-    (1, '스탠다드'),
-    (2, '디럭스'),
-    (3, '스위트')
-ON CONFLICT (id) DO NOTHING;
+-- (room_type은 더 이상 사용하지 않음)
 
 -- 직원 역할 (부서별 직급 추가)
 INSERT INTO staff_role (id, department_id, name) VALUES
@@ -50,14 +45,6 @@ INSERT INTO room (number) VALUES
     ('401'), ('402'), ('403'),
     ('501'), ('502'), ('503'),
     ('707')
-ON CONFLICT (number) DO NOTHING;
-
--- ============================================================
--- PMS 더미 데이터 (발표용 가짜 무대 세트)
--- ============================================================
-
-INSERT INTO room (number, type_id) VALUES
-    ('707', 3)
 ON CONFLICT (number) DO NOTHING;
 
 -- ============================================================
@@ -108,3 +95,11 @@ INSERT INTO request (status, priority, department_id, summary, raw_text, confide
     ('COMPLETED',   'NORMAL', 'CONCIERGE', '택시 호출 요청',          '공항까지 택시 하나 불러주세요',        0.97, '707', 1,    0, NOW() - INTERVAL '3 hours',      NOW() - INTERVAL '1 hour'),
     ('PENDING',     'LOW',    'HK',        '미니바 보충 요청',        '미니바에 물이 없어요',                0.91, '707', NULL, 0, NOW() - INTERVAL '15 minutes',   NOW() - INTERVAL '15 minutes')
 ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- PMS 테스트 데이터 (투숙객 인증 테스트용)
+-- ============================================================
+
+INSERT INTO pms_guest (room_no, name, phone, access_code, checkout_date) VALUES
+    ('707', '홍길동', '010-1234-5678', 'test-guest-code-1234', '2026-12-31')
+ON CONFLICT (room_no) DO NOTHING;

@@ -22,14 +22,6 @@ public class GuestJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "room_id", nullable = false, unique = true)
-    private Long roomId;
-
-    @Column(name = "access_code", nullable = false, unique = true)
-    private String accessCode;
-
-    @Column(name = "guest_name", nullable = false)
-    private String guestName;
     @Column(name = "room_no", nullable = false, unique = true, length = 10)
     private String roomNumber;
 
@@ -38,6 +30,9 @@ public class GuestJpaEntity {
 
     @Column(length = 20)
     private String phone;
+
+    @Column(name = "access_code", unique = true, length = 100)
+    private String accessCode;
 
     @Column(name = "checkin_date", nullable = false)
     private LocalDateTime checkinDate;
@@ -49,15 +44,10 @@ public class GuestJpaEntity {
     public static GuestJpaEntity from(Guest domain) {
         GuestJpaEntity entity = new GuestJpaEntity();
         entity.id = domain.getId();
-        entity.roomId = domain.getRoomId();
-        entity.accessCode = domain.getAccessCode();
-        entity.guestName = domain.getGuestName();
-        entity.language = domain.getLanguage();
-        entity.notes = domain.getNotes();
-        entity.createdAt = domain.getCreatedAt();
         entity.roomNumber = domain.getRoomNumber();
         entity.name = domain.getName();
         entity.phone = domain.getPhone();
+        entity.accessCode = domain.getAccessCode();
         entity.checkinDate = domain.getCheckinDate();
         entity.checkoutDate = domain.getCheckoutDate();
         return entity;
@@ -65,6 +55,6 @@ public class GuestJpaEntity {
 
     // === Entity → Domain ===
     public Guest toDomain() {
-        return new Guest(id, roomId, accessCode, guestName, language, notes, createdAt, roomNumber, name, phone, checkinDate, checkoutDate);
+        return new Guest(id, roomNumber, name, phone, accessCode, checkinDate, checkoutDate);
     }
 }

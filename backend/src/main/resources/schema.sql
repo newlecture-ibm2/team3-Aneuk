@@ -41,17 +41,7 @@ CREATE TABLE IF NOT EXISTS staff (
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );
 
--- 투숙객 (체크아웃 시 Hard Delete — PII 최소화)
-CREATE TABLE IF NOT EXISTS guest (
-    id              BIGSERIAL    PRIMARY KEY,
-    room_id         BIGINT       NOT NULL UNIQUE REFERENCES room(id),
-    access_code     VARCHAR(100) NOT NULL UNIQUE,
-    guest_name      VARCHAR(50)  NOT NULL,
-    language        VARCHAR(10)  NOT NULL DEFAULT 'ko',
-    notes           JSONB,
-    created_at      TIMESTAMP    NOT NULL DEFAULT NOW(),
-    checkout_date   DATE         NOT NULL
-);
+-- (guest 테이블은 pms_guest로 통합됨 — 아래 PMS 섹션 참조)
 
 -- ============================================================
 -- 3. 요청/메시지 테이블
@@ -166,6 +156,7 @@ CREATE TABLE IF NOT EXISTS pms_guest (
                                     ON DELETE CASCADE,
     name            VARCHAR(50)     NOT NULL,
     phone           VARCHAR(20),
+    access_code     VARCHAR(100)    UNIQUE,
     checkin_date    TIMESTAMP       NOT NULL DEFAULT NOW(),
     checkout_date   DATE            NOT NULL
 );
@@ -178,7 +169,7 @@ CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
 CREATE INDEX IF NOT EXISTS idx_request_room_no ON request(room_no);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_message_room_id ON message(room_id);
+CREATE INDEX IF NOT EXISTS idx_message_room_no ON message(room_no);
 CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
 
 -- 메시지 조회 성능

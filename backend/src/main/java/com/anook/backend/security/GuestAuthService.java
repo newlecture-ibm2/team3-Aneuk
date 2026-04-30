@@ -30,14 +30,14 @@ public class GuestAuthService {
         Guest guest = guestRepositoryPort.findByAccessCode(request.accessCode())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않거나 만료된 접속 코드입니다."));
 
-        // 2. 토큰 생성 (Subject: roomId, Claim: Role)
-        String token = jwtProvider.generateToken(guest.getRoomId().toString(), "GUEST");
+        // 2. 토큰 생성 (Subject: roomNumber, Claim: Role)
+        String token = jwtProvider.generateToken(guest.getRoomNumber(), "GUEST");
 
         // 3. 최종 응답 생성 (투숙객에게 의미 없는 department는 null 처리하여 응답에서 제외)
         return LoginResponse.builder()
                 .token(token)
                 .role("GUEST")
-                .name(guest.getGuestName())
+                .name(guest.getName())
                 .department(null) // ★ JsonInclude에 의해 JSON 응답에서 자동 삭제됨
                 .build();
     }

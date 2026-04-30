@@ -4,6 +4,7 @@ import com.anook.backend.security.dto.request.StaffLoginRequest;
 import com.anook.backend.security.dto.response.LoginResponse;
 import com.anook.backend.staff.application.port.out.StaffRepositoryPort;
 import com.anook.backend.staff.domain.model.Staff;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class StaffAuthService {
     private final StaffRepositoryPort staffRepositoryPort;
     private final JwtProvider jwtProvider;
 
-    public StaffAuthService(StaffRepositoryPort staffRepositoryPort, JwtProvider jwtProvider) {
+    public StaffAuthService(@Qualifier("staffPersistenceAdapter") StaffRepositoryPort staffRepositoryPort, JwtProvider jwtProvider) {
         this.staffRepositoryPort = staffRepositoryPort;
         this.jwtProvider = jwtProvider;
     }

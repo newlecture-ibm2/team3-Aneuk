@@ -32,15 +32,13 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     }
 
     @Override
-    public Optional<Guest> findByRoomId(Long roomId) {
-        return guestJpaRepository.findByRoomId(roomId).map(GuestJpaEntity::toDomain);
+    public Optional<Guest> findByRoomNumber(String roomNumber) {
+        return guestJpaRepository.findByRoomNumber(roomNumber).map(GuestJpaEntity::toDomain);
     }
 
     @Override
     public Optional<Guest> findByAccessCode(String accessCode) {
         return guestJpaRepository.findByAccessCode(accessCode).map(GuestJpaEntity::toDomain);
-    public Optional<Guest> findByRoomNumber(String roomNumber) {
-        return jpaRepository.findByRoomNumber(roomNumber).map(GuestJpaEntity::toDomain);
     }
 
     @Override
@@ -56,9 +54,7 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     }
 
     @Override
-    public boolean existsByRoomId(Long roomId) {
-        return guestJpaRepository.existsByRoomId(roomId);
     public boolean existsByRoomNumber(String roomNumber) {
-        return jpaRepository.existsByRoomNumber(roomNumber);
+        return guestJpaRepository.existsByRoomNumber(roomNumber);
     }
 }
