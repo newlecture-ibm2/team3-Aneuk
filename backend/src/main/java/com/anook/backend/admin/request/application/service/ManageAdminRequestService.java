@@ -7,6 +7,7 @@ import com.anook.backend.admin.request.application.dto.request.ChangeRequestPrio
 import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestStatsResult;
 import com.anook.backend.admin.request.application.port.in.ManageAdminRequestUseCase;
 import com.anook.backend.admin.request.application.port.out.AdminRequestQueryPort;
 import com.anook.backend.admin.request.domain.model.AdminRequest;
@@ -132,6 +133,27 @@ public class ManageAdminRequestService implements ManageAdminRequestUseCase {
         Map<Long, String> staffNameMap = buildStaffNameMap();
 
         return toDetailResult(saved, deptNameMap, staffNameMap);
+    }
+
+    @Override
+    public AdminRequestStatsResult getStats() {
+        long total = adminRequestQueryPort.countAll();
+
+        Map<String, Long> byStatus = toMap(adminRequestQueryPort.countByStatus());
+        Map<String, Long> byDept = toMap(adminRequestQueryPort.countByDepartment());
+        Map<String, Long> byPriority = toMap(adminRequestQueryPort.countByPriority());
+
+        long overdueCount = adminRequestQueryPort.findOverdue().size();
+
+        return new AdminRequestStatsResult(total, byStatus, byDept, byPriority, overdueCount);
+    }
+
+    private Map<String, Long> toMap(List<Object[]> rows) {
+        return rows.stream()
+                .collect(Collectors.toMap(
+                        r -> (String) r[0],
+                        r -> (Long) r[1]
+                ));
     }
 
     // === 다른 모듈 데이터 조회 ===
