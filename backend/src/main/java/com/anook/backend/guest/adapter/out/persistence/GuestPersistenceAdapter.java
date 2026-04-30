@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Guest 영속성 어댑터 — GuestRepositoryPort 구현체
- *
- * ✅ 도메인 모델만 반환 (JPA Entity 외부 노출 금지)
+ * Guest 영속성 어댑터 — GuestRepositoryPort 구현체 (PMS 전용)
  */
 @Component
 @RequiredArgsConstructor
@@ -32,8 +30,8 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     }
 
     @Override
-    public Optional<Guest> findByRoomId(Long roomId) {
-        return jpaRepository.findByRoomId(roomId).map(GuestJpaEntity::toDomain);
+    public Optional<Guest> findByRoomNumber(String roomNumber) {
+        return jpaRepository.findByRoomNumber(roomNumber).map(GuestJpaEntity::toDomain);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     }
 
     @Override
-    public boolean existsByRoomId(Long roomId) {
-        return jpaRepository.existsByRoomId(roomId);
+    public boolean existsByRoomNumber(String roomNumber) {
+        return jpaRepository.existsByRoomNumber(roomNumber);
     }
 }

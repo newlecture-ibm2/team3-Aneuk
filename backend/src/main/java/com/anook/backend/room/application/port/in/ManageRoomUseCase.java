@@ -6,7 +6,7 @@ import com.anook.backend.room.application.dto.response.GetRoomResult;
 import java.util.List;
 
 /**
- * 객실 관리 유스케이스 (CRUD)
+ * 객실 관리 유스케이스
  */
 public interface ManageRoomUseCase {
 
@@ -14,5 +14,5 @@ public interface ManageRoomUseCase {
 
     GetRoomResult create(CreateRoomCommand command);
 
-    void delete(Long roomId);
+    void delete(String roomNumber);
 }

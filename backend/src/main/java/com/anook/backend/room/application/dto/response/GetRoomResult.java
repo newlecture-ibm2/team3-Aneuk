@@ -3,18 +3,12 @@ package com.anook.backend.room.application.dto.response;
 import com.anook.backend.room.domain.model.Room;
 
 /**
- * 객실 조회 응답 DTO
+ * 객실 조회 응답 DTO — 호실 번호만
  */
 public record GetRoomResult(
-        Long id,
-        String number,
-        Long typeId
+        String number
 ) {
     public static GetRoomResult from(Room room) {
-        return new GetRoomResult(
-                room.getId(),
-                room.getNumber(),
-                room.getTypeId()
-        );
+        return new GetRoomResult(room.getNumber());
     }
 }

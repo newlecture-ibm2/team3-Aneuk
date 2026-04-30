@@ -1,17 +1,12 @@
 package com.anook.backend.guest.adapter.out.persistence;
 
 import com.anook.backend.guest.application.port.out.RoomQueryPort;
-import com.anook.backend.global.exception.BusinessException;
-import com.anook.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * RoomQueryPort 구현체 — JdbcTemplate으로 Room 테이블 조회
- *
- * Room JPA Entity는 room 모듈이 소유하므로,
- * guest 모듈에서는 JdbcTemplate 읽기 전용 쿼리로 접근합니다.
+ * RoomQueryPort 구현체 — JdbcTemplate으로 pms_room 테이블 조회
  */
 @Component
 @RequiredArgsConstructor
@@ -20,22 +15,10 @@ public class RoomQueryAdapter implements RoomQueryPort {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public boolean existsById(Long roomId) {
+    public boolean existsByNumber(String roomNumber) {
         Long count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM room WHERE id = ?",
-                Long.class, roomId);
+                "SELECT COUNT(*) FROM pms_room WHERE number = ?",
+                Long.class, roomNumber);
         return count != null && count > 0;
-    }
-
-    @Override
-    public String findRoomNumberById(Long roomId) {
-        return jdbcTemplate.query(
-                "SELECT number FROM room WHERE id = ?",
-                rs -> {
-                    if (rs.next()) return rs.getString("number");
-                    throw new BusinessException(ErrorCode.ROOM_NOT_FOUND, "roomId=" + roomId);
-                },
-                roomId
-        );
     }
 }

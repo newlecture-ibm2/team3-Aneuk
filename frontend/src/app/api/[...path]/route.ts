@@ -1,55 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = 'http://localhost:8080';
+/**
+ * BFF Catch-all Proxy
+ *
+ * /api/* 요청을 백엔드(Spring Boot :8080)로 프록시합니다.
+ * 프론트에서 /api/pms/guests → 백엔드 http://localhost:8080/pms/guests
+ */
 
-async function handleProxy(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
+
+async function handleProxy(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path } = await params;
+  const targetPath = '/' + path.join('/');
+  const url = new URL(req.url);
+  const queryString = url.search;
+  const backendUrl = `${BACKEND_URL}${targetPath}${queryString}`;
+
+  const headers: Record<string, string> = {};
+  const contentType = req.headers.get('content-type');
+  if (contentType) {
+    headers['Content-Type'] = contentType;
+  }
+
+  const fetchOptions: RequestInit = {
+    method: req.method,
+    headers,
+  };
+
+  // Body 전달 (GET, HEAD 제외)
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    fetchOptions.body = await req.text();
+  }
+
   try {
-    const params = await context.params;
-    const path = params.path.join('/');
-    const url = new URL(req.url);
-    const searchParams = url.search;
+    const backendRes = await fetch(backendUrl, fetchOptions);
 
-    const backendUrl = `${BACKEND_URL}/${path}${searchParams}`;
-
-    // Get the request body if it's not a GET/HEAD request
-    let body = null;
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      body = await req.text();
+    // 204 No Content 등 body 없는 응답
+    if (backendRes.status === 204) {
+      return new NextResponse(null, { status: 204 });
     }
 
-    // Forward the headers
-    const headers = new Headers();
-    req.headers.forEach((value, key) => {
-      // Avoid forwarding host and connection headers to prevent issues
-      if (key.toLowerCase() !== 'host' && key.toLowerCase() !== 'connection') {
-        headers.set(key, value);
-      }
+    const data = await backendRes.text();
+    return new NextResponse(data, {
+      status: backendRes.status,
+      headers: { 'Content-Type': backendRes.headers.get('content-type') || 'application/json' },
     });
-
-    const response = await fetch(backendUrl, {
-      method: req.method,
-      headers,
-      body: body || undefined,
-      // @ts-ignore
-      duplex: 'half',
-    });
-
-    // Read the response from the backend
-    const responseBody = await response.text();
-
-    // Create the response to send back to the client
-    const responseHeaders = new Headers();
-    response.headers.forEach((value, key) => {
-      responseHeaders.set(key, value);
-    });
-
-    return new NextResponse(responseBody, {
-      status: response.status,
-      headers: responseHeaders,
-    });
-  } catch (error: any) {
-    console.error('BFF Proxy Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { message: '백엔드 서버에 연결할 수 없습니다.' },
+      { status: 502 }
+    );
   }
 }
 
