@@ -6,10 +6,10 @@ import java.util.Map;
  * AI 분석 결과 DTO — message 모듈 소유
  *
  * AI가 고객 메시지를 분석한 결과를 담는 레코드.
- * 채팅 응답(guestReply)과 요청 감지 정보(domainCode, intent 등)를 모두 포함.
+ * 채팅 응답(guestReply)과 요청 감지 정보(domainCode 등)를 모두 포함.
  *
- * intent가 null이면 단순 대화로 판정 → 이벤트 발행 안 함
- * intent가 non-null이면 태스크형 요청 → RequestDetectedEvent 발행
+ * domainCode가 null이면 단순 대화로 판정 → 이벤트 발행 안 함
+ * domainCode가 non-null이면 태스크형 요청 → RequestDetectedEvent 발행
  */
 public record MessageAiResult(
         /** AI가 고객에게 보여줄 응답 텍스트 */
@@ -24,9 +24,6 @@ public record MessageAiResult(
         /** 우선순위 (예: "NORMAL", "HIGH", "URGENT") */
         String priority,
 
-        /** 요청 의도 (예: "SUPPLY_REQUEST") — 단순 대화면 null */
-        String intent,
-
         /** 부서별 가변 데이터 (예: {"item": "towel", "qty": 2}) */
         Map<String, Object> entities,
 
@@ -34,3 +31,4 @@ public record MessageAiResult(
         double confidence
 ) {
 }
+

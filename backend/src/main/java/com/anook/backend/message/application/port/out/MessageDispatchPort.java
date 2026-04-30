@@ -1,15 +1,15 @@
-package com.anook.backend.global.port.out;
+package com.anook.backend.message.application.port.out;
 
 /**
- * 실시간 이벤트 디스패치 포트 (Out)
+ * Message 도메인 전용 실시간 이벤트 디스패치 포트 (Out)
  *
  * Service 계층에서 WebSocket 메시지를 발송할 때 사용하는 추상화 인터페이스.
- * 구현체: infrastructure/websocket/WebSocketDispatchAdapter
+ * 구현체: message/adapter/out/websocket/MessageWebSocketDispatchAdapter
  *
  * ❌ Service에서 SimpMessagingTemplate을 직접 주입하지 않는다.
- * ✅ 반드시 이 DispatchPort를 통해 메시지를 발송한다.
+ * ✅ 반드시 이 MessageDispatchPort를 통해 메시지를 발송한다.
  */
-public interface DispatchPort {
+public interface MessageDispatchPort {
 
     /**
      * 특정 객실 채널로 메시지 전송

@@ -9,12 +9,12 @@ import java.util.Map;
  * 모듈 간 통신 이벤트: AI가 고객 메시지에서 태스크형 요청을 감지했을 때 발행
  *
  * 발행자: message 도메인 (SendMessageService)
- * 수신자: request 도메인 (CreateRequestOnEventService → @EventListener)
+ * 수신자: request 도메인 (CreateRequestOnEventService → @TransactionalEventListener)
  *
  * 이 클래스는 message ↔ request 간 유일한 공유 객체입니다.
  * 두 도메인이 서로를 직접 import하지 않고, 이 이벤트만 의존합니다.
  *
- * 소유: 🟦 Chat 담당이 정의 주도, 🟧 Request 담당은 읽기 전용
+ * 이벤트 발행 조건: domainCode != null (intent는 더 이상 사용하지 않음)
  */
 @Getter
 public class RequestDetectedEvent extends ApplicationEvent {
@@ -27,9 +27,6 @@ public class RequestDetectedEvent extends ApplicationEvent {
 
     /** 우선순위 (예: "NORMAL", "HIGH", "URGENT") */
     private final String priority;
-
-    /** 요청 의도 (예: "SUPPLY_REQUEST", "ROOM_SERVICE", "REPAIR_REQUEST") */
-    private final String intent;
 
     /** 부서별 가변 데이터 (예: {"item": "towel", "qty": 2}) */
     private final Map<String, Object> entities;
@@ -50,7 +47,6 @@ public class RequestDetectedEvent extends ApplicationEvent {
                                  String roomNo,
                                  String domainCode,
                                  String priority,
-                                 String intent,
                                  Map<String, Object> entities,
                                  double confidence,
                                  String rawText,
@@ -60,7 +56,6 @@ public class RequestDetectedEvent extends ApplicationEvent {
         this.roomNo = roomNo;
         this.domainCode = domainCode;
         this.priority = priority;
-        this.intent = intent;
         this.entities = entities;
         this.confidence = confidence;
         this.rawText = rawText;
@@ -68,3 +63,4 @@ public class RequestDetectedEvent extends ApplicationEvent {
         this.escalated = escalated;
     }
 }
+

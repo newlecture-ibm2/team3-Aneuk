@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 대화 내역 조회 서비스
  *
- * roomNo → roomId 변환 후 시간순 메시지 목록 반환
+ * roomNo로 직접 메시지 목록 조회 (room.number가 PK)
  *
  * ❌ JPA Repository 직접 import 금지 → Port(Out)만 의존
  */
@@ -27,12 +27,10 @@ public class GetMessageHistoryService implements GetMessageHistoryUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<MessageDto> getHistory(String roomNo) {
-        Long roomId = messagePort.findRoomIdByRoomNo(roomNo)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다: " + roomNo));
-
-        return messagePort.findByRoomIdOrderByCreatedAt(roomId)
+        return messagePort.findByRoomNo(roomNo)
                 .stream()
                 .map(MessageDto::from)
                 .toList();
     }
 }
+

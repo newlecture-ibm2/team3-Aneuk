@@ -1,6 +1,6 @@
 package com.anook.backend.message.application.service;
 
-import com.anook.backend.global.port.out.DispatchPort;
+import com.anook.backend.message.application.port.out.MessageDispatchPort;
 import com.anook.backend.infrastructure.event.RequestDetectedEvent;
 import com.anook.backend.message.application.dto.request.SendMessageCommand;
 import com.anook.backend.message.application.dto.response.SendMessageResult;
@@ -42,7 +42,7 @@ public class SendMessageService implements SendMessageUseCase {
 
     private final MessageRepositoryPort messagePort;
     private final MessageAiPort aiPort;
-    private final DispatchPort dispatchPort;
+    private final MessageDispatchPort dispatchPort;
     private final ApplicationEventPublisher eventPublisher;
 
     /** 디바운스: 객실별 마지막 메시지 전송 시간 (roomNo → timestamp) */
@@ -57,17 +57,13 @@ public class SendMessageService implements SendMessageUseCase {
         // 1. 디바운스 검증
         checkDebounce(cmd.roomNo());
 
-        // 2. roomNo → roomId 변환
-        Long roomId = messagePort.findRoomIdByRoomNo(cmd.roomNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다: " + cmd.roomNo()));
-
-        // 3. Guest 메시지 저장 → 즉시 반환
-        Message guestMsg = Message.createGuestMessage(roomId, cmd.content());
+        // 2. Guest 메시지 저장 → 즉시 반환
+        Message guestMsg = Message.createGuestMessage(cmd.roomNo(), cmd.content());
         guestMsg = messagePort.save(guestMsg);
         log.info("[Message] Guest 메시지 저장 완료 — id: {}, room: {}", guestMsg.getId(), cmd.roomNo());
 
-        // 4. AI 처리는 비동기로 위임
-        processAiAsync(cmd.roomNo(), roomId, cmd.content(), cmd.guestLanguage());
+        // 3. AI 처리는 비동기로 위임
+        processAiAsync(cmd.roomNo(), cmd.content(), cmd.guestLanguage());
 
         return new SendMessageResult(guestMsg.getId());
     }
@@ -83,13 +79,13 @@ public class SendMessageService implements SendMessageUseCase {
      */
     @Async("aiTaskExecutor")
     @Transactional
-    public void processAiAsync(String roomNo, Long roomId, String content, String language) {
+    public void processAiAsync(String roomNo, String content, String language) {
         try {
             // 3. AI 호출
             MessageAiResult analysis = aiPort.analyze(content, roomNo, language);
 
             // 4. AI 응답 메시지 저장
-            Message aiMsg = Message.createAiReply(roomId, analysis.guestReply());
+            Message aiMsg = Message.createAiReply(roomNo, analysis.guestReply());
             aiMsg = messagePort.save(aiMsg);
             log.info("[Message] AI 응답 저장 완료 — id: {}, reply: {}", aiMsg.getId(), analysis.guestReply());
 
@@ -101,7 +97,7 @@ public class SendMessageService implements SendMessageUseCase {
             ));
 
             // 6. 태스크형 요청 감지 시 이벤트 발행 (여기서 message 책임 끝!)
-            if (analysis.intent() != null) {
+            if (analysis.domainCode() != null) {
                 boolean escalated = analysis.confidence() < 0.7;
 
                 eventPublisher.publishEvent(new RequestDetectedEvent(
@@ -109,15 +105,14 @@ public class SendMessageService implements SendMessageUseCase {
                         roomNo,
                         analysis.domainCode(),
                         analysis.priority(),
-                        analysis.intent(),
                         analysis.entities(),
                         analysis.confidence(),
                         content,
                         analysis.summary(),
                         escalated
                 ));
-                log.info("[Message] RequestDetectedEvent 발행 — intent: {}, domain: {}, escalated: {}",
-                        analysis.intent(), analysis.domainCode(), escalated);
+                log.info("[Message] RequestDetectedEvent 발행 — domain: {}, escalated: {}",
+                        analysis.domainCode(), escalated);
             }
         } catch (Exception e) {
             log.error("[Message] AI 비동기 처리 실패 — room: {}, error: {}", roomNo, e.getMessage(), e);

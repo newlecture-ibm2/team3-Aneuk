@@ -38,7 +38,6 @@ INSERT INTO staff (name, pin, role_id, department_id) VALUES
 ON CONFLICT (pin) DO NOTHING;
 
 -- 시퀀스 동기화 (수동 INSERT로 인해 시퀀스가 1로 남아있는 문제 해결)
-SELECT setval('room_type_id_seq', (SELECT COALESCE(MAX(id), 1) FROM room_type));
 SELECT setval('staff_role_id_seq', (SELECT COALESCE(MAX(id), 1) FROM staff_role));
 
 -- ============================================================
