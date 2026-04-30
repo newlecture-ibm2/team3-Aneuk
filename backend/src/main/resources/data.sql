@@ -85,6 +85,30 @@ INSERT INTO staff (id, name, pin, role_id, department_id) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
+-- PMS 룸서비스 메뉴 (더미 데이터)
+-- ============================================================
+INSERT INTO pms_menu (name, price, category, allergens, available) VALUES
+    -- MAIN (메인 요리)
+    ('클래식 치즈버거',      15000, 'MAIN',    '밀,유제품',        TRUE),
+    ('트러플 머쉬룸 리조또', 28000, 'MAIN',    '유제품',           TRUE),
+    ('한우 불고기 덮밥',     22000, 'MAIN',    '대두,밀',          TRUE),
+    ('시저 샐러드',          14000, 'MAIN',    '유제품,계란',      TRUE),
+    ('해산물 파스타',        25000, 'MAIN',    '밀,갑각류,연체류', TRUE),
+    ('스테이크 샌드위치',    20000, 'MAIN',    '밀,유제품',        TRUE),
+    -- SIDE (사이드)
+    ('감자튀김',             8000,  'SIDE',    NULL,               TRUE),
+    ('시즌 과일 플레이트',   12000, 'SIDE',    NULL,               TRUE),
+    ('모짜렐라 스틱',        10000, 'SIDE',    '밀,유제품',        TRUE),
+    -- DRINK (음료)
+    ('콜라',                 4000,  'DRINK',   NULL,               TRUE),
+    ('오렌지 주스',          6000,  'DRINK',   NULL,               TRUE),
+    ('아메리카노',           5000,  'DRINK',   NULL,               TRUE),
+    ('캐모마일 티',          5000,  'DRINK',   NULL,               TRUE),
+    -- DESSERT (디저트)
+    ('뉴욕 치즈케이크',      12000, 'DESSERT', '밀,유제품,계란',        TRUE),
+    ('초콜릿 브라우니',      10000, 'DESSERT', '밀,유제품,계란,견과류', TRUE),
+    ('바닐라 아이스크림',    8000,  'DESSERT', '유제품',               TRUE)
+ON CONFLICT DO NOTHING;
 -- Mock 요청 시드 데이터
 -- ============================================================
 

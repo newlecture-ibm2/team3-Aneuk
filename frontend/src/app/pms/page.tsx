@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
 import useGuests from './useGuests';
 import useRooms from './useRooms';
+import useReceipts from './useReceipts';
 
 /* ── 날짜 포맷 ── */
 function formatDateTime(dateStr: string) {
@@ -39,6 +40,7 @@ const TYPE_LABELS: Record<string, { label: string; emoji: string }> = {
 export default function PmsPage() {
   const { guests, loading, error, fetchGuests, checkIn, checkOut } = useGuests();
   const { rooms, loading: roomsLoading, fetchRooms } = useRooms();
+  const { receipts, loading: receiptsLoading, fetchUnpaidReceipts, payAll } = useReceipts();
 
   // ── 탭 상태 ──
   const [activeTab, setActiveTab] = useState<'guests' | 'rooms'>('guests');
@@ -48,6 +50,8 @@ export default function PmsPage() {
   const [checkOutTarget, setCheckOutTarget] = useState<{
     id: number; roomNumber: string; name: string;
   } | null>(null);
+  const [showUnpaid, setShowUnpaid] = useState(false);
+  const [payingAll, setPayingAll] = useState(false);
 
   // ── 폼 상태 ──
   const [roomNumber, setRoomNumber] = useState('');
@@ -91,15 +95,42 @@ export default function PmsPage() {
     setCheckoutDate(''); setFormErrors({});
   };
 
-  // ── 체크아웃 ──
+  // ── 체크아웃 버튼 클릭 → 미결제 확인 ──
+  const handleCheckOutClick = async (guest: { id: number; roomNumber: string; name: string }) => {
+    setCheckOutTarget(guest);
+    const unpaid = await fetchUnpaidReceipts(guest.roomNumber);
+    if (unpaid.length > 0) {
+      setShowUnpaid(true);
+    } else {
+      setShowUnpaid(false);
+    }
+  };
+
+  // ── 체크아웃 실행 ──
   const handleCheckOut = async () => {
     if (!checkOutTarget) return;
     try {
       await checkOut(checkOutTarget.id);
-      fetchRooms(); // 객실 상태 갱신
+      fetchRooms();
     }
     catch { /* useGuests handles error */ }
-    finally { setCheckOutTarget(null); }
+    finally { setCheckOutTarget(null); setShowUnpaid(false); }
+  };
+
+  // ── 일괄 결제 후 체크아웃 ──
+  const handlePayAllAndCheckOut = async () => {
+    if (!checkOutTarget) return;
+    setPayingAll(true);
+    try {
+      await payAll(checkOutTarget.roomNumber);
+      await checkOut(checkOutTarget.id);
+      fetchRooms();
+    } catch { /* error handled */ }
+    finally {
+      setPayingAll(false);
+      setCheckOutTarget(null);
+      setShowUnpaid(false);
+    }
   };
 
   // ── 빈 객실 목록 (체크인 드롭다운용) ──
@@ -222,7 +253,7 @@ export default function PmsPage() {
               <span>체크인</span>
               <span>체크아웃 예정</span>
               <span>상태</span>
-              <span style={{ textAlign: 'right' }}>액션</span>
+              <span style={{ textAlign: 'right' }}>체크아웃</span>
             </div>
 
             {loading ? (
@@ -266,13 +297,13 @@ export default function PmsPage() {
                     <button
                       className={styles.actionBtn}
                       title="체크아웃 (Hard Delete)"
-                      onClick={() => setCheckOutTarget({
+                      onClick={() => handleCheckOutClick({
                         id: guest.id,
                         roomNumber: guest.roomNumber,
                         name: guest.name,
                       })}
                     >
-                      🗑️
+                      🚪
                     </button>
                   </div>
                 </div>
@@ -425,20 +456,70 @@ export default function PmsPage() {
         </div>
       )}
 
-      {/* ══ Check-Out Confirm Modal ══ */}
-      {checkOutTarget && (
+      {/* ══ Check-Out Confirm Modal (미결제 없을 때) ══ */}
+      {checkOutTarget && !showUnpaid && (
         <div className={styles.overlay} onClick={() => setCheckOutTarget(null)}>
           <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>
-            <div className={styles.confirmIcon}>⚠️</div>
+            <div className={styles.confirmIcon}>🚪</div>
             <h3 className={styles.confirmTitle}>
               {checkOutTarget.roomNumber}호 {checkOutTarget.name} 체크아웃
             </h3>
+            <p className={styles.confirmSubtitle} style={{ color: '#6ee7b7', marginBottom: 8 }}>
+              ✅ 미결제 내역이 없습니다.
+            </p>
             <p className={styles.confirmSubtitle}>
               체크아웃 시 데이터가 완전 삭제(Hard Delete)되며<br />복구할 수 없습니다.
             </p>
             <div className={styles.confirmActions}>
               <button className={styles.btnCancel} onClick={() => setCheckOutTarget(null)}>취소</button>
               <button className={styles.btnDanger} onClick={handleCheckOut}>체크아웃</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ 미결제 영수증 모달 ══ */}
+      {checkOutTarget && showUnpaid && (
+        <div className={styles.overlay} onClick={() => { setShowUnpaid(false); setCheckOutTarget(null); }}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>🧾 미결제 룸서비스 내역</h2>
+              <button className={styles.modalClose} onClick={() => { setShowUnpaid(false); setCheckOutTarget(null); }}>✕</button>
+            </div>
+
+            <p style={{ color: '#ef4444', fontSize: 14, marginBottom: 16 }}>
+              {checkOutTarget.roomNumber}호 {checkOutTarget.name}님의 미결제 내역이 있습니다.
+              결제 후 체크아웃이 가능합니다.
+            </p>
+
+            {receiptsLoading ? (
+              <div style={{ textAlign: 'center', padding: 24 }}>로딩 중...</div>
+            ) : (
+              <>
+                <div className={styles.tableHeader} style={{ gridTemplateColumns: '2fr 1fr 1fr' }}>
+                  <span>메뉴명</span>
+                  <span style={{ textAlign: 'center' }}>수량</span>
+                  <span style={{ textAlign: 'right' }}>금액</span>
+                </div>
+                {receipts.map(r => (
+                  <div key={r.id} className={styles.tableRow} style={{ gridTemplateColumns: '2fr 1fr 1fr' }}>
+                    <div>{r.menuName}</div>
+                    <div style={{ textAlign: 'center' }}>x{r.quantity}</div>
+                    <div style={{ textAlign: 'right' }}>{r.totalPrice.toLocaleString()}원</div>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid #334155', marginTop: 8, paddingTop: 12, paddingBottom: 20, display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: 16 }}>
+                  <span>합계</span>
+                  <span>{receipts.reduce((sum, r) => sum + r.totalPrice, 0).toLocaleString()}원</span>
+                </div>
+              </>
+            )}
+
+            <div className={styles.modalActions}>
+              <button className={styles.btnCancel} onClick={() => { setShowUnpaid(false); setCheckOutTarget(null); }}>취소</button>
+              <button className={styles.btnSubmit} onClick={handlePayAllAndCheckOut} disabled={payingAll}>
+                {payingAll ? '처리 중...' : '💳 일괄 결제 후 체크아웃'}
+              </button>
             </div>
           </div>
         </div>

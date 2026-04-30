@@ -37,7 +37,7 @@
         .erd-container {
             position: relative;
             width: 1400px;
-            height: 2000px;
+            height: 2200px;
             margin: 0 auto 40px;
         }
 
@@ -226,7 +226,7 @@
 <body>
 
 <h1>🏨 아늑(Aneuk) ERD</h1>
-<p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v3.0 (ANOOK 10 Tables + PMS 2 Tables)</p>
+<p class="subtitle">호텔 AI 컨시어지 — 데이터베이스 구조 v4.0 (ANOOK 10 Tables + PMS 4 Tables)</p>
 
 <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> PK</div>
@@ -281,6 +281,18 @@
         <!-- pms_room(840,200) → room(440,150) 목록 동기화 -->
         <line x1="840" y1="230" x2="740" y2="190" stroke="#f87171" stroke-dasharray="4 4"/>
         <text x="745" y="225" fill="#f87171" style="font-weight: 600;">객실 목록 동기화</text>
+
+        <!-- pms_room → pms_guest 1:1 -->
+        <line x1="960" y1="290" x2="960" y2="380" stroke="#f87171"/>
+        <text x="968" y="340" fill="#f87171">1:1</text>
+
+        <!-- pms_room → pms_receipt N -->
+        <line x1="1060" y1="290" x2="1100" y2="850" stroke="#f87171"/>
+        <text x="1108" y="570" fill="#f87171">주문 1:N</text>
+
+        <!-- pms_menu → pms_receipt N -->
+        <line x1="960" y1="800" x2="1000" y2="850" stroke="#f87171"/>
+        <text x="920" y="835" fill="#f87171">메뉴 1:N</text>
     </svg>
 
     <!-- Row 1: department, room_type, staff_role -->
@@ -357,7 +369,7 @@
     </div>
 
     <!-- PMS 영역 구분선 -->
-    <div style="position:absolute; left:820px; top:150px; width:520px; padding:8px 16px; border:2px dashed #f87171; border-radius:16px; min-height:470px; z-index:0;">
+    <div style="position:absolute; left:820px; top:150px; width:520px; padding:8px 16px; border:2px dashed #f87171; border-radius:16px; min-height:920px; z-index:0;">
         <span style="font-size:12px; color:#f87171; font-weight:700;">🔒 PMS 영역 (ANOOK 접근 불가)</span>
     </div>
 
@@ -371,7 +383,7 @@
     </div>
 
     <!-- pms_guest -->
-    <div class="table-card theme-red" style="left:840px; top:360px; width:280px;">
+    <div class="table-card theme-red" style="left:840px; top:380px; width:280px;">
         <div class="table-header"><span class="icon">🔑</span> pms_guest <span style="font-size:10px; color:#f87171; font-weight:400;">Hard Delete</span></div>
         <div class="table-body">
             <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
@@ -380,6 +392,33 @@
             <div class="col-row"><span class="col-name">phone</span><span class="col-type">varchar</span><span class="col-desc">연락처</span></div>
             <div class="col-row"><span class="col-name">checkin_date</span><span class="col-type">timestamp</span></div>
             <div class="col-row"><span class="col-name">checkout_date</span><span class="col-type">date</span></div>
+        </div>
+    </div>
+
+    <!-- pms_menu -->
+    <div class="table-card theme-red" style="left:840px; top:600px; width:280px;">
+        <div class="table-header"><span class="icon">🍽️</span> pms_menu</div>
+        <div class="table-body">
+            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
+            <div class="col-row"><span class="col-name">name</span><span class="col-type">varchar(100)</span><span class="col-desc">메뉴명</span></div>
+            <div class="col-row"><span class="col-name">price</span><span class="col-type">integer</span><span class="col-desc">가격(원)</span></div>
+            <div class="col-row"><span class="col-name">category</span><span class="col-type">varchar(30)</span><span class="col-desc">MAIN, SIDE 등</span></div>
+            <div class="col-row"><span class="col-name">allergens</span><span class="col-type">varchar(200)</span><span class="col-desc">알러지 정보</span></div>
+            <div class="col-row"><span class="col-name">available</span><span class="col-type">boolean</span><span class="col-desc">주문 가능 여부</span></div>
+        </div>
+    </div>
+
+    <!-- pms_receipt -->
+    <div class="table-card theme-red" style="left:840px; top:850px; width:320px;">
+        <div class="table-header"><span class="icon">🧾</span> pms_receipt <span style="font-size:10px; color:#f87171; font-weight:400;">결제 관리</span></div>
+        <div class="table-body">
+            <div class="col-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="badge badge-pk">PK</span></div>
+            <div class="col-row"><span class="col-name">room_no</span><span class="col-type">varchar(10)</span><span class="badge badge-fk">FK</span><span class="col-desc">pms_room.number</span></div>
+            <div class="col-row"><span class="col-name">menu_id</span><span class="col-type">bigint</span><span class="badge badge-fk">FK</span><span class="col-desc">pms_menu.id</span></div>
+            <div class="col-row"><span class="col-name">quantity</span><span class="col-type">integer</span><span class="col-desc">수량</span></div>
+            <div class="col-row"><span class="col-name">total_price</span><span class="col-type">integer</span><span class="col-desc">총 금액</span></div>
+            <div class="col-row"><span class="col-name">status</span><span class="col-type">varchar(20)</span><span class="col-desc">UNPAID → PAID</span></div>
+            <div class="col-row"><span class="col-name">created_at</span><span class="col-type">timestamp</span></div>
         </div>
     </div>
 
@@ -524,6 +563,16 @@
             <div class="label">📡 dispatch_log</div>
             <div class="desc">실시간 알림 발송 이력</div>
             <div class="lifetime lifetime-permanent">영구 (감사 로그)</div>
+        </div>
+        <div class="info-card">
+            <div class="label">🍽️ pms_menu</div>
+            <div class="desc">PMS 룸서비스 메뉴 마스터 (이름, 가격, 알러지 정보)</div>
+            <div class="lifetime lifetime-permanent">영구 보존</div>
+        </div>
+        <div class="info-card">
+            <div class="label">🧾 pms_receipt</div>
+            <div class="desc">PMS 룸서비스 영수증 — 체크아웃 시 미결제 차단용</div>
+            <div class="lifetime lifetime-permanent">영구 보존 (결제 기록)
         </div>
     </div>
 </div>
