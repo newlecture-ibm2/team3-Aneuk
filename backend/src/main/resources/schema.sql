@@ -41,12 +41,23 @@ CREATE TABLE IF NOT EXISTS staff (
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );
 
+-- 투숙객 (체크아웃 시 Hard Delete — PII 최소화)
+CREATE TABLE IF NOT EXISTS guest (
+    id              BIGSERIAL    PRIMARY KEY,
+    room_id         BIGINT       NOT NULL UNIQUE REFERENCES room(id),
+    access_code     VARCHAR(100) NOT NULL UNIQUE,
+    guest_name      VARCHAR(50)  NOT NULL,
+    language        VARCHAR(10)  NOT NULL DEFAULT 'ko',
+    notes           JSONB,
+    created_at      TIMESTAMP    NOT NULL DEFAULT NOW(),
+    checkout_date   DATE         NOT NULL
+);
+
 -- ============================================================
 -- 3. 요청/메시지 테이블
 -- ============================================================
 
 -- 고객 요청 (핵심 테이블)
--- status: PENDING → ASSIGNED → IN_PROGRESS → COMPLETED → SETTLED(FB 결제완료) / CANCELLED
 CREATE TABLE IF NOT EXISTS request (
     id                  BIGSERIAL    PRIMARY KEY,
     status              VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
@@ -163,11 +174,12 @@ CREATE TABLE IF NOT EXISTS pms_guest (
 -- 7. 인덱스
 -- ============================================================
 
--- 요청 조회 성능
 CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
 CREATE INDEX IF NOT EXISTS idx_request_room_no ON request(room_no);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_message_room_id ON message(room_id);
+CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
 
 -- 메시지 조회 성능
 CREATE INDEX IF NOT EXISTS idx_message_room_no ON message(room_no);
@@ -176,9 +188,5 @@ CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
 -- 지식 도메인별 필터링
 CREATE INDEX IF NOT EXISTS idx_knowledge_domain ON knowledge_entry(domain_code);
 CREATE INDEX IF NOT EXISTS idx_knowledge_status ON knowledge_entry(status);
-
--- 미답변 질문 상태별 조회
 CREATE INDEX IF NOT EXISTS idx_unanswered_status ON unanswered_question(status);
-
--- 디스패치 로그 시간순 조회
 CREATE INDEX IF NOT EXISTS idx_dispatch_sent_at ON dispatch_log(sent_at DESC);

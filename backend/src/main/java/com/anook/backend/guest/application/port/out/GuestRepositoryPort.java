@@ -16,6 +16,8 @@ public interface GuestRepositoryPort {
 
     Optional<Guest> findByRoomNumber(String roomNumber);
 
+    Optional<Guest> findByAccessCode(String accessCode); // 랜덤 코드로 조회 추가
+
     List<Guest> findAll();
 
     void deleteById(Long id);
