@@ -1,0 +1,55 @@
+package com.anook.backend.staff.request.adapter.out.persistence;
+
+import com.anook.backend.staff.request.adapter.in.web.dto.response.StaffTaskResult;
+import com.anook.backend.staff.request.application.port.out.RequestQueryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class StaffRequestQueryAdapter implements RequestQueryPort {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<StaffTaskResult> findRequests(String departmentId, String status, String priority) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT r.id, r.status, r.priority, r.department_id, r.summary, r.raw_text, r.room_no, r.assigned_staff_id, r.confidence, r.created_at " +
+                "FROM request r WHERE 1=1"
+        );
+        
+        List<Object> params = new ArrayList<>();
+
+        if (!"ALL".equalsIgnoreCase(departmentId)) {
+            sql.append(" AND r.department_id = ?");
+            params.add(departmentId);
+        }
+        if (!"ALL".equalsIgnoreCase(status)) {
+            sql.append(" AND r.status = ?");
+            params.add(status);
+        }
+        if (!"ALL".equalsIgnoreCase(priority)) {
+            sql.append(" AND r.priority = ?");
+            params.add(priority);
+        }
+        
+        sql.append(" ORDER BY r.created_at DESC");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new StaffTaskResult(
+                rs.getLong("id"),
+                rs.getString("status"),
+                rs.getString("priority"),
+                rs.getString("department_id"),
+                rs.getString("summary"),
+                rs.getString("raw_text"),
+                rs.getString("room_no"),
+                rs.getString("assigned_staff_id"), // FIXME: staff name fetch if needed
+                rs.getObject("confidence") != null ? rs.getFloat("confidence") : null,
+                rs.getTimestamp("created_at").toLocalDateTime()
+        ), params.toArray());
+    }
+}
