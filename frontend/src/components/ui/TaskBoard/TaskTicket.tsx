@@ -3,6 +3,7 @@ import styles from './TaskTicket.module.css';
 import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
 
 export interface TaskTicketProps {
+  ticketId: string | number;
   priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   title: string;
   description: string;
@@ -12,6 +13,7 @@ export interface TaskTicketProps {
 }
 
 export default function TaskTicket({
+  ticketId,
   priority = 'MEDIUM',
   title,
   description,
@@ -46,6 +48,7 @@ export default function TaskTicket({
   return (
     <div className={styles.taskTicket}>
       <div className={styles.header}>
+        <span className={styles.ticketId}>#{ticketId}</span>
         <StatusBadge variant={badgeVariant}>
           {priority}
         </StatusBadge>
