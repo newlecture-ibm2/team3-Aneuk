@@ -30,9 +30,4 @@ public interface MessageRepositoryPort {
      * ⚠️ 다른 모듈(room) 테이블을 읽기 전용으로 조회 (JdbcTemplate 네이티브 쿼리)
      */
     Optional<Long> findRoomIdByRoomNo(String roomNo);
-
-    /**
-     * 메시지가 존재하는 객실 ID 목록
-     */
-    List<Long> findDistinctRoomIds();
 }

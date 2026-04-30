@@ -19,9 +19,4 @@ public interface GetMessageHistoryUseCase {
      * @return 메시지 목록 (시간순 정렬)
      */
     List<MessageDto> getHistory(String roomNo);
-
-    /**
-     * 메시지가 존재하는 객실 ID 목록 (관리자 채팅 히스토리용)
-     */
-    List<Long> getChatRoomIds();
 }

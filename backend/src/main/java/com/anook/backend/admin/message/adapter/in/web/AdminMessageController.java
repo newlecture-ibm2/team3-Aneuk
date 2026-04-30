@@ -1,10 +1,8 @@
 package com.anook.backend.admin.message.adapter.in.web;
 
-import com.anook.backend.message.application.dto.response.MessageDto;
-import com.anook.backend.message.application.port.in.GetMessageHistoryUseCase;
+import com.anook.backend.admin.message.application.port.out.AdminMessageQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,18 +11,15 @@ import java.util.Map;
 /**
  * 관리자 메시지 히스토리 Controller
  *
- * 기존 message 모듈의 GetMessageHistoryUseCase를 호출하여
- * 관리자가 모든 객실의 메시지 내역을 조회할 수 있도록 합니다.
- *
- * 도메인 분리 없이 Controller만 존재 (읽기 전용).
+ * admin/message 모듈의 자체 Port를 통해 message 테이블을 조회합니다.
+ * message 모듈의 UseCase/Port를 import하지 않고 독립적으로 동작합니다.
  */
 @RestController
 @RequestMapping("/admin/messages")
 @RequiredArgsConstructor
 public class AdminMessageController {
 
-    private final GetMessageHistoryUseCase getMessageHistoryUseCase;
-    private final JdbcTemplate jdbcTemplate;
+    private final AdminMessageQueryPort adminMessageQueryPort;
 
     /**
      * 메시지가 있는 객실 목록 조회
@@ -34,23 +29,7 @@ public class AdminMessageController {
      */
     @GetMapping("/rooms")
     public ResponseEntity<List<Map<String, Object>>> getMessageRooms() {
-        List<Long> roomIds = getMessageHistoryUseCase.getChatRoomIds();
-
-        if (roomIds.isEmpty()) {
-            return ResponseEntity.ok(List.of());
-        }
-
-        // roomId → roomNo 매핑 (room 테이블 읽기 전용)
-        String inClause = roomIds.stream()
-                .map(String::valueOf)
-                .reduce((a, b) -> a + "," + b)
-                .orElse("");
-
-        List<Map<String, Object>> rooms = jdbcTemplate.queryForList(
-                "SELECT id AS \"roomId\", number AS \"roomNo\" FROM room WHERE id IN (" + inClause + ") ORDER BY number"
-        );
-
-        return ResponseEntity.ok(rooms);
+        return ResponseEntity.ok(adminMessageQueryPort.findRoomsWithMessages());
     }
 
     /**
@@ -59,7 +38,7 @@ public class AdminMessageController {
      * GET /admin/messages/rooms/{roomNo}/messages
      */
     @GetMapping("/rooms/{roomNo}/messages")
-    public ResponseEntity<List<MessageDto>> getRoomMessages(@PathVariable String roomNo) {
-        return ResponseEntity.ok(getMessageHistoryUseCase.getHistory(roomNo));
+    public ResponseEntity<List<Map<String, Object>>> getRoomMessages(@PathVariable String roomNo) {
+        return ResponseEntity.ok(adminMessageQueryPort.findMessagesByRoomNo(roomNo));
     }
 }
