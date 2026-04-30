@@ -8,7 +8,7 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .subtitle {
@@ -33,13 +33,13 @@
 .chartsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-32); /* 카드들 사이의 표준 간격 */
+  gap: var(--space-16); /* 카드들 사이의 표준 간격 */
 }
 
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-32); /* 카드들 사이의 표준 간격 */
+  gap: var(--space-16); /* 카드들 사이의 표준 간격 */
 }
 
 .chartPlaceholder {

@@ -16,7 +16,6 @@ export default function DashboardPage() {
       {/* Header Section */}
       <div className={styles.header}>
         <div>
-          <span className={styles.subtitle}>호텔 운영 관리 시스템</span>
           <h1 className={styles.title}>대시보드</h1>
         </div>
         <div className={styles.headerActions}>

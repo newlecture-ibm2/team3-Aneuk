@@ -11,16 +11,14 @@ export interface ChatHistoryData {
 }
 
 export interface ChatHistoryProps {
-  title?: string;
   rooms: ChatHistoryData[];
   activeRoomId?: string | number;
   onRoomSelect?: (roomId: string | number) => void;
 }
 
-export default function ChatHistory({ title = '객실 선택', rooms, activeRoomId, onRoomSelect }: ChatHistoryProps) {
+export default function ChatHistory({ rooms, activeRoomId, onRoomSelect }: ChatHistoryProps) {
   return (
     <div className={styles.container}>
-      {title && <h3 className={styles.title}>{title}</h3>}
       <div className={styles.list}>
         {rooms.map((room) => {
           const isActive = room.id === activeRoomId;

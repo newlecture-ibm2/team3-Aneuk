@@ -44,6 +44,7 @@ export default function FilterButton({
               setIsOpen(false);
             }}
             onClose={() => setIsOpen(false)}
+            style={{ right: 0 }}
           />
         </div>
       )}
