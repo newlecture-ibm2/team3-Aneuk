@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * RequestQueryPort 구현체 — JdbcTemplate으로 Request 테이블 조회
  *
- * request 테이블의 room_number 컬럼을 기반으로 조회합니다.
+ * request 테이블의 room_no 컬럼을 기반으로 조회합니다.
  */
 @Component
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class RequestQueryAdapter implements RequestQueryPort {
 
         String sql = String.format("""
                 SELECT COUNT(*) FROM request
-                WHERE room_number = ?
+                WHERE room_no = ?
                   AND department_id = ?
                   AND status NOT IN (%s)
                 """, placeholders);

@@ -22,7 +22,7 @@ public class GuestJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "room_number", nullable = false, unique = true, length = 10)
+    @Column(name = "room_no", nullable = false, unique = true, length = 10)
     private String roomNumber;
 
     @Column(nullable = false, length = 50)

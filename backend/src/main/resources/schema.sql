@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS request (
     raw_text            TEXT,
     summary             TEXT,
     confidence          REAL,
-    room_number         VARCHAR(10)  NOT NULL REFERENCES room(number),
+    room_no             VARCHAR(10)  NOT NULL REFERENCES room(number),
     assigned_staff_id   BIGINT       REFERENCES staff(id),
     version             INT          NOT NULL DEFAULT 0,
     created_at          TIMESTAMP    NOT NULL DEFAULT NOW(),
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS message (
     sender_type         VARCHAR(10)  NOT NULL,
     content             TEXT         NOT NULL,
     translated_content  TEXT,
-    room_number         VARCHAR(10)  NOT NULL REFERENCES room(number),
+    room_no             VARCHAR(10)  NOT NULL REFERENCES room(number),
     request_id          BIGINT       REFERENCES request(id),
     created_at          TIMESTAMP    NOT NULL DEFAULT NOW()
 );
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS pms_room (
 -- PMS 투숙객 (개인정보 포함 — ANOOK 접근 불가)
 CREATE TABLE IF NOT EXISTS pms_guest (
     id              BIGSERIAL       PRIMARY KEY,
-    room_number     VARCHAR(10)     NOT NULL UNIQUE
+    room_no         VARCHAR(10)     NOT NULL UNIQUE
                                     REFERENCES pms_room(number)
                                     ON DELETE CASCADE,
     name            VARCHAR(50)     NOT NULL,
@@ -163,12 +163,12 @@ CREATE TABLE IF NOT EXISTS pms_guest (
 
 -- 요청 조회 성능
 CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
-CREATE INDEX IF NOT EXISTS idx_request_room_number ON request(room_number);
+CREATE INDEX IF NOT EXISTS idx_request_room_no ON request(room_no);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
 
 -- 메시지 조회 성능
-CREATE INDEX IF NOT EXISTS idx_message_room_number ON message(room_number);
+CREATE INDEX IF NOT EXISTS idx_message_room_no ON message(room_no);
 CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
 
 -- 지식 도메인별 필터링

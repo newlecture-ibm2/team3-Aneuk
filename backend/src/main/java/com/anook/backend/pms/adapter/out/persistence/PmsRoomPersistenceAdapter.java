@@ -25,7 +25,7 @@ public class PmsRoomPersistenceAdapter implements PmsRoomRepositoryPort {
         String sql = """
                 SELECT r.number, r.type, g.name AS guest_name
                 FROM pms_room r
-                LEFT JOIN pms_guest g ON r.number = g.room_number
+                LEFT JOIN pms_guest g ON r.number = g.room_no
                 ORDER BY r.number
                 """;
 
