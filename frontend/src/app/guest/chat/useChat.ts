@@ -63,7 +63,9 @@ export function useChat() {
   // 2. WebSocket 연결
   useEffect(() => {
     const client = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: process.env.NODE_ENV === 'production'
+        ? `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`
+        : 'ws://localhost:8080/ws',
       debug: function (str) {
         console.log(str);
       },
