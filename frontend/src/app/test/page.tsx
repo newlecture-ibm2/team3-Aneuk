@@ -187,11 +187,13 @@ export default function ComponentShowcasePage() {
             <div style={{ borderRadius: 'var(--radius-lg)' }}>
               <div style={{ width: '100%' }}>
                 <ComponentLabel path="components/layout/Sidebar.tsx" />
-                <Sidebar
-                  role={sidebarRole}
-                  fakePathname={sidebarActivePath}
-                  onMenuClick={handleSidebarClick}
-                />
+                <React.Suspense fallback={<div style={{ height: '100%' }} />}>
+                  <Sidebar
+                    role={sidebarRole}
+                    fakePathname={sidebarActivePath}
+                    onMenuClick={handleSidebarClick}
+                  />
+                </React.Suspense>
               </div>
             </div>
           </section>

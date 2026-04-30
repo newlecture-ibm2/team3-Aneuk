@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import Header from './Header';
 import Sidebar, { SidebarProps } from './Sidebar';
 import { useUiStore } from '@/stores/useUiStore';
@@ -24,7 +24,9 @@ export default function DashboardLayout({ children, role = 'admin' }: DashboardL
         )}
         
         <div className={`${styles.sidebarWrapper} ${isSidebarOpen ? styles.open : ''}`}>
-          <Sidebar className={styles.sidebar} role={role} />
+          <Suspense fallback={<div className={styles.sidebar} />}>
+            <Sidebar className={styles.sidebar} role={role} />
+          </Suspense>
         </div>
         
         <main className={styles.main}>
