@@ -13,7 +13,8 @@ CREATE EXTENSION IF NOT EXISTS vector;
 -- 부서
 CREATE TABLE IF NOT EXISTS department (
     id          VARCHAR(20)  PRIMARY KEY,
-    name        VARCHAR(50)  NOT NULL
+    name        VARCHAR(50)  NOT NULL,
+    is_admin    BOOLEAN      NOT NULL DEFAULT FALSE  -- ★ 다시 추가
 );
 
 -- 객실 타입 (CRUD 관리 — 호텔별 커스텀 가능)
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS room (
 CREATE TABLE IF NOT EXISTS staff (
     id              BIGSERIAL    PRIMARY KEY,
     name            VARCHAR(50)  NOT NULL,
-    pin             VARCHAR(10)  NOT NULL,
+    pin             VARCHAR(10)  NOT NULL UNIQUE,
     role_id         BIGINT       NOT NULL REFERENCES staff_role(id),
     department_id   VARCHAR(20)  NOT NULL REFERENCES department(id)
 );
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS staff (
 CREATE TABLE IF NOT EXISTS guest (
     id              BIGSERIAL    PRIMARY KEY,
     room_id         BIGINT       NOT NULL UNIQUE REFERENCES room(id),
+    access_code     VARCHAR(100) NOT NULL UNIQUE,
     guest_name      VARCHAR(50)  NOT NULL,
     language        VARCHAR(10)  NOT NULL DEFAULT 'ko',
     notes           JSONB,
@@ -64,7 +66,6 @@ CREATE TABLE IF NOT EXISTS guest (
 -- ============================================================
 
 -- 고객 요청 (핵심 테이블)
--- status: PENDING → ASSIGNED → IN_PROGRESS → COMPLETED → SETTLED(FB 결제완료) / CANCELLED
 CREATE TABLE IF NOT EXISTS request (
     id                  BIGSERIAL    PRIMARY KEY,
     status              VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
@@ -159,26 +160,13 @@ CREATE TABLE IF NOT EXISTS dispatch_log (
 -- 6. 인덱스
 -- ============================================================
 
--- 요청 조회 성능
 CREATE INDEX IF NOT EXISTS idx_request_status ON request(status);
 CREATE INDEX IF NOT EXISTS idx_request_room_id ON request(room_id);
 CREATE INDEX IF NOT EXISTS idx_request_department_id ON request(department_id);
 CREATE INDEX IF NOT EXISTS idx_request_created_at ON request(created_at DESC);
-
--- 메시지 조회 성능
 CREATE INDEX IF NOT EXISTS idx_message_room_id ON message(room_id);
 CREATE INDEX IF NOT EXISTS idx_message_request_id ON message(request_id);
-
--- 지식 벡터 검색 (IVFFlat — 데이터 1000건 이상 시 활성화 권장)
--- CREATE INDEX IF NOT EXISTS idx_knowledge_embedding ON knowledge_entry
---     USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
-
--- 지식 도메인별 필터링
 CREATE INDEX IF NOT EXISTS idx_knowledge_domain ON knowledge_entry(domain_code);
 CREATE INDEX IF NOT EXISTS idx_knowledge_status ON knowledge_entry(status);
-
--- 미답변 질문 상태별 조회
 CREATE INDEX IF NOT EXISTS idx_unanswered_status ON unanswered_question(status);
-
--- 디스패치 로그 시간순 조회
 CREATE INDEX IF NOT EXISTS idx_dispatch_sent_at ON dispatch_log(sent_at DESC);

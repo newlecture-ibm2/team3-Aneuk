@@ -27,15 +27,15 @@ public class StaffAuthService {
      * PIN 번호로 직원을 조회하고 인증을 수행합니다.
      */
     public LoginResponse login(StaffLoginRequest request) {
-        // 1. PIN 번호로 직원 조회 (부서 정보 포함)
+        // 1. PIN 번호로 직원 조회
         Staff staff = staffRepositoryPort.findByPin(request.pin())
                 .orElseThrow(() -> new IllegalArgumentException("잘못된 PIN 번호입니다."));
 
         // 2. 부서의 isAdmin 여부에 따라 권한(Role) 결정
         String role = staff.getDepartment().isAdmin() ? "ADMIN" : "STAFF";
 
-        // 3. JWT 토큰 생성 (Subject: PIN, Claim: Role)
-        String token = jwtProvider.generateToken(staff.getPin(), role);
+        // 3. JWT 토큰 생성 (보안을 위해 PIN 대신 식별자 ID를 Subject로 사용)
+        String token = jwtProvider.generateToken(staff.getId().toString(), role);
 
         // 4. 최종 응답 생성
         return LoginResponse.builder()
