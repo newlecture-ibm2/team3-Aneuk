@@ -91,3 +91,10 @@
   color: var(--color-white);
 }
 
+
+.description {
+  font: var(--text-body-regular);
+  color: var(--color-gray-500);
+  margin: var(--space-4) 0 0 0;
+}
+

@@ -2,7 +2,6 @@
   box-sizing: border-box;
   flex-shrink: 0;
   height: 65px;
-  border-bottom: 1px solid var(--color-border);
   background-color: var(--color-bg);
   padding: 0 var(--space-24);
   display: flex;

@@ -3,6 +3,8 @@ import Tabs from '@/components/ui/Tab/Tabs';
 import StaffTab from '../StaffTab/StaffTab';
 import RoleTab from '../RoleTab/RoleTab';
 
+import styles from './SettingsPage.module.css';
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('staff');
 
@@ -12,8 +14,12 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div style={{ padding: 'var(--space-32) var(--space-48)', display: 'flex', flexDirection: 'column', gap: 'var(--space-32)' }}>
-      <div style={{ borderBottom: '1px solid var(--color-surface)' }}>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>직원 관리</h1>
+      </div>
+
+      <div className={styles.tabSection}>
         <Tabs
           options={tabsOptions}
           activeValue={activeTab}
@@ -21,7 +27,7 @@ export default function SettingsPage() {
         />
       </div>
 
-      <div style={{ minHeight: '500px' }}>
+      <div className={styles.contentContainer}>
         {activeTab === 'staff' && <StaffTab />}
         {activeTab === 'role' && <RoleTab />}
       </div>
