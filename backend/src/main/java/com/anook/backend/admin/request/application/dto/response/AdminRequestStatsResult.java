@@ -1,0 +1,14 @@
+package com.anook.backend.admin.request.application.dto.response;
+
+import java.util.Map;
+
+/**
+ * 대시보드 통계 응답 DTO
+ */
+public record AdminRequestStatsResult(
+        long total,
+        Map<String, Long> byStatus,
+        Map<String, Long> byDepartment,
+        Map<String, Long> byPriority,
+        long overdueCount
+) {}

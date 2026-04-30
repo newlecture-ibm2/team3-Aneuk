@@ -40,4 +40,15 @@ public interface AdminRequestJpaRepository extends JpaRepository<AdminRequestJpa
             @Param("departmentId") String departmentId,
             @Param("priority") String priority
     );
+
+    // === 통계 쿼리 ===
+
+    @Query("SELECT r.status, COUNT(r) FROM AdminRequest r GROUP BY r.status")
+    List<Object[]> countGroupByStatus();
+
+    @Query("SELECT r.departmentId, COUNT(r) FROM AdminRequest r GROUP BY r.departmentId")
+    List<Object[]> countGroupByDepartment();
+
+    @Query("SELECT r.priority, COUNT(r) FROM AdminRequest r GROUP BY r.priority")
+    List<Object[]> countGroupByPriority();
 }

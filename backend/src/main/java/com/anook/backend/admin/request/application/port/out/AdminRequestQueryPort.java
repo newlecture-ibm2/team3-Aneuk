@@ -43,7 +43,7 @@ public interface AdminRequestQueryPort {
     void cancel(Long requestId);
 
     /**
-     * 에스컬레이션 승인 
+     * 에스컬레이션 승인
      */
     void escalate(Long requestId);
 
@@ -53,8 +53,15 @@ public interface AdminRequestQueryPort {
     List<AdminRequest> findOverdue();
 
     /**
-     * 요청 저장 — 수동 생성 
+     * 요청 저장 — 수동 생성
      */
     AdminRequest save(String departmentId, String roomNo, String summary,
                       String rawText, String priority, Long assignedStaffId);
+
+    // === 통계 ===
+
+    long countAll();
+    List<Object[]> countByStatus();
+    List<Object[]> countByDepartment();
+    List<Object[]> countByPriority();
 }

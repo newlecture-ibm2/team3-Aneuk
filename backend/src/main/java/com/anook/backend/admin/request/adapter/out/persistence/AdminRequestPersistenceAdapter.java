@@ -88,4 +88,26 @@ public class AdminRequestPersistenceAdapter implements AdminRequestQueryPort {
                 departmentId, roomNo, summary, rawText, priority, assignedStaffId);
         return jpaRepository.save(entity).toDomain();
     }
+
+    // === 통계 ===
+
+    @Override
+    public long countAll() {
+        return jpaRepository.count();
+    }
+
+    @Override
+    public List<Object[]> countByStatus() {
+        return jpaRepository.countGroupByStatus();
+    }
+
+    @Override
+    public List<Object[]> countByDepartment() {
+        return jpaRepository.countGroupByDepartment();
+    }
+
+    @Override
+    public List<Object[]> countByPriority() {
+        return jpaRepository.countGroupByPriority();
+    }
 }

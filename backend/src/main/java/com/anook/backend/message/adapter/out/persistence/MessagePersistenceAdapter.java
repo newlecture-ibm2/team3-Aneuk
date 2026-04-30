@@ -51,4 +51,9 @@ public class MessagePersistenceAdapter implements MessageRepositoryPort {
         );
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
+
+    @Override
+    public List<Long> findDistinctRoomIds() {
+        return jpaRepository.findDistinctRoomIds();
+    }
 }

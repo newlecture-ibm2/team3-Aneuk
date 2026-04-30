@@ -5,6 +5,7 @@ import com.anook.backend.admin.request.application.dto.request.ChangeRequestPrio
 import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestStatsResult;
 
 import java.util.List;
 
@@ -52,4 +53,9 @@ public interface ManageAdminRequestUseCase {
      * 관리자 수동 요청 생성
      */
     AdminRequestDetailResult createRequest(CreateAdminRequestCommand command);
+
+    /**
+     * 대시보드 통계
+     */
+    AdminRequestStatsResult getStats();
 }

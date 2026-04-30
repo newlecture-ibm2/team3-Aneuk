@@ -35,4 +35,10 @@ public class GetMessageHistoryService implements GetMessageHistoryUseCase {
                 .map(MessageDto::from)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> getChatRoomIds() {
+        return messagePort.findDistinctRoomIds();
+    }
 }

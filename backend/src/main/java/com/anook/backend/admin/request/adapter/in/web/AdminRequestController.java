@@ -5,6 +5,7 @@ import com.anook.backend.admin.request.application.dto.request.ChangeRequestPrio
 import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestStatsResult;
 import com.anook.backend.admin.request.application.port.in.ManageAdminRequestUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -118,5 +119,15 @@ public class AdminRequestController {
             @Valid @RequestBody CreateAdminRequestCommand command) {
         AdminRequestDetailResult result = manageAdminRequestUseCase.createRequest(command);
         return ResponseEntity.created(URI.create("/admin/requests/" + result.id())).body(result);
+    }
+
+    /**
+     * 대시보드 통계
+     *
+     * GET /admin/requests/stats
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<AdminRequestStatsResult> getStats() {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getStats());
     }
 }
