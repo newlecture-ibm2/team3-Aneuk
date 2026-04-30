@@ -1,0 +1,60 @@
+package com.anook.backend.admin.request.application.port.out;
+
+import com.anook.backend.admin.request.domain.model.AdminRequest;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 관리자 요청 영속성 포트
+ *
+ * request 테이블에 대한 읽기/쓰기 접근을 추상화합니다.
+ * admin 모듈의 JPA Entity(AdminRequestJpaEntity)를 통해 구현됩니다.
+ */
+public interface AdminRequestQueryPort {
+
+    // === 읽기 ===
+
+    /**
+     * 전체 요청 목록 조회 (필터링 + 정렬)
+     */
+    List<AdminRequest> findAll(String status, String departmentId, String priority, String sort);
+
+    /**
+     * 단건 조회
+     */
+    Optional<AdminRequest> findById(Long id);
+
+    // === 쓰기 ===
+
+    /**
+     * 담당자 배정/재배정
+     */
+    void assignStaff(Long requestId, Long staffId);
+
+    /**
+     * 우선순위 변경
+     */
+    void updatePriority(Long requestId, String priority);
+
+    /**
+     * 요청 취소
+     */
+    void cancel(Long requestId);
+
+    /**
+     * 에스컬레이션 승인 
+     */
+    void escalate(Long requestId);
+
+    /**
+     * 에스컬레이션 대상 목록 (초과 시간 요청)
+     */
+    List<AdminRequest> findOverdue();
+
+    /**
+     * 요청 저장 — 수동 생성 
+     */
+    AdminRequest save(String departmentId, String roomNo, String summary,
+                      String rawText, String priority, Long assignedStaffId);
+}
