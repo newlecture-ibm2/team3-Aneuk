@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
+// JWT 토큰을 만들고, 들어온 토큰의 위조/만료 여부를 검사하는 도구 클래스
 public class JwtProvider {
 
     private final SecretKey key;
@@ -23,6 +24,7 @@ public class JwtProvider {
         this.expirationTime = expirationTime;
     }
 
+    // 유저의 고유 정보(식별자)와 권한(Role)을 담아 새로운 토큰을 발급합니다.
     public String generateToken(String identifier, String role) {
         long now = System.currentTimeMillis();
         return Jwts.builder()

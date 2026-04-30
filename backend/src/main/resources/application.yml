@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/anook_db}
-    username: ${SPRING_DATASOURCE_USERNAME:anook_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:anook2026}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/anook_dev}
+    username: ${SPRING_DATASOURCE_USERNAME:anook}
+    password: ${SPRING_DATASOURCE_PASSWORD:anook1234}
     driver-class-name: org.postgresql.Driver
 
   sql:
@@ -19,8 +19,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: ${JWT_SECRET:default_jwt_secret_key_for_local_development_environment}
-  expiration-time: 86400000 # 24 hours in ms
+  secret: ${JWT_SECRET:default-local-secret-key-for-anook-1234567890}
+  expiration-time: 86400000 # 24 hours in ms # 24 hours in ms
 
 server:
   port: 8080

@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32); /* 컴포넌트 간 간격 */
+  padding: var(--space-48) var(--space-32); /* 상하 48px, 좌우 32px */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8); /* 제목과 서브타이틀 사이 간격 */
+}
+
+.subtitle {
+  font: var(--text-body-medium);
+  color: var(--color-gray-500);
+}
+
+.title {
+  font: var(--text-h1-bold);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16); /* 리스트 아이템 간격 세로 배치 */
+}

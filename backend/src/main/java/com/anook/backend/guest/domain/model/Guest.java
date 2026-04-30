@@ -5,7 +5,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * 투숙객 도메인 모델 (순수 POJO — JPA 의존 없음)
+ * PMS 투숙객 도메인 모델 (순수 POJO — JPA 의존 없음)
+ *
+ * 체크아웃 시 Hard Delete로 PII를 최소화합니다.
+ * PMS 전용 — ANOOK에서는 이 모델을 사용하지 않습니다.
  */
 public class Guest {
 
@@ -16,6 +19,10 @@ public class Guest {
     private String language;
     private String notes;
     private LocalDateTime createdAt;
+    private String roomNumber;
+    private String name;
+    private String phone;
+    private LocalDateTime checkinDate;
     private LocalDate checkoutDate;
 
     // === 기본 생성자 ===
@@ -23,7 +30,8 @@ public class Guest {
 
     // === 전체 필드 생성자 ===
     public Guest(Long id, Long roomId, String accessCode, String guestName, String language, String notes,
-                 LocalDateTime createdAt, LocalDate checkoutDate) {
+                 LocalDateTime createdAt, String roomNumber, String name, String phone,
+                 LocalDateTime checkinDate, LocalDate checkoutDate) {
         this.id = id;
         this.roomId = roomId;
         this.accessCode = accessCode;
@@ -31,6 +39,10 @@ public class Guest {
         this.language = language;
         this.notes = notes;
         this.createdAt = createdAt;
+        this.roomNumber = roomNumber;
+        this.name = name;
+        this.phone = phone;
+        this.checkinDate = checkinDate;
         this.checkoutDate = checkoutDate;
     }
 
@@ -59,5 +71,29 @@ public class Guest {
     public String getLanguage() { return language; }
     public String getNotes() { return notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    // === 전체 필드 생성자 (Entity → Domain 변환용) ===
+    public Guest(Long id, String roomNumber, String name, String phone,
+                 LocalDateTime checkinDate, LocalDate checkoutDate) {
+        this.id = id;
+        
+    }
+
+    // === 팩토리 메서드 (체크인 시 사용) ===
+    public static Guest create(String roomNumber, String name, String phone, LocalDate checkoutDate) {
+        Guest guest = new Guest();
+        guest.roomNumber = roomNumber;
+        guest.name = name;
+        guest.phone = phone;
+        guest.checkinDate = LocalDateTime.now();
+        guest.checkoutDate = checkoutDate;
+        return guest;
+    }
+
+    // === Getter ===
+    public Long getId() { return id; }
+    public String getRoomNumber() { return roomNumber; }
+    public String getName() { return name; }
+    public String getPhone() { return phone; }
+    public LocalDateTime getCheckinDate() { return checkinDate; }
     public LocalDate getCheckoutDate() { return checkoutDate; }
 }

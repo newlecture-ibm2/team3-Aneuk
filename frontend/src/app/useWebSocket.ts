@@ -33,7 +33,7 @@ const WS_URL =
 // 재연결 지수 백오프 설정
 const RECONNECT_DELAYS = [1000, 2000, 4000, 8000, 16000, 30000]; // ms
 
-export function useWebSocket(): UseWebSocketReturn {
+export function useWebSocket(): UseWebSocketReturn & { reconnect: () => void } {
   const clientRef = useRef<Client | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const reconnectAttemptRef = useRef(0);
@@ -130,8 +130,20 @@ export function useWebSocket(): UseWebSocketReturn {
     []
   );
 
+  // 수동 재연결 함수
+  const reconnect = useCallback(() => {
+    if (clientRef.current) {
+      console.log('[WS] 🔄 수동 재연결 시도...');
+      clientRef.current.deactivate();
+      setTimeout(() => {
+        clientRef.current?.activate();
+      }, 500);
+    }
+  }, []);
+
   return {
     subscribe,
     isConnected,
+    reconnect,
   };
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Guest 영속성 어댑터 (Persistence Adapter)
+ * Guest 영속성 어댑터 — GuestRepositoryPort 구현체 (PMS 전용)
  */
 @Component
 public class GuestPersistenceAdapter implements GuestRepositoryPort {
@@ -39,6 +39,8 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     @Override
     public Optional<Guest> findByAccessCode(String accessCode) {
         return guestJpaRepository.findByAccessCode(accessCode).map(GuestJpaEntity::toDomain);
+    public Optional<Guest> findByRoomNumber(String roomNumber) {
+        return jpaRepository.findByRoomNumber(roomNumber).map(GuestJpaEntity::toDomain);
     }
 
     @Override
@@ -56,5 +58,7 @@ public class GuestPersistenceAdapter implements GuestRepositoryPort {
     @Override
     public boolean existsByRoomId(Long roomId) {
         return guestJpaRepository.existsByRoomId(roomId);
+    public boolean existsByRoomNumber(String roomNumber) {
+        return jpaRepository.existsByRoomNumber(roomNumber);
     }
 }

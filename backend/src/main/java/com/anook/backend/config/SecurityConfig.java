@@ -33,15 +33,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 미사용
+            .formLogin(AbstractHttpConfigurer::disable)
+            // JWT를 사용하므로 스프링 시큐리티의 세션(메모리) 기능을 완전히 끕니다.
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // 각 API 주소별로 필요한 권한을 설정합니다.
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()           // 인증 관련 API는 누구나 접근 가능
-                .requestMatchers("/admin/**").hasRole("ADMIN")     // 관리자 전용
-                .requestMatchers("/staff/**").hasRole("STAFF")     // 직원 전용 (ADMIN 포함)
-                .requestMatchers("/chat/**").hasRole("GUEST")      // 투숙객 전용
-                .anyRequest().authenticated()                      // 그 외는 인증 필요
+                .requestMatchers("/api/auth/**").permitAll() // 로그인 API는 누구나 접근 가능
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자 API는 ADMIN 권한 필요
+                .requestMatchers("/api/staff/**").hasRole("STAFF") // 직원 API는 STAFF 권한 필요
+                .requestMatchers("/api/chat/**").hasRole("GUEST") // 채팅 API는 GUEST 권한 필요
+                .anyRequest().permitAll() // 임시로 나머지 요청은 모두 허용 (이후 점진적 통제)
             )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // 커스텀 필터 등록
+            // 기본 로그인 필터가 작동하기 전에, 우리가 만든 JwtAuthFilter(쿠키 검사기)를 먼저 실행하게 합니다.
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
             
         return http.build();
     }

@@ -6,23 +6,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 체크인 응답 DTO
+ * PMS 체크인 응답 DTO
  */
 public record CheckInGuestResult(
         Long guestId,
         String roomNumber,
-        String guestName,
-        String language,
-        LocalDateTime createdAt,
+        String name,
+        String phone,
+        LocalDateTime checkinDate,
         LocalDate checkoutDate
 ) {
-    public static CheckInGuestResult of(Guest guest, String roomNumber) {
+    public static CheckInGuestResult from(Guest guest) {
         return new CheckInGuestResult(
                 guest.getId(),
-                roomNumber,
-                guest.getGuestName(),
-                guest.getLanguage(),
-                guest.getCreatedAt(),
+                guest.getRoomNumber(),
+                guest.getName(),
+                guest.getPhone(),
+                guest.getCheckinDate(),
                 guest.getCheckoutDate()
         );
     }
