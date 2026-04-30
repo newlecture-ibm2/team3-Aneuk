@@ -73,8 +73,7 @@ INSERT INTO staff (id, name, pin, role_id, department_id) VALUES
     (1, '김아늑', '1234', 1, 'HK')
 ON CONFLICT (id) DO NOTHING;
 
--- 기존 요청 데이터 초기화 (ERD 기준: id 자동 생성 유지)
-TRUNCATE TABLE request RESTART IDENTITY CASCADE;
+
 
 INSERT INTO request (status, priority, department_id, summary, raw_text, confidence, room_no, assigned_staff_id, version, created_at, updated_at) VALUES
     ('PENDING',     'NORMAL', 'HK',        '수건 2장 추가 요청',      '수건 두 장만 더 주세요',              0.95, '707', NULL, 0, NOW() - INTERVAL '2 hours',      NOW() - INTERVAL '2 hours'),
