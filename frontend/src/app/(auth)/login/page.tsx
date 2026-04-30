@@ -1,11 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
 import { useLoginForm } from "./_components/useLoginForm";
 
 export default function LoginPage() {
-  const { pin, setPin, isLoading, error, handleLogin } = useLoginForm();
+  const { pin, setPin, isLoading, error, handleLogin, performLogin } = useLoginForm();
+  const searchParams = useSearchParams();
+
+  // ★ QR 코드 자동 로그인 로직
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code) {
+      setPin(code); // 입력창에도 표시
+      performLogin(code); // 즉시 로그인 시도
+    }
+  }, [searchParams, performLogin, setPin]);
 
   return (
     <div className={styles.container}>
@@ -22,7 +33,7 @@ export default function LoginPage() {
             </label>
             <input
               id="auth-code"
-              type="text" // 비밀번호 대신 텍스트 허용 (복사/붙여넣기 용이)
+              type="text"
               placeholder="Enter PIN or Access Code"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
