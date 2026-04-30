@@ -52,7 +52,8 @@ function DashboardContent() {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return task.roomNumber.toString().includes(query) ||
-          task.summary.toLowerCase().includes(query);
+          task.summary.toLowerCase().includes(query) ||
+          task.id.toString().includes(query);
       }
       return true;
     });
@@ -109,7 +110,8 @@ function DashboardContent() {
                   <div className={styles.columnContent}>
                     {columnTasks.map(task => (
                       <TaskTicket
-                        key={`${task.roomNumber}-${task.createdAt}`}
+                        key={task.id}
+                        ticketId={task.id}
                         priority={mapPriority(task.priority)}
                         title={`[${task.roomNumber}호] ${task.summary}`}
                         description={task.rawText}
