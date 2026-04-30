@@ -2,7 +2,7 @@
 -- 아늑(Aneuk) 초기 데이터
 -- ============================================================
 
--- 부서 (5개 — 텍스트 PK 유지: AI 파이프코드 연동)
+-- 부서 (isAdmin 값 설정)
 INSERT INTO department (id, name, is_admin) VALUES
     ('HK',        '하우스키핑',   FALSE),
     ('FB',        '식음료',       FALSE),
@@ -10,6 +10,8 @@ INSERT INTO department (id, name, is_admin) VALUES
     ('CONCIERGE', '컨시어지',     FALSE),
     ('FRONT',     '프론트데스크', TRUE)
 ON CONFLICT (id) DO NOTHING;
+
+-- (room_type은 더 이상 사용하지 않음)
 
 -- 직원 역할 (부서별 직급 추가)
 INSERT INTO staff_role (id, department_id, name) VALUES
@@ -46,9 +48,18 @@ INSERT INTO room (number) VALUES
 ON CONFLICT (number) DO NOTHING;
 
 -- ============================================================
--- PMS 더미 데이터 (발표용 가짜 무대 세트)
+-- ★ 테스트용 직원 데이터 (PIN 6자리 변경) ★
 -- ============================================================
 
+-- 관리자 계정 (PIN: 000000)
+INSERT INTO staff (name, pin, role_id, department_id) VALUES
+    ('최관리', '000000', 2, 'FRONT')
+ON CONFLICT (pin) DO NOTHING;
+
+-- 일반 직원 계정 (PIN: 111111)
+INSERT INTO staff (name, pin, role_id, department_id) VALUES
+    ('김직원', '111111', 1, 'HK')
+ON CONFLICT (pin) DO NOTHING;
 -- PMS 객실 (6개 타입 · 총 23실)
 INSERT INTO pms_room (number, type) VALUES
     -- 1층: 스탠다드 (기본 객실)
@@ -84,3 +95,11 @@ INSERT INTO request (status, priority, department_id, summary, raw_text, confide
     ('COMPLETED',   'NORMAL', 'CONCIERGE', '택시 호출 요청',          '공항까지 택시 하나 불러주세요',        0.97, '707', 1,    0, NOW() - INTERVAL '3 hours',      NOW() - INTERVAL '1 hour'),
     ('PENDING',     'LOW',    'HK',        '미니바 보충 요청',        '미니바에 물이 없어요',                0.91, '707', NULL, 0, NOW() - INTERVAL '15 minutes',   NOW() - INTERVAL '15 minutes')
 ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- PMS 테스트 데이터 (투숙객 인증 테스트용)
+-- ============================================================
+
+INSERT INTO pms_guest (room_no, name, phone, access_code, checkout_date) VALUES
+    ('707', '홍길동', '010-1234-5678', 'test-guest-code-1234', '2026-12-31')
+ON CONFLICT (room_no) DO NOTHING;
