@@ -31,6 +31,9 @@ public class GuestJpaEntity {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "access_code", unique = true, length = 100)
+    private String accessCode;
+
     @Column(name = "checkin_date", nullable = false)
     private LocalDateTime checkinDate;
 
@@ -44,6 +47,7 @@ public class GuestJpaEntity {
         entity.roomNumber = domain.getRoomNumber();
         entity.name = domain.getName();
         entity.phone = domain.getPhone();
+        entity.accessCode = domain.getAccessCode();
         entity.checkinDate = domain.getCheckinDate();
         entity.checkoutDate = domain.getCheckoutDate();
         return entity;
@@ -51,6 +55,6 @@ public class GuestJpaEntity {
 
     // === Entity → Domain ===
     public Guest toDomain() {
-        return new Guest(id, roomNumber, name, phone, checkinDate, checkoutDate);
+        return new Guest(id, roomNumber, name, phone, accessCode, checkinDate, checkoutDate);
     }
 }

@@ -9,6 +9,7 @@
   background: var(--color-bg);
   box-shadow: var(--shadow-card);
   width: 100%;
+  flex-shrink: 0;
   box-sizing: border-box;
   transition: border-color var(--transition);
 }

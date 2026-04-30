@@ -1,0 +1,133 @@
+package com.anook.backend.admin.request.adapter.in.web;
+
+import com.anook.backend.admin.request.application.dto.request.AssignRequestCommand;
+import com.anook.backend.admin.request.application.dto.request.ChangeRequestPriorityCommand;
+import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
+import com.anook.backend.admin.request.application.dto.response.AdminRequestStatsResult;
+import com.anook.backend.admin.request.application.port.in.ManageAdminRequestUseCase;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+/**
+ * 관리자 요청 관리 Controller
+ *
+ * 전체 요청 모니터링, 담당자 배정, 우선순위 변경, 취소 기능을 제공합니다.
+ */
+@RestController
+@RequestMapping("/admin/requests")
+@RequiredArgsConstructor
+public class AdminRequestController {
+
+    private final ManageAdminRequestUseCase manageAdminRequestUseCase;
+
+    /**
+     * 전체 요청 목록 조회 (필터링 + 정렬)
+     *
+     * GET /admin/requests?status=PENDING&dept=HK&priority=URGENT&sort=created_at_desc
+     */
+    @GetMapping
+    public ResponseEntity<List<AdminRequestListResult>> getAllRequests(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String dept,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false, defaultValue = "created_at_desc") String sort) {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getAllRequests(status, dept, priority, sort));
+    }
+
+    /**
+     * 요청 상세 조회
+     *
+     * GET /admin/requests/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<AdminRequestDetailResult> getRequestDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getRequestDetail(id));
+    }
+
+    /**
+     * 담당자 배정/재배정
+     *
+     * PATCH /admin/requests/{id}/assign
+     */
+    @PatchMapping("/{id}/assign")
+    public ResponseEntity<Void> assignRequest(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignRequestCommand command) {
+        manageAdminRequestUseCase.assignRequest(id, command);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 우선순위 변경
+     *
+     * PATCH /admin/requests/{id}/priority
+     */
+    @PatchMapping("/{id}/priority")
+    public ResponseEntity<Void> changeRequestPriority(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangeRequestPriorityCommand command) {
+        manageAdminRequestUseCase.changeRequestPriority(id, command);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 요청 취소
+     *
+     * PATCH /admin/requests/{id}/cancel
+     */
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelRequest(@PathVariable Long id) {
+        manageAdminRequestUseCase.cancelRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 에스컬레이션 대기열 조회
+     *
+     * GET /admin/requests/escalations
+     */
+    @GetMapping("/escalations")
+    public ResponseEntity<List<AdminRequestListResult>> getEscalations() {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getEscalations());
+    }
+
+    /**
+     * 에스컬레이션 승인 — URGENT로 올리고 재배정 대기
+     *
+     * PATCH /admin/requests/{id}/escalate
+     */
+    @PatchMapping("/{id}/escalate")
+    public ResponseEntity<Void> escalateRequest(@PathVariable Long id) {
+        manageAdminRequestUseCase.escalateRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 관리자 수동 요청 생성
+     *
+     * POST /admin/requests
+     */
+    @PostMapping
+    public ResponseEntity<AdminRequestDetailResult> createRequest(
+            @Valid @RequestBody CreateAdminRequestCommand command) {
+        AdminRequestDetailResult result = manageAdminRequestUseCase.createRequest(command);
+        return ResponseEntity.created(URI.create("/admin/requests/" + result.id())).body(result);
+    }
+
+    /**
+     * 대시보드 통계
+     *
+     * GET /admin/requests/stats
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<AdminRequestStatsResult> getStats() {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getStats());
+    }
+}

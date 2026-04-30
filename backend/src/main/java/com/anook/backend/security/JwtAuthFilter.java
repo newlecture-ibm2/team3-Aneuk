@@ -28,8 +28,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. HTTP 요청의 쿠키 목록에서 "accessToken"을 찾아서 꺼냅니다.
-        String token = extractTokenFromCookie(request);
+        // 1. HTTP 요청의 헤더에서 "Authorization" 값을 꺼냅니다.
+        String token = extractTokenFromHeader(request);
 
         // 2. 토큰이 존재하고, 유효한(위조되지 않은) 토큰인지 검사합니다.
         if (token != null && jwtProvider.validateToken(token)) {
@@ -51,14 +51,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String extractTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        for (Cookie cookie : request.getCookies()) {
-            if ("accessToken".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
+    private String extractTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // "Bearer " 이후의 실제 토큰 문자열만 반환
         }
         return null;
     }

@@ -12,11 +12,11 @@ import java.util.Optional;
 /**
  * StaffRepositoryPort 구현체 — Staff 영속성 어댑터
  */
-@Component
+@Component("adminStaffPersistenceAdapter")
 @RequiredArgsConstructor
 public class StaffPersistenceAdapter implements StaffRepositoryPort {
 
-    private final StaffJpaRepository jpaRepository;
+    private final AdminStaffJpaRepository jpaRepository;
 
     @Override
     public Optional<Staff> findById(Long id) {

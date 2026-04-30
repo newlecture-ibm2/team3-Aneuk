@@ -25,9 +25,10 @@ interface UseWebSocketReturn {
 }
 
 // WebSocket 서버 URL (개발: 백엔드 직접, 프로덕션: Nginx 프록시)
+// HTTPS 환경에서는 wss:// 필수 (브라우저 보안 정책)
 const WS_URL =
   process.env.NODE_ENV === 'production'
-    ? `ws://${typeof window !== 'undefined' ? window.location.host : ''}/ws`
+    ? `${typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws'}://${typeof window !== 'undefined' ? window.location.host : ''}/ws`
     : 'ws://localhost:8080/ws';
 
 // 재연결 지수 백오프 설정

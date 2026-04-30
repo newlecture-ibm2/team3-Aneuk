@@ -8,9 +8,11 @@ import com.anook.backend.request.domain.model.DomainCode;
 import com.anook.backend.request.domain.model.Request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  * Message 도메인에서 발행한 RequestDetectedEvent를 수신하여 Request 생성
@@ -23,8 +25,8 @@ public class CreateRequestOnEventService {
     private final RequestRepositoryPort requestRepositoryPort;
     private final DispatchPort dispatchPort;
 
-    @EventListener
-    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onRequestDetected(RequestDetectedEvent event) {
         log.info("요청 이벤트 수신: roomNo={}, domainCode={}, summary={}", 
                  event.getRoomNo(), event.getDomainCode(), event.getSummary());
