@@ -35,22 +35,17 @@ export default function FilterButton({
       </button>
 
       {isOpen && (
-        <PopoverMenu
-          items={filterOptions}
-          selectedValue={selectedFilter}
-          onSelect={(value) => {
-            onFilterSelect(value);
-            setIsOpen(false);
-          }}
-          onClose={() => setIsOpen(false)}
-          width="max-content"
-          style={{ 
-            top: 'calc(100% + var(--space-8))', 
-            right: 0, 
-            left: 'auto',
-            minWidth: '160px'
-          }}
-        />
+        <div className={styles.popoverContainer} onMouseDown={(e) => e.stopPropagation()}>
+          <PopoverMenu
+            items={filterOptions}
+            selectedValue={selectedFilter}
+            onSelect={(value) => {
+              onFilterSelect(value);
+              setIsOpen(false);
+            }}
+            onClose={() => setIsOpen(false)}
+          />
+        </div>
       )}
     </div>
   );
