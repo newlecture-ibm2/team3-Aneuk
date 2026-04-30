@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class StaffRequestQueryAdapter implements RequestQueryPort {
     @Override
     public List<StaffTaskResult> findRequests(String departmentId, String status, String priority) {
         StringBuilder sql = new StringBuilder(
-                "SELECT r.id, r.status, r.priority, r.department_id, r.summary, r.raw_text, r.room_no, r.assigned_staff_id, r.confidence, r.created_at " +
+                "SELECT r.status, r.priority, r.department_id, r.summary, r.raw_text, r.room_no, r.assigned_staff_id, r.confidence, r.created_at " +
                 "FROM request r WHERE 1=1"
         );
         
@@ -39,17 +40,27 @@ public class StaffRequestQueryAdapter implements RequestQueryPort {
         
         sql.append(" ORDER BY r.created_at DESC");
 
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new StaffTaskResult(
-                rs.getLong("id"),
-                rs.getString("status"),
-                rs.getString("priority"),
-                rs.getString("department_id"),
-                rs.getString("summary"),
-                rs.getString("raw_text"),
-                rs.getString("room_no"),
-                rs.getString("assigned_staff_id"), // FIXME: staff name fetch if needed
-                rs.getObject("confidence") != null ? rs.getFloat("confidence") : null,
-                rs.getTimestamp("created_at").toLocalDateTime()
-        ), params.toArray());
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
+            String rStatus = rs.getString("status");
+            String rPriority = rs.getString("priority");
+            String rDeptId = rs.getString("department_id");
+            String rSummary = rs.getString("summary");
+            String rRawText = rs.getString("raw_text");
+            String rRoomNo = rs.getString("room_no");
+            Float rConfidence = rs.getObject("confidence") != null ? rs.getFloat("confidence") : null;
+            LocalDateTime rCreatedAt = rs.getTimestamp("created_at").toLocalDateTime();
+
+            return new StaffTaskResult(
+                rStatus,
+                rPriority,
+                rDeptId,
+                rSummary,
+                rRawText,
+                rRoomNo,
+                null, // assignedStaffName
+                rConfidence,
+                rCreatedAt
+            );
+        }, params.toArray());
     }
 }

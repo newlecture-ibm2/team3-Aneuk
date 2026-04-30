@@ -11,7 +11,6 @@ INSERT INTO department (id, name, is_admin) VALUES
     ('FRONT',     '프론트데스크', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
-
 -- 직원 역할 (부서별 직급 추가)
 INSERT INTO staff_role (id, department_id, name) VALUES
     (1, 'FRONT', '직원'),
@@ -31,6 +30,7 @@ INSERT INTO staff (name, pin, role_id, department_id) VALUES
     ('관리자', '000000', 2, 'FRONT')
 ON CONFLICT (pin) DO NOTHING;
 
+-- 시퀀스 동기화 (수동 INSERT로 인해 시퀀스가 1로 남아있는 문제 해결)
 SELECT setval('staff_role_id_seq', (SELECT COALESCE(MAX(id), 1) FROM staff_role));
 
 -- ============================================================
@@ -73,17 +73,13 @@ INSERT INTO staff (id, name, pin, role_id, department_id) VALUES
     (1, '김아늑', '1234', 1, 'HK')
 ON CONFLICT (id) DO NOTHING;
 
--- ============================================================
--- 더미 데이터: 요청 (Request)
--- ============================================================
+-- 기존 요청 데이터 초기화 (ERD 기준: id 자동 생성 유지)
+TRUNCATE TABLE request RESTART IDENTITY CASCADE;
 
-INSERT INTO request (id, department_id, summary, priority, status, room_no, created_at, updated_at) VALUES
-    (1, 'HK', '수건 2장 요청', 'HIGH', 'PENDING', '101', NOW(), NOW()),
-    (2, 'FRONT', '체크아웃 연장 문의', 'NORMAL', 'ASSIGNED', '205', NOW(), NOW()),
-    (3, 'FACILITY', '에어컨 고장', 'URGENT', 'IN_PROGRESS', '302', NOW(), NOW()),
-    (4, 'FB', '룸서비스: 조식 추가', 'NORMAL', 'PENDING', '501', NOW(), NOW())
-ON CONFLICT (id) DO NOTHING;
-
--- 시퀀스 동기화
-SELECT setval('request_id_seq', (SELECT COALESCE(MAX(id), 1) FROM request));
-
+INSERT INTO request (status, priority, department_id, summary, raw_text, confidence, room_no, assigned_staff_id, version, created_at, updated_at) VALUES
+    ('PENDING',     'NORMAL', 'HK',        '수건 2장 추가 요청',      '수건 두 장만 더 주세요',              0.95, '707', NULL, 0, NOW() - INTERVAL '2 hours',      NOW() - INTERVAL '2 hours'),
+    ('ASSIGNED',    'HIGH',   'FB',        '룸서비스 스테이크 주문',   '스테이크 미디엄으로 하나 주문할게요',   0.88, '707', 1,    0, NOW() - INTERVAL '1 hour',       NOW() - INTERVAL '30 minutes'),
+    ('IN_PROGRESS', 'URGENT', 'FACILITY',  '에어컨 고장 수리 요청',    '에어컨이 안 켜져요',                 0.92, '707', 1,    0, NOW() - INTERVAL '45 minutes',   NOW() - INTERVAL '10 minutes'),
+    ('COMPLETED',   'NORMAL', 'CONCIERGE', '택시 호출 요청',          '공항까지 택시 하나 불러주세요',        0.97, '707', 1,    0, NOW() - INTERVAL '3 hours',      NOW() - INTERVAL '1 hour'),
+    ('PENDING',     'LOW',    'HK',        '미니바 보충 요청',        '미니바에 물이 없어요',                0.91, '707', NULL, 0, NOW() - INTERVAL '15 minutes',   NOW() - INTERVAL '15 minutes')
+ON CONFLICT DO NOTHING;
