@@ -1,7 +1,7 @@
-package com.anook.backend.request.application.service;
+package com.anook.backend.staff.request.application.service;
 
 import com.anook.backend.request.application.dto.response.RequestWebSocketPayload;
-import com.anook.backend.request.application.port.in.ChangeRequestStatusUseCase;
+import com.anook.backend.staff.request.application.port.in.ChangeRequestStatusUseCase;
 import com.anook.backend.request.application.port.out.DispatchPort;
 import com.anook.backend.request.application.port.out.RequestRepositoryPort;
 import com.anook.backend.request.domain.model.Request;
