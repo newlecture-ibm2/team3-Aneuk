@@ -2,6 +2,7 @@ package com.anook.backend.admin.request.adapter.in.web;
 
 import com.anook.backend.admin.request.application.dto.request.AssignRequestCommand;
 import com.anook.backend.admin.request.application.dto.request.ChangeRequestPriorityCommand;
+import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
 import com.anook.backend.admin.request.application.port.in.ManageAdminRequestUseCase;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -83,5 +85,38 @@ public class AdminRequestController {
     public ResponseEntity<Void> cancelRequest(@PathVariable Long id) {
         manageAdminRequestUseCase.cancelRequest(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 에스컬레이션 대기열 조회
+     *
+     * GET /admin/requests/escalations
+     */
+    @GetMapping("/escalations")
+    public ResponseEntity<List<AdminRequestListResult>> getEscalations() {
+        return ResponseEntity.ok(manageAdminRequestUseCase.getEscalations());
+    }
+
+    /**
+     * 에스컬레이션 승인 — URGENT로 올리고 재배정 대기
+     *
+     * PATCH /admin/requests/{id}/escalate
+     */
+    @PatchMapping("/{id}/escalate")
+    public ResponseEntity<Void> escalateRequest(@PathVariable Long id) {
+        manageAdminRequestUseCase.escalateRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 관리자 수동 요청 생성
+     *
+     * POST /admin/requests
+     */
+    @PostMapping
+    public ResponseEntity<AdminRequestDetailResult> createRequest(
+            @Valid @RequestBody CreateAdminRequestCommand command) {
+        AdminRequestDetailResult result = manageAdminRequestUseCase.createRequest(command);
+        return ResponseEntity.created(URI.create("/admin/requests/" + result.id())).body(result);
     }
 }

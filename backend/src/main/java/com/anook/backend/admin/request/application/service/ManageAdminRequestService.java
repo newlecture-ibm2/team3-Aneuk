@@ -4,6 +4,7 @@ import com.anook.backend.admin.department.application.dto.response.DepartmentInf
 import com.anook.backend.admin.department.application.port.in.ListDepartmentsUseCase;
 import com.anook.backend.admin.request.application.dto.request.AssignRequestCommand;
 import com.anook.backend.admin.request.application.dto.request.ChangeRequestPriorityCommand;
+import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
 import com.anook.backend.admin.request.application.port.in.ManageAdminRequestUseCase;
@@ -92,6 +93,45 @@ public class ManageAdminRequestService implements ManageAdminRequestUseCase {
         }
 
         adminRequestQueryPort.cancel(id);
+    }
+
+    @Override
+    public List<AdminRequestListResult> getEscalations() {
+        List<AdminRequest> overdue = adminRequestQueryPort.findOverdue();
+
+        Map<String, String> deptNameMap = buildDeptNameMap();
+        Map<Long, String> staffNameMap = buildStaffNameMap();
+
+        return overdue.stream()
+                .map(r -> toListResult(r, deptNameMap, staffNameMap))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void escalateRequest(Long id) {
+        adminRequestQueryPort.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REQUEST_NOT_FOUND));
+
+        adminRequestQueryPort.escalate(id);
+    }
+
+    @Override
+    @Transactional
+    public AdminRequestDetailResult createRequest(CreateAdminRequestCommand command) {
+        AdminRequest saved = adminRequestQueryPort.save(
+                command.departmentId().toUpperCase(),
+                command.roomNo(),
+                command.summary(),
+                command.rawText(),
+                command.priority(),
+                command.assignedStaffId()
+        );
+
+        Map<String, String> deptNameMap = buildDeptNameMap();
+        Map<Long, String> staffNameMap = buildStaffNameMap();
+
+        return toDetailResult(saved, deptNameMap, staffNameMap);
     }
 
     // === 다른 모듈 데이터 조회 ===

@@ -99,4 +99,36 @@ public class AdminRequestJpaEntity {
         this.status = "CANCELLED";
         this.updatedAt = LocalDateTime.now();
     }
+
+    /**
+     * 에스컬레이션 승인 — 우선순위를 URGENT로 올리고 상태를 PENDING으로 변경
+     */
+    public void escalate() {
+        this.priority = "URGENT";
+        if ("ASSIGNED".equals(this.status) || "IN_PROGRESS".equals(this.status)) {
+            this.status = "PENDING";
+            this.assignedStaffId = null;
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // === 팩토리: 관리자 수동 생성 ===
+
+    public static AdminRequestJpaEntity createManual(
+            String departmentId, String roomNo, String summary,
+            String rawText, String priority, Long assignedStaffId) {
+        AdminRequestJpaEntity entity = new AdminRequestJpaEntity();
+        entity.departmentId = departmentId;
+        entity.roomNo = roomNo;
+        entity.summary = summary;
+        entity.rawText = rawText;
+        entity.priority = (priority != null && !priority.isBlank()) ? priority.toUpperCase() : "NORMAL";
+        entity.assignedStaffId = assignedStaffId;
+        entity.status = (assignedStaffId != null) ? "ASSIGNED" : "PENDING";
+        entity.confidence = 1.0f;
+        entity.version = 0;
+        entity.createdAt = LocalDateTime.now();
+        entity.updatedAt = LocalDateTime.now();
+        return entity;
+    }
 }

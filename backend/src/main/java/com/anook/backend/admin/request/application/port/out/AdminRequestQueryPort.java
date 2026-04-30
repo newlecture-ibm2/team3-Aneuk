@@ -41,4 +41,20 @@ public interface AdminRequestQueryPort {
      * 요청 취소
      */
     void cancel(Long requestId);
+
+    /**
+     * 에스컬레이션 승인 
+     */
+    void escalate(Long requestId);
+
+    /**
+     * 에스컬레이션 대상 목록 (초과 시간 요청)
+     */
+    List<AdminRequest> findOverdue();
+
+    /**
+     * 요청 저장 — 수동 생성 
+     */
+    AdminRequest save(String departmentId, String roomNo, String summary,
+                      String rawText, String priority, Long assignedStaffId);
 }

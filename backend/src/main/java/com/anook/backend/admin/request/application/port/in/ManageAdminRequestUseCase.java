@@ -2,6 +2,7 @@ package com.anook.backend.admin.request.application.port.in;
 
 import com.anook.backend.admin.request.application.dto.request.AssignRequestCommand;
 import com.anook.backend.admin.request.application.dto.request.ChangeRequestPriorityCommand;
+import com.anook.backend.admin.request.application.dto.request.CreateAdminRequestCommand;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestDetailResult;
 import com.anook.backend.admin.request.application.dto.response.AdminRequestListResult;
 
@@ -36,4 +37,19 @@ public interface ManageAdminRequestUseCase {
      * 요청 취소 (관리자 권한)
      */
     void cancelRequest(Long id);
+
+    /**
+     * 에스컬레이션 대상 목록 조회 
+     */
+    List<AdminRequestListResult> getEscalations();
+
+    /**
+     * 에스컬레이션 승인 
+     */
+    void escalateRequest(Long id);
+
+    /**
+     * 관리자 수동 요청 생성
+     */
+    AdminRequestDetailResult createRequest(CreateAdminRequestCommand command);
 }
