@@ -39,6 +39,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - AI_SERVER_URL=http://ai:8000
+    ports:
+      - "127.0.0.1:8080:8080"  # 호스트 Nginx만 접근 가능 (외부 차단)
     depends_on:
       - db
     networks:
