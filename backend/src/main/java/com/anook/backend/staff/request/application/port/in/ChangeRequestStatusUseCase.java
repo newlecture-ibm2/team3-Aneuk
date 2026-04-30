@@ -1,4 +1,4 @@
-package com.anook.backend.request.application.port.in;
+package com.anook.backend.staff.request.application.port.in;
 
 /**
  * 직원 요청 상태 변경 UseCase

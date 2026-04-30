@@ -1,9 +1,13 @@
-package com.anook.backend.request.adapter.in.web;
+package com.anook.backend.staff.request.adapter.in.web;
 
-import com.anook.backend.request.application.port.in.ChangeRequestStatusUseCase;
+import com.anook.backend.staff.request.application.port.in.ChangeRequestStatusUseCase;
+import com.anook.backend.staff.request.application.port.in.GetStaffRequestsUseCase;
+import com.anook.backend.staff.request.adapter.in.web.dto.response.StaffTaskResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 직원 전용 요청 상태 변경 컨트롤러
@@ -14,6 +18,17 @@ import org.springframework.web.bind.annotation.*;
 public class StaffRequestController {
 
     private final ChangeRequestStatusUseCase changeRequestStatusUseCase;
+    private final GetStaffRequestsUseCase getStaffRequestsUseCase;
+
+    @GetMapping
+    public ResponseEntity<List<StaffTaskResult>> getStaffRequests(
+            @RequestParam(required = false, defaultValue = "ALL") String departmentId,
+            @RequestParam(required = false, defaultValue = "ALL") String status,
+            @RequestParam(required = false, defaultValue = "ALL") String priority
+    ) {
+        List<StaffTaskResult> requests = getStaffRequestsUseCase.getRequests(departmentId, status, priority);
+        return ResponseEntity.ok(requests);
+    }
 
     @PatchMapping("/{id}/accept")
     public ResponseEntity<String> acceptRequest(@PathVariable Long id, @RequestBody StaffActionDto dto) {
