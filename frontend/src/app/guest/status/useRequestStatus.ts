@@ -39,7 +39,7 @@ export function useRequestStatus(roomNo: string = '707') {
   // WebSocket 구독 (실시간 상태 업데이트)
   useEffect(() => {
     const unsubscribe = subscribe(`/topic/room/${roomNo}`, (payload: any) => {
-      if (payload.eventType === 'NEW_REQUEST') {
+      if (payload.type === 'NEW_REQUEST') {
         setRequests(prev => [
           {
             id: payload.requestId,
@@ -51,7 +51,7 @@ export function useRequestStatus(roomNo: string = '707') {
           },
           ...prev
         ]);
-      } else if (payload.eventType === 'STATUS_CHANGED') {
+      } else if (payload.type === 'STATUS_CHANGED') {
         setRequests(prev => prev.map(req => 
           req.id === payload.requestId 
             ? { ...req, status: payload.status, updatedAt: new Date().toISOString() }
