@@ -36,8 +36,8 @@ export function useTasks(departmentId?: string): UseTasksReturn {
     setError(null);
     try {
       const url = departmentId 
-        ? `/api/staff/requests?departmentId=${departmentId}`
-        : '/api/staff/requests';
+        ? `/api/staff?action=requests&departmentId=${departmentId}`
+        : '/api/staff?action=requests';
         
       const res = await fetch(url);
       const data = await handleResponse<StaffTask[]>(res);
