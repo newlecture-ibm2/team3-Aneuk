@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import TaskColumn from '@/components/ui/TaskBoard/TaskColumn';
 import TaskTicket from '@/components/ui/TaskBoard/TaskTicket';
 import InputField from '@/components/ui/Inputfield/InputField';
 import FilterButton from '@/components/ui/FilterButton/FilterButton';
-import { useSearchParams } from 'next/navigation';
 import { useTasks } from './useTasks';
 import styles from './page.module.css';
 
@@ -31,9 +31,9 @@ const PRIORITY_OPTIONS = [
  */
 export default function StaffDashboardPage() {
   return (
-    <React.Suspense fallback={<div className={styles.loading}>화면을 준비 중입니다...</div>}>
+    <Suspense fallback={<div className={styles.loading}>화면을 준비 중입니다...</div>}>
       <DashboardContent />
-    </React.Suspense>
+    </Suspense>
   );
 }
 
@@ -66,7 +66,7 @@ function DashboardContent() {
 
   return (
     <div className={styles.container}>
-      <Sidebar role="housekeeping" />
+      <Sidebar role="housekeeping" fakePathname={view === 'my' ? '/staff?view=my' : '/staff'} />
 
       <main className={styles.mainContent}>
         <div className={styles.headerContainer}>

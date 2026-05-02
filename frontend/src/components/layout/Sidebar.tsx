@@ -72,8 +72,8 @@ export default function Sidebar({ role = 'admin', className = '', fakePathname, 
     {
       category: '',
       items: [
-        { label: '내 작업 (My Tasks)', href: `/dept/${role}/my-tasks`, icon: User },
-        { label: '부서 전체 작업 (Dept Tasks)', href: `/dept/${role}/all-tasks`, icon: Users }
+        { label: '내 작업 (My Tasks)', href: '/staff?view=my', icon: User },
+        { label: '부서 전체 작업 (Dept Tasks)', href: '/staff', icon: Users }
       ]
     }
   ];
